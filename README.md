@@ -133,10 +133,10 @@ count ⌊π/4·√(N/M̂)⌋; above the cap the attack falls back to trying M = 
 
 | Env var | Default | Meaning |
 |---|---|---|
-| `QBREAK_KEY_BITS` | `4` | requested key sizes, e.g. `4,6,8,10,12` locally |
+| `QBREAK_KEY_BITS` | `4,6,8,10,12` (`4` in Docker/Render) | requested key sizes |
 | `SYMMETRIC_MAX_KEY_BITS` | `12` (`8` in Docker/Render) | memory cap on key size |
 | `QBREAK_COUNTING_MAX_KEY_BITS` | `4` | largest key size with quantum counting |
-| `QBREAK_AES_TIMEOUT_S` | `60` | per-request limit (raise for 12-bit) |
+| `QBREAK_AES_TIMEOUT_S` | `900` (`60` in Docker) | per-request limit; 12-bit attacks take ~6–9 min |
 | `QBREAK_NOISE_MAX_KEY_BITS` | `4` | largest key size accepting `noise_p` |
 | `QBREAK_RESULTS_DIR` | `backend/results` | experiment records |
 | `QBREAK_BB84_MAX_RAW_QUBITS` | `4096` | cap on BB84 raw qubits per request |
@@ -251,7 +251,20 @@ quantum counting and Shor circuits, blind attackers, classical baselines, and ev
 
 ## Run it locally (Windows PowerShell, VS Code)
 
-Requires **Python 3.11** (3.12 also works) and **Node.js 20**. From the repository root:
+Requires **Python 3.11** (3.12 also works) and **Node.js 20**.
+
+**One command** (from the repository root): creates the venv and installs dependencies if needed,
+builds the UI, and serves everything on **http://localhost:8000** with every MiniAES key size
+(4/6/8/10/12-bit) and every RSA modulus enabled:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\start.ps1            # add -SkipBuild to reuse the last UI build
+```
+
+Expected attack times on a fast multi-core PC: 4–8-bit a few seconds, 10-bit ~30 s
+(ciphertext-only ~1.5 min), 12-bit ~6–9 min. Every extra key bit doubles the simulation.
+
+Or step by step:
 
 ```powershell
 # 1. Backend: virtual environment + dependencies (qiskit, qiskit-aer, fastapi, cryptography, kyber-py)
@@ -262,7 +275,6 @@ pip install -e "backend[dev]"
 
 # 2. Run the API (terminal 1)
 cd backend
-$env:QBREAK_KEY_BITS = "4,6,8"         # optional: enable more MiniAES key sizes
 uvicorn qbreak.api.main:app --reload --port 8000
 ```
 

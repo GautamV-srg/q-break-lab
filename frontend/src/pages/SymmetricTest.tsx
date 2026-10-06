@@ -527,6 +527,14 @@ export default function SymmetricTest() {
                 ]}
               />
             )}
+            {attacking && intercepted && intercepted.key_bits >= 10 && (
+              <p className="small muted">
+                {intercepted.key_bits >= 12
+                  ? "12-bit keys simulate a 24-qubit state vector through 50 Grover iterations: expect about 6–9 minutes on a fast multi-core PC."
+                  : "10-bit keys take about 30 seconds (up to ~1.5 minutes for ciphertext-only) on a fast multi-core PC."}{" "}
+                Every extra key bit doubles the simulator's work. That is the point.
+              </p>
+            )}
             <ErrorBox message={attackError} onRetry={busy ? undefined : () => void runAttack()} />
           </StageCard>
         }

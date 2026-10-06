@@ -24,8 +24,9 @@ MAX_SHOTS = 4096
 SIMULATED_KEY_BITS: tuple[int, ...] = (4, 6, 8, 10, 12)
 """Every key size the simulator can run. 16-bit is listed in config but never simulated."""
 
-REQUESTED_KEY_BITS: list[int] = _integer_list("QBREAK_KEY_BITS", "4")
-"""Key sizes this instance was asked to enable (QBREAK_KEY_BITS)."""
+REQUESTED_KEY_BITS: list[int] = _integer_list("QBREAK_KEY_BITS", "4,6,8,10,12")
+"""Key sizes this instance was asked to enable (QBREAK_KEY_BITS). Locally every simulated size
+is on; Docker and Render set QBREAK_KEY_BITS=4 for their small instances."""
 
 SYMMETRIC_MAX_KEY_BITS: int = int(os.getenv("SYMMETRIC_MAX_KEY_BITS", os.getenv("QBREAK_SYMMETRIC_MAX_KEY_BITS", "12")))
 """Memory cap: 12-bit needs an instance with about 2 GB RAM, so constrained deploys set 8 or 10."""
@@ -37,8 +38,9 @@ MAX_AES_TEXT_CHARS = 1000
 
 AES_CONDITIONS: tuple[str, ...] = ("known_beginning", "known_substring", "ciphertext_only")
 
-AES_REQUEST_TIMEOUT_S: float = float(os.getenv("QBREAK_AES_TIMEOUT_S", "60"))
-"""Per-request limit for symmetric simulations; raise it locally for 12-bit runs."""
+AES_REQUEST_TIMEOUT_S: float = float(os.getenv("QBREAK_AES_TIMEOUT_S", "900"))
+"""Per-request limit for symmetric simulations. 12-bit attacks take about 6-9 minutes on a fast
+multi-core PC (10-bit ciphertext-only about 1.5 minutes), hence 15 minutes by default."""
 
 AES_NOISE_MAX_KEY_BITS: int = int(os.getenv("QBREAK_NOISE_MAX_KEY_BITS", "4"))
 """Noisy runs simulate every shot separately, so the noise option is limited to small keys."""

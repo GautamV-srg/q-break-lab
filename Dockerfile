@@ -9,6 +9,7 @@ COPY backend/ ./backend/
 RUN pip install --no-cache-dir ./backend
 COPY --from=frontend-build /fe/dist ./static
 ENV QBREAK_KEY_BITS=4 \
+    QBREAK_AES_TIMEOUT_S=60 \
     SYMMETRIC_MAX_KEY_BITS=8 \
     QBREAK_RESULTS_DIR=/app/backend/results \
     QBREAK_MODULI=15 \
