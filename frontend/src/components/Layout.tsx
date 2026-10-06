@@ -6,6 +6,7 @@ import { useConfig } from "../config";
 const NAV = [
   { to: "/test/symmetric", label: "Symmetric test" },
   { to: "/test/public-key", label: "Public-key test" },
+  { to: "/protect", label: "Protect" },
   { to: "/evaluation", label: "Evaluation" },
   { to: "/mosca", label: "Mosca risk" },
   { to: "/readiness", label: "Readiness" },

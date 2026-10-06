@@ -262,12 +262,12 @@ def test_verdicts_match_the_brief() -> None:
     v = body["verdicts"]
     assert v["aes256"]["verdict"] == "infeasible" and v["aes256"]["executed"] is False
     assert v["aes256"]["evidence"]["required"]["logical_qubits"] == 6681
-    assert any(c["id"] == "GLRS16" for c in v["aes256"]["citations"])
+    assert "GLRS16" in v["aes256"]["citations"]
     assert v["mlkem"]["verdict"] == "not_applicable" and v["mlkem"]["executed"] is False
     assert v["mlkem"]["evidence"]["shor_input_stage"]["applicable"] is False
     assert "no known efficient quantum attack" in v["mlkem"]["explanation"]
     assert "unbreakable" not in json.dumps(v["mlkem"]).lower()
-    assert any(c["id"] == "FIPS203" for c in v["mlkem"]["citations"])
+    assert "FIPS203" in v["mlkem"]["citations"]
     assert v["bb84"]["verdict"] == "detected" and v["bb84"]["executed"] is True
     assert v["bb84"]["evidence"]["qber"] > 0.11
     assert body["before"]["cipher"] == "miniaes"

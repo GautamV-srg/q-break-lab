@@ -26,8 +26,8 @@ SERIES_DESCRIPTIONS: dict[str, str] = {
     "counting": "Quantum-counting estimate of the number of matching keys vs the true count.",
     "bb84_qber_vs_eve": "BB84: measured QBER vs Eve's intercept fraction, with the theory fraction/4 and the abort threshold.",
     "bb84_qber_vs_noise": "BB84: measured QBER vs channel noise, with the 11% abort threshold.",
-    "bb84_key_rate": "BB84: key bits per raw qubit by raw qubits and channel noise. key_rate = delivered key (always 256 bits, 0 when aborted) / raw; secure_rate = estimated extractable secret bits / raw.",
-    "defence_overhead": "AES-256 / ML-KEM-768 / BB84: measured sizes and timings by message length.",
+    "bb84_key_rate": "BB84 on a clean channel: key bits per raw qubit. key_rate = delivered key (always 256 bits, 0 when aborted) / raw; secure_rate = estimated extractable secret bits / raw.",
+    "defence_overhead": "AES-256 / ML-KEM-768 / BB84: measured bytes (ciphertext, other public material, key) and total time for a 100-character message.",
 }
 SERIES = tuple(SERIES_DESCRIPTIONS)
 
@@ -167,29 +167,52 @@ def _bb84_qber(records: list[dict], experiment: str, x: str) -> list[dict]:
 
 
 def _bb84_key_rate(records: list[dict]) -> list[dict]:
-    picked = [r for r in records if r["experiment"] == "bb84_key_rate"]
+    """One row per raw-qubit count on the clean channel (the noisy runs stay in the records)."""
+    picked = [r for r in records if r["experiment"] == "bb84_key_rate" and not r["extra"]["channel_noise"]]
     rows = []
-    key = lambda r: (r["extra"]["raw_qubits"], r["extra"]["channel_noise"])
-    for (raw, noise), rs in sorted(_group(picked, key).items()):
+    for raw, rs in sorted(_group(picked, lambda r: r["extra"]["raw_qubits"]).items()):
         rows.append({
-            "raw_qubits": raw, "channel_noise": noise,
+            "raw_qubits": raw, "channel_noise": 0.0,
             "key_rate": _mean([r["extra"]["key_rate"] for r in rs]),
             "secure_rate": _mean([r["extra"]["secure_rate"] for r in rs]),
+            "final_key_bits": _mean([r["extra"]["final_key_bits"] for r in rs]),
+            "sifted_bits": _mean([r["extra"]["sifted_bits"] for r in rs]),
             "sifted_fraction": _mean([r["extra"]["sifted_bits"] / raw for r in rs]),
             "acceptance_rate": _mean([float(r["extra"]["accepted"]) for r in rs]),
+            "accepted_rate": _mean([float(r["extra"]["accepted"]) for r in rs]),
             "runs": len(rs),
         })
     return rows
 
 
+OVERHEAD_CHARS = 100
+"""The overhead chart compares methods on one message length (the records hold 16/100/1000)."""
+
+
+def _public_bytes(method: str, sizes: dict) -> float:
+    """Public material sent besides the message ciphertext."""
+    if method == "mlkem":
+        return sizes.get("nonce_bytes", 0) + sizes.get("encapsulation_key_bytes", 0) + sizes.get("kem_ciphertext_bytes", 0)
+    if method == "bb84":  # nonce + announced bases (2 bits per photon, Alice and Bob) + disclosed sample
+        return sizes.get("nonce_bytes", 0) + 2 * sizes.get("raw_qubits", 0) / 8 + 2 * sizes.get("sample_bits", 0) / 8
+    return sizes.get("nonce_bytes", 0)
+
+
 def _defence_overhead(records: list[dict]) -> list[dict]:
     picked = [r for r in records if r["experiment"] == "defence_overhead"]
+    lengths = {r["extra"]["plaintext_chars"] for r in picked}
+    chars = OVERHEAD_CHARS if OVERHEAD_CHARS in lengths else (min(lengths) if lengths else None)
     rows = []
-    for (method, chars), rs in sorted(_group(picked, lambda r: (r["cipher"], r["extra"]["plaintext_chars"])).items()):
+    for method, rs in sorted(_group([r for r in picked if r["extra"]["plaintext_chars"] == chars], lambda r: r["cipher"]).items()):
         sizes = sorted({k for r in rs for k in r["extra"]["sizes"]})
         timings = sorted({k for r in rs for k in r["extra"]["timings_ms"]})
         rows.append({
             "method": method, "plaintext_chars": chars,
+            "ciphertext_bytes": _mean([r["extra"]["sizes"].get("ciphertext_bytes") for r in rs]),
+            "public_bytes": _mean([_public_bytes(method, r["extra"]["sizes"]) for r in rs]),
+            "key_bytes": _mean([r["extra"]["sizes"].get("key_bytes") for r in rs]),
+            "total_ms": _mean([sum(v for k, v in r["extra"]["timings_ms"].items() if k != "simulation") for r in rs]),
+            "raw_qubits": _mean([r["extra"]["sizes"].get("raw_qubits") for r in rs]),
             **{f"size_{k}": _mean([r["extra"]["sizes"].get(k) for r in rs]) for k in sizes},
             **{f"ms_{k}": _mean([r["extra"]["timings_ms"].get(k) for r in rs]) for k in timings},
             "roundtrip_rate": _mean([float(r["success"]) for r in rs if r["success"] is not None]),

@@ -19,6 +19,12 @@
   --breach: #ff4560;
   --amber: #f59e0b;
   --ok: #22c55e;
+  /* Act II, the blue team: the defence accent ("now we fight back"). */
+  --def: #2dd4bf;
+  --def-strong: #0d9488;
+  --def-deep: #115e59;
+  --def-ink: #042f2e;
+  --def-sky: #38bdf8;
   --neutral: #94a3b8;
   --bar: #3a4560;
 
@@ -55,6 +61,11 @@
     --breach: #d9173f;
     --amber: #b45309;
     --ok: #15803d;
+    --def: #0f766e;
+    --def-strong: #0d9488;
+    --def-deep: #134e4a;
+    --def-ink: #ffffff;
+    --def-sky: #0369a1;
     --neutral: #64748b;
     --bar: #b8c3d6;
     --series-1: #2a78d6;
@@ -471,18 +482,21 @@ label.seg:focus-within {
 }
 
 /* ============ Stepper ============ */
-.stepper {
-  list-style: none;
-  margin: 0 0 20px;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+.stepper-wrap {
   position: sticky;
   top: 62px;
   z-index: 10;
   background: var(--bg);
   padding: 8px 0;
+  margin: 0 0 20px;
+}
+.stepper {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--steps, 4), minmax(0, 1fr));
+  gap: 8px;
 }
 .step-inner {
   display: flex;
@@ -1819,9 +1833,8 @@ ul.reco {
       opacity: 1;
     }
   }
-  .stepper {
+  .stepper-wrap {
     top: 56px;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .step-side {
     display: none;
@@ -2696,7 +2709,7 @@ a.tile-link p {
   .topnav-inner {
     position: relative;
   }
-  .stepper {
+  .stepper-wrap {
     top: 52px;
   }
   .chart-grid,

@@ -33,8 +33,8 @@ STATEVECTOR_BYTES_PER_AMPLITUDE = 16
 """complex128 amplitudes, as Aer's statevector method stores them."""
 
 
-def _cite(*keys: str) -> list[dict[str, str]]:
-    return [{"id": key, "text": CITATIONS[key]} for key in keys]
+def _cite(*keys: str) -> dict[str, str]:
+    return {key: CITATIONS[key] for key in keys}
 
 
 def _toy_grover_curve() -> list[dict[str, Any]]:
@@ -72,6 +72,16 @@ def attack_aes256(bundle: dict[str, Any]) -> dict[str, Any]:
     qubits = estimate["logical_qubits"]["value"]
     iterations_log2 = estimate["grover_iterations"]["log2"]
     evidence = {
+        # Headline numbers (flat, for the UI's key-number grid); details follow.
+        "key_bits": 256,
+        "effective_quantum_security_bits": 128,
+        "logical_qubits": qubits,
+        "grover_iterations": estimate["grover_iterations"]["text"],
+        "grover_formula": estimate["grover_iterations"]["formula"],
+        "t_depth": estimate["t_depth"]["text"],
+        "simulator_ceiling_qubits": largest_qubits,
+        "ciphertext_bytes": ciphertext_bytes,
+        "note": "Not executed: a feasibility check from the cited resource estimate, not a Grover run.",
         "observed": {"ciphertext_bytes": ciphertext_bytes, "nonce_bytes": len(unb64(bundle["nonce_b64"])), "known_plaintext_pairs": 0},
         "required": {
             "logical_qubits": qubits,
@@ -122,6 +132,11 @@ def attack_mlkem(bundle: dict[str, Any]) -> dict[str, Any]:
     public = {k: v for k, v in bundle.items() if k != "public_metrics"}
     stage = shor_input_stage(public)
     evidence = {
+        "parameter_set": bundle.get("parameter_set", "ML-KEM-768"),
+        "encapsulation_key_bytes": len(unb64(bundle["encapsulation_key_b64"])),
+        "kem_ciphertext_bytes": len(unb64(bundle["kem_ciphertext_b64"])),
+        "shor_applicable": stage["applicable"],
+        "note": "Not executed: the Shor pipeline's input stage found nothing to factor. " + MLKEM_HONESTY_NOTE,
         "shor_input_stage": stage,
         "observed": {
             "parameter_set": bundle.get("parameter_set", "ML-KEM-768"),
@@ -182,6 +197,9 @@ def attack_bb84(
         )
     evidence = {k: v for k, v in view.items() if k != "evidence"}
     evidence["expected_eve_info_bits"] = round(eve_intercept_fraction / 2 * sifted)
+    evidence["expected_leak_bits"] = evidence["expected_eve_info_bits"]
+    evidence["key_discarded"] = view["detected"] or not view["accepted"]
+    evidence["note"] = "Executed: a fresh BB84 exchange with Eve was simulated in Qiskit Aer. " + BB84_HONESTY_NOTE
     evidence["circuits"] = view["evidence"]
     evidence["honesty_note"] = BB84_HONESTY_NOTE
     evidence["original_exchange"] = {

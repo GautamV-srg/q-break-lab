@@ -134,6 +134,14 @@ class BB84Limits(StrictModel):
     max_channel_noise: float
     sample_fraction: float
     final_key_bits: int
+    limits: dict[str, float] = {}
+
+
+class DefenceConfig(StrictModel):
+    methods: list[str]
+    max_text_chars: int
+    bb84_defaults: BB84Defaults
+    bb84_limits: dict[str, float]
 
 
 class ConfigResponse(StrictModel):
@@ -160,6 +168,7 @@ class ConfigResponse(StrictModel):
     defence_methods: list[str] = []
     defence_max_text_chars: int = 1000
     defence_bb84: BB84Limits | None = None
+    defence: DefenceConfig | None = None
 
 
 class AESEncryptRequest(StrictModel):
@@ -708,7 +717,7 @@ class ReattackVerdict(StrictModel):
     verdict: Literal["infeasible", "not_applicable", "detected", "undetected_low_intercept"]
     explanation: str
     evidence: dict[str, Any]
-    citations: list[Citation]
+    citations: dict[str, str]
 
 
 class ReattackVerdicts(StrictModel):
@@ -749,12 +758,16 @@ class ReattackResponse(StrictModel):
 class DefenceMethodInfo(StrictModel):
     id: DefenceMethod
     label: str
+    name: str
+    description: str
+    kind: str
 
 
 class DefenceInfoResponse(StrictModel):
     methods: list[DefenceMethodInfo]
     comparison: DefenceComparison
-    citations: list[Citation]
+    comparison_rows: list[ComparisonRow]
+    citations: dict[str, str]
     bb84: BB84Limits
     max_text_chars: int
     honesty_notes: list[str]

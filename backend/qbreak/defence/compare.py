@@ -21,6 +21,17 @@ from qbreak.defence.types import BB84_HONESTY_NOTE, CITATIONS, MLKEM_HONESTY_NOT
 
 METHOD_LABELS = {"aes256": "AES-256", "mlkem": "ML-KEM-768", "bb84": "BB84 QKD"}
 
+METHOD_DESCRIPTIONS = {
+    "aes256": "Classical symmetric cipher with a key big enough that Grover can't touch it (AES-256-GCM).",
+    "mlkem": "NIST's post-quantum key encapsulation (FIPS 203): ML-KEM-768 agrees a key, AES-256-GCM encrypts.",
+    "bb84": "Quantum key distribution: an eavesdropper disturbs the photons and is detected; its key drives AES-256-GCM.",
+}
+METHOD_KINDS = {
+    "aes256": "Real AES-256-GCM encryption",
+    "mlkem": "Real ML-KEM-768 (educational kyber-py) + AES-256-GCM",
+    "bb84": "Simulated in Qiskit Aer",
+}
+
 STATIC_ROWS: list[dict[str, str]] = [
     {
         "label": "Quantum-safe, and why",
@@ -135,9 +146,13 @@ def recommend(bundles: dict[str, Any], verdicts: dict[str, Any]) -> dict[str, st
 def defence_info() -> dict[str, Any]:
     """Everything the UI shows before any run: static rows, citations, limits, honesty notes."""
     return {
-        "methods": [{"id": m, "label": METHOD_LABELS[m]} for m in DEFENCE_METHODS],
+        "methods": [
+            {"id": m, "label": METHOD_LABELS[m], "name": METHOD_LABELS[m], "description": METHOD_DESCRIPTIONS[m], "kind": METHOD_KINDS[m]}
+            for m in DEFENCE_METHODS
+        ],
         "comparison": {"rows": [dict(r) for r in STATIC_ROWS]},
-        "citations": [{"id": k, "text": v} for k, v in CITATIONS.items()],
+        "comparison_rows": [dict(r) for r in STATIC_ROWS],
+        "citations": dict(CITATIONS),
         "bb84": bb84_limits(),
         "max_text_chars": MAX_DEFENCE_TEXT_CHARS,
         "honesty_notes": list(HONESTY_NOTES),
@@ -164,4 +179,25 @@ def bb84_limits() -> dict[str, Any]:
         "max_channel_noise": BB84_MAX_CHANNEL_NOISE,
         "sample_fraction": BB84_SAMPLE_FRACTION,
         "final_key_bits": 256,
+        "limits": {
+            "raw_qubits_min": BB84_MIN_RAW_QUBITS,
+            "raw_qubits_max": BB84_MAX_RAW_QUBITS,
+            "eve_intercept_fraction_min": 0.0,
+            "eve_intercept_fraction_max": 1.0,
+            "channel_noise_min": 0.0,
+            "channel_noise_max": BB84_MAX_CHANNEL_NOISE,
+            "qber_threshold_min": BB84_MIN_QBER_THRESHOLD,
+            "qber_threshold_max": BB84_MAX_QBER_THRESHOLD,
+        },
+    }
+
+
+def defence_config() -> dict[str, Any]:
+    """The `defence` object in /api/config."""
+    limits = bb84_limits()
+    return {
+        "methods": list(DEFENCE_METHODS),
+        "max_text_chars": MAX_DEFENCE_TEXT_CHARS,
+        "bb84_defaults": limits["defaults"],
+        "bb84_limits": limits["limits"],
     }

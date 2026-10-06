@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { ConfigProvider } from "./config";
 import "./styles/global.css";
+import "./styles/defence.css";
 import "./styles/print.css";
 
 createRoot(document.getElementById("root")!).render(

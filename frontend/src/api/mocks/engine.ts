@@ -14,10 +14,17 @@ import type {
   AesResources,
   AttackCondition,
   ConfigResponse,
+  DefenceConfig,
+  DefenceInfo,
   EvaluationResponse,
+  EvaluationSeries,
   MoscaInfo,
   MoscaRequest,
   MoscaResult,
+  ProtectRequest,
+  ProtectResponse,
+  ReattackRequest,
+  ReattackResponse,
   RsaAttackRequest,
   RsaAttackResponse,
   RsaEncryptRequest,
@@ -40,6 +47,12 @@ import evaluationFixture from "./evaluation.json";
 import moscaInfoFixture from "./mosca_info.json";
 import aesResourcesFixture from "./aes_resources.json";
 import rsaResourceFixture from "./rsa_resource_estimate.json";
+import defenceConfigFixture from "./defence_config.json";
+import defenceInfoFixture from "./defence_info.json";
+import defenceProtectFixture from "./defence_protect.json";
+import defenceReattackFixture from "./defence_reattack.json";
+import evaluationDefenceFixture from "./evaluation_defence.json";
+import * as defenceSynth from "./defenceSynth";
 
 const CONFIG = configFixture as unknown as ConfigResponse;
 const AES_ENCRYPT = aesEncryptFixture as unknown as { byBits: Record<string, AesEncryptResponse>; short: AesEncryptResponse };
@@ -69,7 +82,7 @@ function nearestNoise<T extends { noise_p?: number | null }>(runs: T[], p: numbe
 }
 
 export function config(): ConfigResponse {
-  return CONFIG;
+  return { ...CONFIG, defence: defenceConfigFixture as unknown as DefenceConfig };
 }
 
 // ---------- Symmetric ----------
@@ -251,7 +264,9 @@ export function rsaAttack(req: RsaAttackRequest): RsaAttackResponse {
 // ---------- Evaluation, risk, published estimates ----------
 
 export function evaluation(): EvaluationResponse {
-  return evaluationFixture as unknown as EvaluationResponse;
+  const base = evaluationFixture as unknown as EvaluationResponse;
+  const defence = evaluationDefenceFixture as unknown as Record<string, EvaluationSeries>;
+  return { series: [...base.series, ...Object.keys(defence)], data: { ...base.data, ...defence } };
 }
 
 export function moscaInfo(): MoscaInfo {
@@ -278,4 +293,35 @@ export function aesResources(): AesResources {
 
 export function rsaResourceEstimate(): RsaResourceEstimate {
   return rsaResourceFixture as unknown as RsaResourceEstimate;
+}
+
+// ---------- Defence (synthetic: see defenceSynth.ts and README.md) ----------
+
+const DEFENCE_PROTECT = defenceProtectFixture as unknown as { request: ProtectRequest; accepted: ProtectResponse; aborted: ProtectResponse };
+const DEFENCE_REATTACK = defenceReattackFixture as unknown as { request: ReattackRequest; response: ReattackResponse };
+
+export function defenceInfo(): DefenceInfo {
+  return defenceInfoFixture as unknown as DefenceInfo;
+}
+
+/** Key-order-insensitive equality, so a request matches its fixture however the UI built it. */
+function canonical(v: unknown): unknown {
+  if (Array.isArray(v)) return v.map(canonical);
+  if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).sort(([a], [b]) => a.localeCompare(b)).map(([k, x]) => [k, canonical(x)]));
+  return v;
+}
+const sameJson = (a: unknown, b: unknown) => JSON.stringify(canonical(a)) === JSON.stringify(canonical(b));
+
+/** The two stored fixtures answer the demo inputs verbatim; anything else is computed by the stand-in. */
+export async function defenceProtect(req: ProtectRequest): Promise<ProtectResponse> {
+  const base = DEFENCE_PROTECT.request;
+  if (sameJson(req, base)) return DEFENCE_PROTECT.accepted;
+  if (sameJson(req, { ...base, bb84: { ...base.bb84, eve: true } })) return DEFENCE_PROTECT.aborted;
+  return defenceSynth.protect(req);
+}
+
+export function defenceReattack(req: ReattackRequest): ReattackResponse {
+  if (sameJson(req, DEFENCE_REATTACK.request)) return DEFENCE_REATTACK.response;
+  const aes256 = (aesResourcesFixture as unknown as AesResources).estimates.find((e) => e.key_bits === 256);
+  return defenceSynth.reattack(req, aes256 as Parameters<typeof defenceSynth.reattack>[1]);
 }

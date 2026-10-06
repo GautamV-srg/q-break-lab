@@ -8,7 +8,8 @@
     "dev:mock": "vite --mode mock",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "gen:defence-mocks": "vite-node scripts/gen-defence-mocks.ts"
   },
   "dependencies": {
     "react": "^18.3.1",

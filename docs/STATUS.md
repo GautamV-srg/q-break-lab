@@ -94,7 +94,7 @@ Protect → blind re-attack → compare is implemented and tested end to end.
 - Re-attack: `bundles.bb84` may be `null` (aborted exchange). BB84 is re-attacked whenever the `bb84` field is
   present, even when it is null. `bb84_attack` also accepts an optional `raw_qubits`. The response adds `before`
   (`{cipher, verdict, text}`) when `original_attack` is sent. Verdict values:
-  `infeasible | not_applicable | detected | undetected_low_intercept`. Citations are `[{id, text}]`.
+  `infeasible | not_applicable | detected | undetected_low_intercept`. Citations are `{id: text}` objects.
 - `channel_noise` is the per-photon bit-flip probability (QBER ≈ p), capped at 0.25.
 
 ### Known issues
@@ -103,3 +103,8 @@ Protect → blind re-attack → compare is implemented and tested end to end.
   dependencies (`cryptography`, `kyber-py==1.2.0`) install from wheels/pure Python on `python:3.11-slim`.
 - On noisy channels the default 1024 raw qubits often aborts with "not enough secure bits", because the leak
   budget is conservative; use 2048+ raw qubits (see `bb84_key_rate`).
+
+### Integration with `feat/defence-ui` (live, no mocks)
+
+- The backend now also serves the shapes the UI reads. `/api/config` has `defence: {methods, max_text_chars, bb84_defaults, bb84_limits}`, and `/api/defence/info` has `methods[].{name, description, kind}`, `comparison_rows` and `bb84.limits`. Verdict evidence carries flat headline numbers. The `bb84_key_rate` (clean channel) and `defence_overhead` (100-character message, per method) rows carry the fields the Evaluation charts plot.
+- The full 7-stage demo was verified in headless Chrome against the live backend on both tests, plus `/protect` and `/evaluation`, with no console errors and no failed API calls.

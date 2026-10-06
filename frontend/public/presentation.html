@@ -109,7 +109,7 @@
   <div class="kicker">Qiskit Fall Fest 2026 · Track 5 · Open Innovation</div>
   <h1>Q-Break</h1>
   <h2 style="font-weight:600;max-width:24em">A quantum red-team engine for breach testing encrypted communications</h2>
-  <p class="lede">Can your encrypted messages survive a quantum attacker?</p>
+  <p class="lede">Q-Break shows how a quantum attacker would breach your encryption, then protects it with post-quantum and quantum methods, and compares them so you can choose the right defence.</p>
   <p class="strip"><b>Simulated exercise</b> · miniature ciphers · classical simulator · does not break real AES or RSA · no speed-advantage claim</p>
 </section>
 
@@ -134,13 +134,14 @@
 
 <section class="slide" id="s3" aria-label="What Q-Break does">
   <div class="kicker">The product</div>
-  <h2>A red-team engagement, in four stages</h2>
+  <h2>Attack, then protect, re-attack and compare</h2>
   <ol class="flow">
     <li><b>Configure</b><span class="small">Your organization encrypts a message with its own key.</span></li>
     <li><b>Intercept</b><span class="small">The adversary captures only what an eavesdropper would.</span></li>
     <li><b>Breach test</b><span class="small">A genuine Grover or Shor circuit runs on the intercept.</span></li>
     <li><b>Breach Report</b><span class="small">Verdict, recovered secret, quantum vs classical cost, recommendation.</span></li>
   </ol>
+  <p class="small"><b>Then Act II, the blue team:</b> protect the same message with AES-256, ML-KEM-768 and BB84 QKD, re-attack each protected version with the same adversary, and compare the defences.</p>
   <div class="wall" aria-hidden="true"><span>YOUR ORGANIZATION</span><i></i><span>QUANTUM ADVERSARY</span></div>
   <div class="note"><p><strong>Blindness is enforced, not promised.</strong> The attack code and the classical baselines receive ciphertext and public parameters only. The key, p, q, φ and d never cross the wall, and tests check it.</p></div>
 </section>

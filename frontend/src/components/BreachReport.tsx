@@ -29,6 +29,8 @@ interface Props {
   onRetry: () => void;
   retrying: boolean;
   popTheHood: ReactNode;
+  /** Opens Act II with the same message. */
+  onProtect?: () => void;
 }
 
 export type Verdict = "breached" | "ambiguous" | "safe";
@@ -113,7 +115,23 @@ function Stat({ k, v, sub }: { k: string; v: ReactNode; sub?: ReactNode }) {
   );
 }
 
-export default function BreachReport({ input, onRetry, retrying, popTheHood }: Props) {
+function ProtectCta({ onProtect, verdict }: { onProtect: () => void; verdict: Verdict }) {
+  return (
+    <div className="protect-cta no-print">
+      <div>
+        <strong>{verdict === "breached" ? "Now fight back." : "Fight back anyway."}</strong>{" "}
+        <span className="muted">
+          Re-encrypt this same message with AES-256, ML-KEM and BB84, then send the same quantum adversary after it.
+        </span>
+      </div>
+      <button type="button" className="btn btn-defend btn-large" onClick={onProtect}>
+        Protect this message →
+      </button>
+    </div>
+  );
+}
+
+export default function BreachReport({ input, onRetry, retrying, popTheHood, onProtect }: Props) {
   const verdict = verdictOf(input);
   const testName = input.kind === "symmetric" ? "Symmetric breach test (Grover)" : "Public-key breach test (Shor)";
   const now = new Date().toLocaleString();
@@ -202,6 +220,8 @@ export default function BreachReport({ input, onRetry, retrying, popTheHood }: P
           </button>
         </div>
       )}
+
+      {onProtect && <ProtectCta onProtect={onProtect} verdict={verdict} />}
 
       {input.resp.warnings.length > 0 && (
         <div className="caution">
@@ -325,6 +345,8 @@ export default function BreachReport({ input, onRetry, retrying, popTheHood }: P
       <div className="report-notice">
         <PrototypeNotice />
       </div>
+
+      {onProtect && <ProtectCta onProtect={onProtect} verdict={verdict} />}
 
       <div className="no-print">{popTheHood}</div>
     </article>

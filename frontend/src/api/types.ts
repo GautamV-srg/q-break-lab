@@ -114,6 +114,8 @@ export interface ConfigResponse {
   rsa_constructions?: RsaConstructionOption[];
   rsa_noise_moduli?: number[];
   rsa_max_noise_p?: number;
+  // --- defence (round 3) ---
+  defence?: DefenceConfig;
 }
 
 // ---------- AES (symmetric) ----------
@@ -459,4 +461,150 @@ export interface RsaResourceEstimate {
   citations: Record<string, RsaCitation>;
   honesty_note: string;
   [extra: string]: unknown;
+}
+
+// ---------- Defence (round 3): protect, re-attack, compare ----------
+//
+// Mirrors AGENT_DEFENCE_A_BACKEND.md §7. The live OpenAPI schema wins: fields the brief
+// leaves open (sizes, timings, evidence, bundle contents) are typed loosely and read by key.
+
+export type DefenceMethod = "aes256" | "mlkem" | "bb84";
+
+export interface Bb84Options {
+  eve: boolean;
+  eve_intercept_fraction: number;
+  channel_noise: number;
+  raw_qubits: number;
+  qber_threshold: number;
+  seed: number | null;
+}
+
+export interface ProtectRequest {
+  plaintext: string;
+  methods: DefenceMethod[];
+  bb84: Bb84Options;
+}
+
+/** Public material only: what an eavesdropper on the channel would capture. */
+export interface DefenceBundle {
+  ciphertext_b64?: string;
+  nonce_b64?: string;
+  /** ML-KEM only. */
+  encapsulation_key_b64?: string;
+  kem_ciphertext_b64?: string;
+  /** BB84 only: the public channel record (announced bases, sample positions and values). */
+  [field: string]: unknown;
+}
+
+export interface PhotonRow {
+  alice_bit: number;
+  alice_basis: string;
+  eve_basis: string | null;
+  bob_basis: string;
+  bob_bit: number;
+  kept: boolean;
+  error: boolean;
+}
+
+export interface QkdSummary {
+  raw_bits: number;
+  sifted_bits: number;
+  sample_bits: number;
+  final_key_bits: number;
+  qber: number;
+  qber_threshold: number;
+  accepted: boolean;
+  reason: string;
+  photon_preview: PhotonRow[];
+}
+
+export interface ProtectResult {
+  method: DefenceMethod;
+  /** "protected" | "aborted" */
+  status: string;
+  bundle: DefenceBundle | null;
+  sizes: Record<string, number | string | null>;
+  timings_ms: Record<string, number | null>;
+  roundtrip_ok: boolean;
+  steps: string[];
+  /** ML-KEM only, e.g. "ML-KEM-768". */
+  parameter_set?: string;
+  /** BB84 only. */
+  qkd?: QkdSummary;
+  /** BB84 only: circuits, simulator method, an example circuit drawing and OpenQASM. */
+  evidence?: Record<string, unknown>;
+}
+
+export interface ProtectResponse {
+  results: Partial<Record<DefenceMethod, ProtectResult>>;
+}
+
+export interface ReattackRequest {
+  bundles: Partial<Record<DefenceMethod, DefenceBundle | null>>;
+  bb84_attack: { eve_intercept_fraction: number; channel_noise: number; seed: number | null };
+  original_attack?: { cipher: "miniaes" | "minirsa"; verdict: string };
+}
+
+/** "infeasible" | "not_applicable" | "detected" | "undetected_low_intercept" */
+export type DefenceVerdictKind = string;
+
+export type Citation = string | { authors?: string; title?: string; venue?: string; year?: number | string; url?: string; [k: string]: unknown };
+
+export interface DefenceVerdict {
+  method: DefenceMethod;
+  attack: string;
+  executed: boolean;
+  verdict: DefenceVerdictKind;
+  explanation: string;
+  evidence: Record<string, unknown>;
+  citations: Citation[] | Record<string, Citation>;
+}
+
+export interface ComparisonRow {
+  label: string;
+  aes256: string;
+  mlkem: string;
+  bb84: string;
+}
+
+export interface ReattackResponse {
+  verdicts: Partial<Record<DefenceMethod, DefenceVerdict>>;
+  comparison: { rows: ComparisonRow[] };
+  recommendation: { text: string; rule: string };
+}
+
+export interface DefenceMethodInfo {
+  id: DefenceMethod;
+  name: string;
+  description: string;
+  /** e.g. "Real AES-256-GCM encryption" or "Simulated in Qiskit". */
+  kind?: string;
+}
+
+export interface Bb84Limits {
+  raw_qubits_min?: number;
+  raw_qubits_max?: number;
+  eve_intercept_fraction_min?: number;
+  eve_intercept_fraction_max?: number;
+  channel_noise_min?: number;
+  channel_noise_max?: number;
+  qber_threshold_min?: number;
+  qber_threshold_max?: number;
+}
+
+export interface DefenceInfo {
+  methods: DefenceMethodInfo[];
+  comparison_rows: ComparisonRow[];
+  citations: Record<string, Citation> | Citation[];
+  bb84: { defaults: Bb84Options; limits: Bb84Limits };
+  honesty_notes: string[];
+  max_text_chars?: number;
+}
+
+/** Defence fields added to /api/config. */
+export interface DefenceConfig {
+  methods?: DefenceMethod[];
+  max_text_chars?: number;
+  bb84_defaults?: Partial<Bb84Options>;
+  bb84_limits?: Bb84Limits;
 }

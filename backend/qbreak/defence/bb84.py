@@ -302,6 +302,10 @@ class Exchange:
         except Exception:
             qasm = None
         return {
+            "eve_intercepted": self.intercepted,
+            "theory_qber": round(theory_qber(self.eve_intercept_fraction if self.eve else 0.0, self.channel_noise), 6),
+            "num_circuits": sum(self.stage_circuits.values()),
+            "note": BB84_HONESTY_NOTE,
             "simulator_method": SIMULATOR_METHOD,
             "qubits_per_circuit": self.max_width,
             "batch_qubits": BB84_BATCH_QUBITS,

@@ -301,3 +301,12 @@ docker build -t q-break .
 docker run --rm -p 8000:8000 q-break
 # open http://localhost:8000
 ```
+
+**Frontend extras.** No backend? Mock mode answers every call from the fixtures in
+`frontend/src/api/mocks/`: `npm run dev:mock` (or add `?mock=1` to any page URL). Frontend
+tests: `npm test`.
+
+**Try the full loop in the browser:** open **Symmetric test** (or **Public-key test**) and press
+**▶ Run full demo**. It runs Act I (configure → intercept → breach test → Breach Report) and then
+Act II (protect with AES-256, ML-KEM and BB84 with the eavesdropper on → re-attack → compare).
+**Protect** in the top navigation opens Act II on its own with a fresh message.

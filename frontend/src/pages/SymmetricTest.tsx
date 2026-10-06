@@ -4,8 +4,10 @@ import { MOCK_KEYS } from "../api/mocks/demo";
 import { buildAesAttackRequest, type InterceptedAes } from "../api/payloads";
 import type { AesAttackResponse, AesEncryptResponse, AttackCondition } from "../api/types";
 import BitInput, { randomBits } from "../components/BitInput";
-import BreachReport from "../components/BreachReport";
+import BreachReport, { verdictOf } from "../components/BreachReport";
 import CiphertextView from "../components/CiphertextView";
+import DefenceAct from "../components/defence/DefenceAct";
+import { useDefence } from "../components/defence/useDefence";
 import Duo from "../components/Duo";
 import ErrorBox from "../components/ErrorBox";
 import InterceptionWall from "../components/InterceptionWall";
@@ -17,15 +19,18 @@ import ShotsSlider from "../components/ShotsSlider";
 import StageCard from "../components/StageCard";
 import Stepper from "../components/Stepper";
 import TraceView from "../components/TraceView";
-import { randomSeed, sleep, useAliveRef, useScrollToStage } from "../components/flow";
+import { focusStage, randomSeed, sleep, useAliveRef, useScrollToStage } from "../components/flow";
 import { useConfig } from "../config";
 
 const ID = "sym";
 const STEPS = [
-  { label: "Configure", side: "Your organization" },
-  { label: "Intercept", side: "The wall" },
-  { label: "Breach test", side: "Quantum adversary" },
-  { label: "Report", side: "Breach Report" },
+  { label: "Configure", side: "Your organization", act: "attack" as const },
+  { label: "Intercept", side: "The wall", act: "attack" as const },
+  { label: "Breach test", side: "Quantum adversary", act: "attack" as const },
+  { label: "Report", side: "Breach Report", act: "attack" as const },
+  { label: "Protect", side: "Your organization", act: "defend" as const },
+  { label: "Re-attack", side: "Quantum adversary", act: "defend" as const },
+  { label: "Compare", side: "Defence Report", act: "defend" as const },
 ];
 const DEMO_MESSAGE = "Hi judges!";
 const DEMO_SUBSTRING = "judges";
@@ -81,6 +86,15 @@ export default function SymmetricTest() {
   const [demoRunning, setDemoRunning] = useState(false);
   const [completedOnce, setCompletedOnce] = useState(false);
 
+  // ---- Act II (blue team): protect the same message, re-attack, compare. ----
+  const defence = useDefence();
+  const [actOpen, setActOpen] = useState(false);
+  // A new breach (or none) starts Act II over.
+  useEffect(() => {
+    defence.reset();
+    setActOpen(false);
+  }, [attack]);
+
   // Everything selectable is driven by /api/config. Engines without the Track 5 fields
   // fall back to the plain list of enabled sizes and the single known-beginning mode.
   const conditions = config.aes_conditions ?? [];
@@ -104,13 +118,23 @@ export default function SymmetricTest() {
     if (activeCondition && activeCondition.id !== condition) setCondition(activeCondition.id);
   }, [activeCondition, condition]);
 
-  const stage = attack ? 4 : intercepted ? 3 : enc ? 2 : 1;
+  const stage = attack
+    ? defence.reattack
+      ? 7
+      : defence.protect || actOpen
+        ? 5 + (defence.protect ? 1 : 0)
+        : 4
+    : intercepted
+      ? 3
+      : enc
+        ? 2
+        : 1;
   useScrollToStage(ID, stage);
 
   const configReady = !loading && !configError && config.aes_key_bits.length > 0;
   const keyValid = orgKey.length === keyBits && /^[01]+$/.test(orgKey);
   const messageValid = message.length > 0 && message.length <= config.max_aes_text_chars;
-  const busy = encrypting || attacking || demoRunning || !configReady;
+  const busy = encrypting || attacking || demoRunning || defence.busy || !configReady;
   const countingRuns = config.aes_counting_max_key_bits !== undefined && keyBits <= config.aes_counting_max_key_bits;
 
   function resetFromEncrypt() {
@@ -172,8 +196,8 @@ export default function SymmetricTest() {
     setAttackError(null);
   }
 
-  async function runAttack(target: InterceptedAes | null = intercepted, seed: number | null = null) {
-    if (!target || inFlight.current) return; // never fire twice
+  async function runAttack(target: InterceptedAes | null = intercepted, seed: number | null = null): Promise<AesAttackResponse | null> {
+    if (!target || inFlight.current) return null; // never fire twice
     inFlight.current = true;
     setAttacking(true);
     setAttackError(null);
@@ -181,11 +205,13 @@ export default function SymmetricTest() {
       // The request is built ONLY from the adversary's intercepted data (see api/payloads.ts).
       const req = buildAesAttackRequest(target, { shots, seed });
       const r = await aesAttack(req);
-      if (!alive.current) return;
+      if (!alive.current) return null;
       setAttack(r);
       setCompletedOnce(true);
+      return r;
     } catch (e) {
       if (alive.current) setAttackError(errorMessage(e));
+      return null;
     } finally {
       inFlight.current = false;
       if (alive.current) setAttacking(false);
@@ -217,10 +243,42 @@ export default function SymmetricTest() {
       handOff(r, known);
       await sleep(3200); // let the wall animation play
       if (!alive.current) return;
-      await runAttack(interceptOf(r, known));
+      const a = await runAttack(interceptOf(r, known));
+      if (!a || !alive.current) return;
+      await sleep(2500); // let the Breach Report land
+      if (!alive.current) return;
+      await runDefenceDemo(msg, originalOf(a));
     } finally {
       if (alive.current) setDemoRunning(false);
     }
+  }
+
+  function originalOf(a: AesAttackResponse) {
+    const v = verdictOf({ kind: "symmetric", resp: a });
+    return {
+      cipher: "miniaes" as const,
+      verdict: v === "safe" ? "not_breached" : v,
+      label: `MiniAES, ${a.key_bits}-bit key · Grover`,
+    };
+  }
+
+  /** Act II of the demo: protect with all three methods, Eve ON so the detection shows, re-attack, compare. */
+  async function runDefenceDemo(msg: string, original: ReturnType<typeof originalOf>) {
+    const s = defence.settings;
+    if (!s) return;
+    setActOpen(true);
+    const bb84 = { ...s.defaults, eve: true };
+    defence.setMethods(s.methods);
+    defence.setBb84(bb84);
+    await sleep(1500);
+    if (!alive.current) return;
+    const p = await defence.runProtect(msg, { bb84, methods: s.methods });
+    if (!p || !alive.current) return;
+    await sleep(4500); // let the photon stream and the QBER verdict play
+    if (!alive.current) return;
+    const attack = { eve_intercept_fraction: s.defaults.eve_intercept_fraction, channel_noise: s.defaults.channel_noise };
+    defence.setAttack(attack);
+    await defence.runReattack(p, { attack, original });
   }
 
   const keyChoices: Option<number>[] = keyOptions.map((o) => ({
@@ -256,7 +314,7 @@ export default function SymmetricTest() {
           </p>
         </div>
         <button className="btn btn-demo no-print" onClick={runDemo} disabled={busy}>
-          {demoRunning ? "Demo running…" : "▶ Run demo test"}
+          {demoRunning ? "Demo running…" : "▶ Run full demo"}
         </button>
       </div>
 
@@ -490,6 +548,10 @@ export default function SymmetricTest() {
             input={reportInput}
             onRetry={() => void runAttack(intercepted, randomSeed())}
             retrying={attacking}
+            onProtect={() => {
+              setActOpen(true);
+              focusStage(ID, 5);
+            }}
             popTheHood={
               <PopTheHood
                 input={reportInput}
@@ -500,6 +562,21 @@ export default function SymmetricTest() {
           />
         )}
       </StageCard>
+
+      {/* ---------- Act II: stages 5–7 ---------- */}
+      <DefenceAct
+        d={defence}
+        idPrefix={ID}
+        startN={5}
+        handOff
+        unlocked={!!attack}
+        lockedHint="Finish the breach test first: Act II protects the same message."
+        message={encMessage}
+        carriedFrom="Carried over from Act I, on the organization's side. It goes to the protect step only, never to the re-attack."
+        original={attack ? originalOf(attack) : undefined}
+        origin="Symmetric breach test, Act II"
+        demoRunning={demoRunning}
+      />
     </div>
   );
 }

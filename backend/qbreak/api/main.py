@@ -77,7 +77,7 @@ def health() -> dict[str, str]:
 def config() -> dict:
     """Return enabled test sizes and public request limits."""
     from qbreak.aes.counting import COUNTING_MAX_KEY_BITS
-    from qbreak.defence.compare import bb84_limits
+    from qbreak.defence.compare import bb84_limits, defence_config
 
     return {
         "aes_key_bits": ENABLED_KEY_BITS,
@@ -98,6 +98,7 @@ def config() -> dict:
         "defence_methods": list(DEFENCE_METHODS),
         "defence_max_text_chars": MAX_DEFENCE_TEXT_CHARS,
         "defence_bb84": bb84_limits(),
+        "defence": defence_config(),
     }
 
 
