@@ -1,6 +1,20 @@
 import { useEffect, useState } from "react";
 
-const NAMES = ["--accent", "--breach", "--text", "--text-muted", "--border", "--surface-2", "--bar"] as const;
+const NAMES = [
+  "--accent",
+  "--breach",
+  "--text",
+  "--text-muted",
+  "--border",
+  "--surface",
+  "--surface-2",
+  "--bar",
+  "--grid",
+  "--series-1",
+  "--series-2",
+  "--series-3",
+  "--series-4",
+] as const;
 export type ThemeColors = Record<(typeof NAMES)[number], string>;
 
 function read(): ThemeColors {

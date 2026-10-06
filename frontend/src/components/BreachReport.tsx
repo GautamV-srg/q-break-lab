@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
-import type { AesAttackResponse, RsaAttackResponse, RsaVictimSecret } from "../api/types";
+import type { AesAttackResponse, AttackCondition, RsaAttackResponse, RsaVictimSecret } from "../api/types";
 import PrototypeNotice from "./PrototypeNotice";
+import QuantumVsClassical from "./QuantumVsClassical";
+import RealScaleEstimates from "./RealScaleEstimates";
 
 export type ReportInput =
   | {
@@ -9,6 +11,8 @@ export type ReportInput =
       /** Organization's key from Stage 1, used ONLY for the post-test "matches?" badge. */
       orgKey: string;
       knownPlaintext: string;
+      /** Attack-mode label from /api/config, for the engagement summary. */
+      conditionLabel?: string;
     }
   | {
       kind: "public-key";
@@ -16,6 +20,8 @@ export type ReportInput =
       e: number;
       /** Organization's secret from Stage 1, used ONLY for the post-test "matches?" badge. */
       orgSecret: RsaVictimSecret;
+      /** Construction label from /api/config, for the engagement summary. */
+      constructionLabel?: string;
     };
 
 interface Props {
@@ -25,10 +31,12 @@ interface Props {
   popTheHood: ReactNode;
 }
 
-type Verdict = "breached" | "ambiguous" | "safe";
+export type Verdict = "breached" | "ambiguous" | "safe";
 
-function verdictOf(input: ReportInput): Verdict {
+export function verdictOf(input: { kind: "symmetric"; resp: AesAttackResponse } | { kind: "public-key"; resp: RsaAttackResponse }): Verdict {
   if (input.kind === "symmetric") {
+    // The engine's own verdict wins; older engines are read from the recovered keys.
+    if (input.resp.verdict) return input.resp.verdict === "not_breached" ? "safe" : input.resp.verdict;
     if (input.resp.key !== null) return "breached";
     if (!input.resp.unique && input.resp.recovered_keys.length > 1) return "ambiguous";
     return "safe";
@@ -40,23 +48,48 @@ function fmtMs(ms: number): string {
   return ms >= 1000 ? `${(ms / 1000).toFixed(2)} s` : `${ms.toFixed(0)} ms`;
 }
 
+/** Character ranges of `text` the adversary already knew, for the given attack mode. */
+function knownRanges(text: string, known: string, condition: AttackCondition | undefined): [number, number][] {
+  if (!known || condition === "ciphertext_only") return [];
+  if (condition === "known_substring") {
+    const out: [number, number][] = [];
+    for (let i = text.indexOf(known); i !== -1; i = text.indexOf(known, i + known.length)) out.push([i, i + known.length]);
+    return out;
+  }
+  return text.startsWith(known) ? [[0, known.length]] : [];
+}
+
 /** Decrypted text with the part the adversary did NOT know highlighted. */
-function Decrypted({ text, knownPrefix }: { text: string; knownPrefix: string }) {
-  const hasPrefix = knownPrefix.length > 0 && text.startsWith(knownPrefix);
-  const known = hasPrefix ? knownPrefix : "";
-  const rest = text.slice(known.length);
+function Decrypted({ text, known, condition }: { text: string; known: string; condition?: AttackCondition }) {
+  const ranges = knownRanges(text, known, condition);
+  const parts: { s: string; known: boolean }[] = [];
+  let pos = 0;
+  for (const [a, b] of ranges) {
+    if (a > pos) parts.push({ s: text.slice(pos, a), known: false });
+    parts.push({ s: text.slice(a, b), known: true });
+    pos = b;
+  }
+  if (pos < text.length || parts.length === 0) parts.push({ s: text.slice(pos) || " ", known: false });
+
   return (
     <div className="decrypted">
       <p className="decrypted-text mono" aria-label={`Decrypted message: ${text}`}>
-        {known && <span className="dec-known" title="Known to the adversary in advance">{known}</span>}
-        <mark className="dec-recovered" title="Recovered beyond the known plaintext">
-          {rest || " "}
-        </mark>
+        {parts.map((p, i) =>
+          p.known ? (
+            <span className="dec-known" key={i} title="Known to the adversary in advance">
+              {p.s}
+            </span>
+          ) : (
+            <mark className="dec-recovered" key={i} title="Recovered beyond the known plaintext">
+              {p.s}
+            </mark>
+          ),
+        )}
       </p>
       <p className="small muted">
-        {known ? (
+        {ranges.length > 0 ? (
           <>
-            <span className="dec-known-swatch">Grey</span>: known plaintext the adversary assumed.{" "}
+            <span className="dec-known-swatch">Grey</span>: plaintext the adversary already knew.{" "}
             <mark className="dec-recovered">Highlighted</mark>: recovered beyond the known plaintext.
           </>
         ) : (
@@ -84,14 +117,29 @@ export default function BreachReport({ input, onRetry, retrying, popTheHood }: P
   const verdict = verdictOf(input);
   const testName = input.kind === "symmetric" ? "Symmetric breach test (Grover)" : "Public-key breach test (Shor)";
   const now = new Date().toLocaleString();
+  const engineVerdict = input.kind === "symmetric" ? input.resp.verdict_text : undefined;
+
+  const engagement: [string, ReactNode][] =
+    input.kind === "symmetric"
+      ? [
+          ["Target", `MiniAES, ${input.resp.key_bits}-bit key`],
+          ["Attack mode", input.conditionLabel ?? "Known beginning"],
+          ["Shots", input.resp.measurement.shots],
+        ]
+      : [
+          ["Target", `MiniRSA, N = ${input.resp.n}`],
+          ["Construction", input.constructionLabel ?? input.resp.construction],
+          ["Shots", input.resp.measurement.shots],
+        ];
+  if (input.resp.noise_p) engagement.push(["Noise", `depolarising p = ${input.resp.noise_p}`]);
 
   return (
     <article className="report" aria-labelledby="report-title">
       <header className="report-head">
         <div>
-          <div className="report-eyebrow">Q-Break · Breach Report</div>
+          <div className="report-eyebrow">Q-Break · Red-team Breach Report</div>
           <h2 id="report-title">{testName}</h2>
-          <div className="small muted">Generated {now}</div>
+          <div className="small muted">Generated {now} · simulated exercise on a miniature cipher</div>
         </div>
         <div className="report-actions no-print">
           <button className="btn btn-ghost" onClick={() => window.print()}>
@@ -99,6 +147,15 @@ export default function BreachReport({ input, onRetry, retrying, popTheHood }: P
           </button>
         </div>
       </header>
+
+      <dl className="engagement">
+        {engagement.map(([k, v]) => (
+          <div key={k}>
+            <dt>{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))}
+      </dl>
 
       {/* ---------- Verdict ---------- */}
       {verdict === "breached" && (
@@ -108,9 +165,10 @@ export default function BreachReport({ input, onRetry, retrying, popTheHood }: P
             <div className="verdict-title">BREACHED</div>
             <div className="verdict-sub">
               {input.kind === "symmetric"
-                ? "Key recovered. The intercepted message was decrypted."
-                : "Modulus factored, private key rebuilt, message decrypted."}
+                ? "The red team recovered the key and decrypted the intercepted message."
+                : "The red team factored the modulus, rebuilt the private key and decrypted the message."}
             </div>
+            {engineVerdict && <div className="verdict-engine small">Engine verdict: {engineVerdict}</div>}
           </div>
         </div>
       )}
@@ -118,10 +176,13 @@ export default function BreachReport({ input, onRetry, retrying, popTheHood }: P
         <div className="verdict verdict-ambiguous" role="status">
           <span className="verdict-icon" aria-hidden="true">≈</span>
           <div>
-            <div className="verdict-title">Ambiguous: {input.resp.recovered_keys.length} candidate keys</div>
+            <div className="verdict-title">AMBIGUOUS: {input.resp.recovered_keys.length} candidate keys</div>
             <div className="verdict-sub">
-              Several keys fit the known plaintext. Compare the decryptions below to see which one reads correctly.
+              {input.resp.condition === "ciphertext_only"
+                ? "Several keys decrypt the message to plausible text. With no known plaintext, the red team cannot tell which one is real."
+                : "Several keys fit the known plaintext. Compare the decryptions below to see which one reads correctly."}
             </div>
+            {engineVerdict && <div className="verdict-engine small">Engine verdict: {engineVerdict}</div>}
           </div>
         </div>
       )}
@@ -129,11 +190,12 @@ export default function BreachReport({ input, onRetry, retrying, popTheHood }: P
         <div className="verdict verdict-safe" role="status">
           <span className="verdict-icon" aria-hidden="true">○</span>
           <div>
-            <div className="verdict-title">Not breached this run</div>
+            <div className="verdict-title">NOT BREACHED this run</div>
             <div className="verdict-sub">
               Quantum attacks are probabilistic: a single run can miss. This is not evidence of safety; retry with a
               new random seed.
             </div>
+            {engineVerdict && <div className="verdict-engine small">Engine verdict: {engineVerdict}</div>}
           </div>
           <button className="btn btn-primary no-print" onClick={onRetry} disabled={retrying}>
             {retrying ? "Running…" : "↻ Retry with a new seed"}
@@ -162,15 +224,21 @@ export default function BreachReport({ input, onRetry, retrying, popTheHood }: P
         {input.kind === "symmetric" ? (
           <div className="stats-grid">
             <Stat k="Search space" v={`2^${input.resp.key_bits} = ${input.resp.search_space}`} sub="possible keys" />
+            {input.resp.counting && (
+              <Stat
+                k="Estimated matching keys"
+                v={input.resp.estimated_matching_keys != null ? `M ≈ ${input.resp.estimated_matching_keys}` : "not estimated"}
+                sub={
+                  input.resp.counting.ran
+                    ? `quantum counting, ${input.resp.counting.counting_qubits ?? "?"}-qubit counting register`
+                    : "quantum counting was skipped for this key size (see Pop the Hood)"
+                }
+              />
+            )}
             <Stat
               k="Grover iterations"
               v={input.resp.iterations}
               sub={<span className="mono">{input.resp.optimal_iterations_formula}</span>}
-            />
-            <Stat
-              k="Classical average guesses"
-              v={input.resp.search_space / 2}
-              sub={`2^${input.resp.key_bits} / 2 trial decryptions`}
             />
             <Stat k="Qubits" v={input.resp.circuit.num_qubits} sub={`${input.resp.pairs_used.length} known block(s) in the oracle`} />
             <Stat k="Run time" v={fmtMs(input.resp.sim_time_ms)} sub="simulated on a classical computer" />
@@ -180,7 +248,12 @@ export default function BreachReport({ input, onRetry, retrying, popTheHood }: P
             <Stat
               k="Qubits"
               v={input.resp.circuit.num_qubits}
-              sub={`${input.resp.n_count} counting + ${input.resp.n_work} work`}
+              sub={`${input.resp.counting_qubits ?? input.resp.n_count} counting + ${input.resp.n_work} work`}
+            />
+            <Stat
+              k="Construction"
+              v={<span className="stat-v-text">{input.constructionLabel ?? input.resp.construction}</span>}
+              sub={`${input.resp.n_count} bits of phase precision`}
             />
             <Stat k="Period r" v={input.resp.period ?? "—"} sub={`of ${input.resp.a}^x mod ${input.resp.n}`} />
             <Stat
@@ -191,7 +264,27 @@ export default function BreachReport({ input, onRetry, retrying, popTheHood }: P
             <Stat k="Run time" v={fmtMs(input.resp.sim_time_ms)} sub="simulated on a classical computer" />
           </div>
         )}
+        {input.kind === "public-key" && (
+          <p className="small muted disclosure-line">
+            {/* The engine's own disclosure text when it sends one; otherwise the same statement in our words. */}
+            {input.resp.classical_precomputation_note ?? (
+              <>
+                <strong>Classical pre-computation is disclosed.</strong>{" "}
+                {input.resp.construction === "textbook-swaps"
+                  ? "This run used the hand-built textbook swap circuit for N = 15; no permutation was pre-computed."
+                  : "The modular-multiplication blocks are permutations computed classically when the circuit is built; the period itself is read from the quantum measurement."}
+              </>
+            )}
+          </p>
+        )}
       </section>
+
+      {/* ---------- Quantum vs classical ---------- */}
+      {input.kind === "symmetric" ? (
+        <QuantumVsClassical kind="symmetric" comparison={input.resp.comparison} />
+      ) : (
+        <QuantumVsClassical kind="public-key" comparison={input.resp.comparison} constructionLabel={input.constructionLabel} />
+      )}
 
       {/* ---------- Real scale ---------- */}
       <section className="report-section">
@@ -213,6 +306,7 @@ export default function BreachReport({ input, onRetry, retrying, popTheHood }: P
             decrypted later (“harvest now, decrypt later”).
           </p>
         )}
+        <RealScaleEstimates kind={input.kind} />
       </section>
 
       <section className="report-section recommendation">
@@ -241,6 +335,7 @@ function SymmetricFindings({ input }: { input: Extract<ReportInput, { kind: "sym
   const { resp, orgKey, knownPlaintext } = input;
   // Post-test, browser-side comparison only. The key was never sent to /attack.
   const matches = resp.key !== null && resp.key === orgKey;
+  const shown = resp.candidate_decryptions.length;
 
   return (
     <>
@@ -261,11 +356,11 @@ function SymmetricFindings({ input }: { input: Extract<ReportInput, { kind: "sym
       {resp.decrypted_text !== null && (
         <section className="report-section">
           <h3>Decrypted message</h3>
-          <Decrypted text={resp.decrypted_text} knownPrefix={knownPlaintext} />
+          <Decrypted text={resp.decrypted_text} known={knownPlaintext} condition={resp.condition} />
         </section>
       )}
 
-      {resp.key === null && resp.candidate_decryptions.length > 1 && (
+      {resp.key === null && shown > 1 && (
         <section className="report-section">
           <h3>Candidate keys and their decryptions</h3>
           <div className="candidates">
@@ -278,7 +373,10 @@ function SymmetricFindings({ input }: { input: Extract<ReportInput, { kind: "sym
             ))}
           </div>
           <p className="small muted">
-            A longer known plaintext usually pins down a single key. Try adding more known characters in stage 2.
+            {resp.recovered_keys.length > shown && `Showing ${shown} of ${resp.recovered_keys.length} candidate keys. `}
+            {resp.condition === "ciphertext_only"
+              ? "Every candidate decrypts the whole message to plausible text, so the ciphertext alone cannot single one out. Even a short piece of known plaintext usually does."
+              : "A longer known plaintext usually pins down a single key. Try adding more known characters in stage 2."}
           </p>
         </section>
       )}
@@ -320,7 +418,7 @@ function PublicKeyFindings({ input }: { input: Extract<ReportInput, { kind: "pub
       {resp.decrypted_text !== null && (
         <section className="report-section">
           <h3>Decrypted message</h3>
-          <Decrypted text={resp.decrypted_text} knownPrefix="" />
+          <Decrypted text={resp.decrypted_text} known="" />
         </section>
       )}
     </>

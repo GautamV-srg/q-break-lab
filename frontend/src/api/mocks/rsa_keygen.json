@@ -1,9 +1,1 @@
-{
-  "n": 15,
-  "e": 3,
-  "victim_secret": { "p": 3, "q": 5, "phi": 8, "d": 3 },
-  "e_equals_d": true,
-  "warnings": [
-    "At N=15 the public and private exponents are equal (e = d = 3). This miniature key demonstrates Shor's factor-recovery workflow; it is not a secure RSA example."
-  ]
-}
+{"15":{"n":15,"e":3,"victim_secret":{"p":3,"q":5,"phi":8,"d":3},"e_equals_d":true,"warnings":["At N=15 the public and private exponents are equal (e = d = 3). This is a demonstration of Shor's factor-recovery workflow, not a secure RSA example."]},"21":{"n":21,"e":5,"victim_secret":{"p":3,"q":7,"phi":12,"d":5},"e_equals_d":true,"warnings":["At N=21 the public and private exponents are equal (e = d = 5). This is a demonstration of Shor's factor-recovery workflow, not a secure RSA example."]},"33":{"n":33,"e":3,"victim_secret":{"p":3,"q":11,"phi":20,"d":7},"e_equals_d":false,"warnings":[]},"35":{"n":35,"e":5,"victim_secret":{"p":5,"q":7,"phi":24,"d":5},"e_equals_d":true,"warnings":["At N=35 the public and private exponents are equal (e = d = 5). This is a demonstration of Shor's factor-recovery workflow, not a secure RSA example."]},"55":{"n":55,"e":3,"victim_secret":{"p":5,"q":11,"phi":40,"d":27},"e_equals_d":false,"warnings":[]},"77":{"n":77,"e":7,"victim_secret":{"p":7,"q":11,"phi":60,"d":43},"e_equals_d":false,"warnings":[]}}

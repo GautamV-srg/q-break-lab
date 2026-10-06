@@ -83,7 +83,7 @@ export default function Readiness() {
 
   return (
     <div className="page prose-page readiness">
-      <div className="eyebrow">Stretch · General guidance</div>
+      <div className="eyebrow">Risk framing · General guidance</div>
       <h1>Quantum Readiness Check</h1>
       <p className="lede">
         Pick the algorithms your organization uses and how long its data must stay confidential. You get a
@@ -173,6 +173,9 @@ export default function Readiness() {
           protected by RSA or ECC today could be recorded now and decrypted once large quantum computers exist.
         </p>
       )}
+      <p>
+        <Link to="/mosca">Put numbers on that timeline with the Mosca risk calculator →</Link>
+      </p>
     </div>
   );
 }

@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { aesAttack, aesEncrypt, errorMessage, MOCK_MODE } from "../api/client";
+import { MOCK_KEYS } from "../api/mocks/demo";
 import { buildAesAttackRequest, type InterceptedAes } from "../api/payloads";
-import type { AesAttackResponse, AesEncryptResponse } from "../api/types";
+import type { AesAttackResponse, AesEncryptResponse, AttackCondition } from "../api/types";
 import BitInput, { randomBits } from "../components/BitInput";
 import BreachReport from "../components/BreachReport";
 import CiphertextView from "../components/CiphertextView";
 import Duo from "../components/Duo";
 import ErrorBox from "../components/ErrorBox";
 import InterceptionWall from "../components/InterceptionWall";
+import OptionGroup, { type Option } from "../components/OptionGroup";
 import PopTheHood from "../components/PopTheHood";
 import PrototypeNotice from "../components/PrototypeNotice";
 import RunProgress from "../components/RunProgress";
@@ -25,13 +27,38 @@ const STEPS = [
   { label: "Breach test", side: "Quantum adversary" },
   { label: "Report", side: "Breach Report" },
 ];
+const DEMO_MESSAGE = "Hi judges!";
+const DEMO_SUBSTRING = "judges";
+
+/** Presentation copy for the known-text field, per attack mode. The modes themselves come from /api/config. */
+const KNOWN_FIELD: Record<AttackCondition, { label: string; hint: string } | null> = {
+  known_beginning: {
+    label: "Known beginning (e.g. a standard greeting or header)",
+    hint: "Real messages often start predictably: greetings, headers, file signatures.",
+  },
+  known_substring: {
+    label: "Known text somewhere in the message (position unknown)",
+    hint: "A name, a date, a boilerplate phrase: the adversary knows it appears, not where.",
+  },
+  ciphertext_only: null,
+};
+
+/** A sensible starting guess for the known text, taken from the message that was encrypted. */
+function defaultKnown(condition: AttackCondition, msg: string, prefixChars: number): string {
+  if (condition === "ciphertext_only") return "";
+  if (condition === "known_beginning") return msg.slice(0, prefixChars);
+  if (msg.includes(DEMO_SUBSTRING)) return DEMO_SUBSTRING;
+  const words = msg.split(/\s+/).filter((w) => w.length >= 3);
+  // Prefer a word that is not at the very start, so "position unknown" means something.
+  return words[1] ?? words[0] ?? msg.slice(Math.floor(msg.length / 3), Math.floor(msg.length / 3) + 4);
+}
 
 export default function SymmetricTest() {
-  const { config } = useConfig();
+  const { config, loading, error: configError } = useConfig();
   const alive = useAliveRef();
 
   // ---- Organization (victim) state. Never read when building the attack request. ----
-  const [message, setMessage] = useState("Hi judges!");
+  const [message, setMessage] = useState(DEMO_MESSAGE);
   const [keyBits, setKeyBits] = useState(config.aes_key_bits[0] ?? 4);
   const [orgKey, setOrgKey] = useState("1001");
   const [enc, setEnc] = useState<AesEncryptResponse | null>(null);
@@ -39,7 +66,8 @@ export default function SymmetricTest() {
   const [encrypting, setEncrypting] = useState(false);
   const [encError, setEncError] = useState<string | null>(null);
 
-  // ---- Wall: known plaintext is chosen here, as part of what the adversary has. ----
+  // ---- Wall: what the adversary knows is chosen here, as part of what crosses. ----
+  const [condition, setCondition] = useState<AttackCondition>("known_beginning");
   const [knownPlaintext, setKnownPlaintext] = useState("");
 
   // ---- Adversary state. Holds only what crossed the wall. ----
@@ -53,21 +81,37 @@ export default function SymmetricTest() {
   const [demoRunning, setDemoRunning] = useState(false);
   const [completedOnce, setCompletedOnce] = useState(false);
 
-  // Keep key size valid when /api/config arrives.
+  // Everything selectable is driven by /api/config. Engines without the Track 5 fields
+  // fall back to the plain list of enabled sizes and the single known-beginning mode.
+  const conditions = config.aes_conditions ?? [];
+  const modesExposed = conditions.length > 0;
+  const activeCondition = modesExposed ? (conditions.find((c) => c.id === condition) ?? conditions[0]) : null;
+  const needsKnown = activeCondition?.needs_known_text ?? true;
+  const knownField = KNOWN_FIELD[activeCondition?.id ?? "known_beginning"];
+  const keyOptions = config.aes_key_options?.length
+    ? config.aes_key_options
+    : config.aes_key_bits.map((bits) => ({ bits, enabled: true, simulated: true, reason: null }));
+
+  // Keep the selections valid when /api/config arrives.
   useEffect(() => {
-    if (!config.aes_key_bits.includes(keyBits)) {
-      const kb = config.aes_key_bits[0] ?? 4;
+    if (config.aes_key_bits.length > 0 && !config.aes_key_bits.includes(keyBits)) {
+      const kb = config.aes_key_bits[0];
       setKeyBits(kb);
       setOrgKey(randomBits(kb));
     }
   }, [config.aes_key_bits, keyBits]);
+  useEffect(() => {
+    if (activeCondition && activeCondition.id !== condition) setCondition(activeCondition.id);
+  }, [activeCondition, condition]);
 
   const stage = attack ? 4 : intercepted ? 3 : enc ? 2 : 1;
   useScrollToStage(ID, stage);
 
+  const configReady = !loading && !configError && config.aes_key_bits.length > 0;
   const keyValid = orgKey.length === keyBits && /^[01]+$/.test(orgKey);
   const messageValid = message.length > 0 && message.length <= config.max_aes_text_chars;
-  const busy = encrypting || attacking || demoRunning;
+  const busy = encrypting || attacking || demoRunning || !configReady;
+  const countingRuns = config.aes_counting_max_key_bits !== undefined && keyBits <= config.aes_counting_max_key_bits;
 
   function resetFromEncrypt() {
     setEnc(null);
@@ -83,6 +127,15 @@ export default function SymmetricTest() {
     };
   }
 
+  /** Switching the attack mode changes what crosses the wall, so the hand-off is redone. */
+  function chooseCondition(next: AttackCondition) {
+    setCondition(next);
+    setIntercepted(null);
+    setAttack(null);
+    setAttackError(null);
+    if (enc) setKnownPlaintext(defaultKnown(next, encMessage, config.default_known_prefix_chars));
+  }
+
   async function doEncrypt(msg = message, key = orgKey, kb = keyBits): Promise<AesEncryptResponse | null> {
     setEncrypting(true);
     setEncError(null);
@@ -92,7 +145,7 @@ export default function SymmetricTest() {
       resetFromEncrypt();
       setEnc(r);
       setEncMessage(msg);
-      setKnownPlaintext(msg.slice(0, config.default_known_prefix_chars));
+      setKnownPlaintext(defaultKnown(condition, msg, config.default_known_prefix_chars));
       return r;
     } catch (e) {
       if (alive.current) setEncError(errorMessage(e));
@@ -102,10 +155,19 @@ export default function SymmetricTest() {
     }
   }
 
+  function interceptOf(r: AesEncryptResponse, known: string): InterceptedAes {
+    // Only public material crosses the wall: ciphertext, key size, attack mode, known plaintext.
+    return {
+      key_bits: r.key_bits,
+      ciphertext_nibbles: [...r.ciphertext_nibbles],
+      known_plaintext: needsKnown ? known : "",
+      ...(modesExposed ? { condition } : {}),
+    };
+  }
+
   function handOff(r: AesEncryptResponse | null = enc, known = knownPlaintext) {
-    if (!r || !known) return;
-    // Only public material crosses the wall: ciphertext, key size, known plaintext.
-    setIntercepted({ key_bits: r.key_bits, ciphertext_nibbles: [...r.ciphertext_nibbles], known_plaintext: known });
+    if (!r || (needsKnown && !known)) return;
+    setIntercepted(interceptOf(r, known));
     setAttack(null);
     setAttackError(null);
   }
@@ -130,13 +192,14 @@ export default function SymmetricTest() {
     }
   }
 
+  /** Scripted run of the currently selected attack mode on the smallest enabled key. */
   async function runDemo() {
     setDemoRunning(true);
     try {
       const kb = config.aes_key_bits[0] ?? 4;
-      // Mock fixtures were generated with key 1001, so keep the "matches" badge honest in mock mode.
-      const key = MOCK_MODE ? "1001" : randomBits(kb);
-      const msg = "Hi judges!";
+      // In mock mode, use the key the fixtures were recorded with so the demo replays a real run.
+      const key = (MOCK_MODE && MOCK_KEYS[kb]) || randomBits(kb);
+      const msg = DEMO_MESSAGE;
       setKeyBits(kb);
       setOrgKey(key);
       setMessage(msg);
@@ -147,30 +210,49 @@ export default function SymmetricTest() {
       if (!r || !alive.current) return;
       await sleep(1600);
       if (!alive.current) return;
-      const known = "Hi ";
+      const known = defaultKnown(condition, msg, config.default_known_prefix_chars);
       setKnownPlaintext(known);
       await sleep(700);
       if (!alive.current) return;
       handOff(r, known);
       await sleep(3200); // let the wall animation play
       if (!alive.current) return;
-      await runAttack({ key_bits: r.key_bits, ciphertext_nibbles: r.ciphertext_nibbles, known_plaintext: known });
+      await runAttack(interceptOf(r, known));
     } finally {
       if (alive.current) setDemoRunning(false);
     }
   }
 
-  const showKeySelector = config.aes_key_bits.length > 1;
+  const keyChoices: Option<number>[] = keyOptions.map((o) => ({
+    value: o.bits,
+    name: `${o.bits}-bit`,
+    label: `${o.bits}-bit`,
+    sub: `${(2 ** o.bits).toLocaleString()} keys`,
+    disabledReason: o.enabled ? null : (o.reason ?? "Not enabled on this instance."),
+  }));
+  const modeChoices: Option<AttackCondition>[] = conditions.map((c) => ({
+    value: c.id,
+    name: c.label,
+    label: c.label,
+    sub: c.description,
+  }));
+  const reportInput = attack && {
+    kind: "symmetric" as const,
+    resp: attack,
+    orgKey,
+    knownPlaintext: intercepted?.known_plaintext ?? "",
+    conditionLabel: conditions.find((c) => c.id === (attack.condition ?? intercepted?.condition))?.label,
+  };
 
   return (
     <div className="page test-page">
       <div className="page-head">
         <div>
-          <div className="eyebrow">Shared-key encryption like AES · Grover's algorithm</div>
+          <div className="eyebrow">Red-team engagement · shared-key encryption like AES · Grover's algorithm</div>
           <h1>Symmetric breach test</h1>
           <p className="lede">
             Your organization encrypts a message with a secret key. A simulated quantum adversary intercepts the
-            ciphertext and uses Grover's search to recover the key.
+            ciphertext and uses Grover's search to recover the key, under the attack mode you choose.
           </p>
         </div>
         <button className="btn btn-demo no-print" onClick={runDemo} disabled={busy}>
@@ -198,41 +280,46 @@ export default function SymmetricTest() {
                 <textarea
                   id="sym-msg"
                   className="input"
-                  rows={2}
+                  rows={3}
                   value={message}
-                  maxLength={config.max_aes_text_chars}
+                  maxLength={config.max_aes_text_chars || undefined}
                   onChange={(e) => onOrgChange(setMessage)(e.target.value)}
                   disabled={busy}
+                  aria-invalid={!messageValid}
+                  aria-describedby="sym-msg-hint"
                 />
-                <div className="field-hint">
-                  {message.length}/{config.max_aes_text_chars} characters
+                <div id="sym-msg-hint" className={`field-hint ${configReady && !messageValid ? "field-error" : ""}`}>
+                  {configReady
+                    ? `${message.length}/${config.max_aes_text_chars} characters${message.length === 0 ? " · enter a message" : ""}`
+                    : "Waiting for the test engine's limits…"}
                 </div>
               </div>
 
-              {showKeySelector && (
-                <div className="field">
-                  <span className="field-label" id="sym-kb-label">
-                    Key size
-                  </span>
-                  <div className="segmented" role="radiogroup" aria-labelledby="sym-kb-label">
-                    {config.aes_key_bits.map((kb) => (
-                      <button
-                        type="button"
-                        role="radio"
-                        aria-checked={kb === keyBits}
-                        key={kb}
-                        className={kb === keyBits ? "seg seg-on" : "seg"}
-                        onClick={() => {
-                          onOrgChange(setKeyBits)(kb);
-                          setOrgKey(randomBits(kb));
-                        }}
-                        disabled={busy}
-                      >
-                        {kb}-bit <span className="muted small">({2 ** kb} keys)</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              <OptionGroup
+                label="Key size"
+                options={keyChoices}
+                value={keyBits}
+                busy={busy}
+                onChange={(kb) => {
+                  onOrgChange(setKeyBits)(kb);
+                  setOrgKey(randomBits(kb));
+                }}
+                hint={
+                  keyBits >= 10
+                    ? "Larger keys take noticeably longer to simulate: every extra qubit doubles the simulator's work."
+                    : undefined
+                }
+              />
+
+              {modesExposed && (
+                <OptionGroup
+                  label="Attack mode: what the adversary knows"
+                  variant="cards"
+                  options={modeChoices}
+                  value={condition}
+                  busy={busy}
+                  onChange={chooseCondition}
+                />
               )}
 
               <BitInput
@@ -271,6 +358,11 @@ export default function SymmetricTest() {
               The adversary knows the cipher's public rules (MiniAES: S-box, RotateBits, key schedule), like any
               attacker who knows which algorithm you use.
             </p>
+            {activeCondition && (
+              <p className="small">
+                <strong>Attack mode: {activeCondition.label}.</strong> {activeCondition.description}
+              </p>
+            )}
           </div>
         }
       />
@@ -287,39 +379,52 @@ export default function SymmetricTest() {
       >
         {enc && (
           <InterceptionWall
-            key={enc.ciphertext_hex}
+            key={enc.ciphertext_hex + condition}
             secrets={["Secret key " + "•".repeat(enc.key_bits)]}
             captured={[
-              { label: "Ciphertext", value: <span className="mono">{enc.ciphertext_hex}</span> },
+              { label: "Ciphertext", value: <span className="mono chip-scroll">{enc.ciphertext_hex}</span> },
               { label: "Cipher rules", value: `MiniAES, ${enc.key_bits}-bit key, public` },
-              { label: "Known plaintext", value: <span className="mono">“{knownPlaintext}”</span> },
+              needsKnown
+                ? {
+                    label: condition === "known_substring" ? "Known text (position unknown)" : "Known plaintext",
+                    value: <span className="mono">“{knownPlaintext}”</span>,
+                  }
+                : { label: "Known plaintext", value: "None: ciphertext only" },
             ]}
           >
-            <div className="field known-field">
-              <label htmlFor="sym-known" className="field-label">
-                Known plaintext (e.g. a standard greeting or header)
-              </label>
-              <input
-                id="sym-known"
-                className="input mono"
-                value={knownPlaintext}
-                onChange={(e) => {
-                  setKnownPlaintext(e.target.value);
-                  if (intercepted) {
-                    setIntercepted(null);
-                    setAttack(null);
-                  }
-                }}
-                maxLength={encMessage.length || undefined}
-                disabled={busy}
-                spellCheck={false}
-              />
-              <div className="field-hint">
-                Real messages often start predictably: greetings, headers, file signatures.
+            {needsKnown && knownField ? (
+              <div className="field known-field">
+                <label htmlFor="sym-known" className="field-label">
+                  {knownField.label}
+                </label>
+                <input
+                  id="sym-known"
+                  className="input mono"
+                  value={knownPlaintext}
+                  onChange={(e) => {
+                    setKnownPlaintext(e.target.value);
+                    if (intercepted) {
+                      setIntercepted(null);
+                      setAttack(null);
+                    }
+                  }}
+                  maxLength={encMessage.length || undefined}
+                  disabled={busy}
+                  spellCheck={false}
+                  aria-describedby="sym-known-hint"
+                />
+                <div id="sym-known-hint" className="field-hint">
+                  {knownField.hint}
+                </div>
               </div>
-            </div>
+            ) : (
+              <p className="known-field small">
+                <strong>No known plaintext.</strong> The adversary only assumes the message is readable text, so
+                several keys will usually fit.
+              </p>
+            )}
             {!intercepted && (
-              <button className="btn btn-primary" onClick={() => handOff()} disabled={!knownPlaintext || busy}>
+              <button className="btn btn-primary" onClick={() => handOff()} disabled={(needsKnown && !knownPlaintext) || busy}>
                 Hand intercept to the adversary →
               </button>
             )}
@@ -335,7 +440,7 @@ export default function SymmetricTest() {
             <span className="side-tag side-tag-org">Your organization</span>
             <p>
               <span aria-hidden="true">🔒</span> The secret key never leaves this side. The adversary's request
-              contains only the ciphertext, the key size and the known plaintext.
+              contains only the ciphertext, the key size, the attack mode and any known plaintext.
             </p>
           </div>
         }
@@ -357,6 +462,7 @@ export default function SymmetricTest() {
               <RunProgress
                 stages={[
                   "Building oracle",
+                  ...(countingRuns ? ["Counting matching keys"] : []),
                   `Simulating ${intercepted.key_bits}-qubit key register in superposition`,
                   "Amplifying",
                   "Measuring",
@@ -379,14 +485,15 @@ export default function SymmetricTest() {
         lockedHint="Run the breach test to produce a report."
         className="stage-report"
       >
-        {attack && (
+        {reportInput && (
           <BreachReport
-            input={{ kind: "symmetric", resp: attack, orgKey, knownPlaintext: intercepted?.known_plaintext ?? "" }}
+            input={reportInput}
             onRetry={() => void runAttack(intercepted, randomSeed())}
             retrying={attacking}
             popTheHood={
               <PopTheHood
-                input={{ kind: "symmetric", resp: attack, orgKey, knownPlaintext: intercepted?.known_plaintext ?? "" }}
+                input={reportInput}
+                noiseTarget={intercepted ? { kind: "symmetric", intercepted, shots } : undefined}
                 pulse={completedOnce}
               />
             }

@@ -4,11 +4,11 @@ import type { ConfigResponse } from "./api/types";
 
 /** Used until /api/config answers (and if it never does), so the UI still renders. */
 export const FALLBACK_CONFIG: ConfigResponse = {
-  aes_key_bits: [4],
-  rsa_moduli: [15],
-  max_shots: 4096,
-  max_aes_text_chars: 200,
-  max_rsa_text_chars: 80,
+  aes_key_bits: [],
+  rsa_moduli: [],
+  max_shots: 0,
+  max_aes_text_chars: 0,
+  max_rsa_text_chars: 0,
   default_known_prefix_chars: 3,
 };
 

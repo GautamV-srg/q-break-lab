@@ -1,15 +1,1 @@
-{
-  "key_bits": 4,
-  "plaintext_nibbles": [4, 8, 6, 9, 2, 0, 6, 10, 7, 5, 6, 4, 6, 7, 6, 5, 7, 3, 2, 1],
-  "ciphertext_nibbles": [3, 8, 14, 13, 9, 5, 14, 2, 0, 10, 14, 3, 14, 0, 14, 10, 0, 12, 9, 6],
-  "ciphertext_hex": "38ed95e20ae3e0ea0c96",
-  "byte_length": 10,
-  "trace": [
-    { "step": "Input P", "value": 4, "detail": "0100" },
-    { "step": "AddRoundKey K0", "value": 13, "detail": "0100 ⊕ 1001 = 1101" },
-    { "step": "SubNibble", "value": 9, "detail": "S(1101) = 1001" },
-    { "step": "RotateBits", "value": 3, "detail": "rotl(1001, 1) = 0011" },
-    { "step": "AddRoundKey K1", "value": 3, "detail": "0011 ⊕ 0000 = 0011" },
-    { "step": "Output C", "value": 3, "detail": "0011" }
-  ]
-}
+{"byBits":{"4":{"key_bits":4,"plaintext_nibbles":[4,8,6,9,2,0,6,10,7,5,6,4,6,7,6,5,7,3,2,1],"ciphertext_nibbles":[3,8,14,13,9,5,14,2,0,10,14,3,14,0,14,10,0,12,9,6],"ciphertext_hex":"38ed95e20ae3e0ea0c96","byte_length":10,"trace":[{"step":"Input P","value":4,"detail":"0100"},{"step":"AddRoundKey K0","value":13,"detail":"0100 ⊕ 1001 = 1101"},{"step":"SubNibble","value":9,"detail":"S[1101] = 1001"},{"step":"RotateBits","value":3,"detail":"rotl(1001) = 0011"},{"step":"AddRoundKey K1","value":3,"detail":"0011 ⊕ K1 0000 = 0011"}]},"6":{"key_bits":6,"plaintext_nibbles":[4,8,6,9,2,0,6,10,7,5,6,4,6,7,6,5,7,3,2,1],"ciphertext_nibbles":[11,0,13,14,4,7,13,10,8,2,13,11,13,8,13,2,8,15,4,1],"ciphertext_hex":"b0de47da82dbd8d28f41","byte_length":10,"trace":[{"step":"Input P","value":4,"detail":"0100"},{"step":"AddRoundKey K0","value":2,"detail":"0100 ⊕ 0110 = 0010"},{"step":"SubNibble","value":13,"detail":"S[0010] = 1101"},{"step":"RotateBits","value":11,"detail":"rotl(1101) = 1011"},{"step":"AddRoundKey K1","value":11,"detail":"1011 ⊕ K1 0000 = 1011"}]},"8":{"key_bits":8,"plaintext_nibbles":[4,8,6,9,2,0,6,10,7,5,6,4,6,7,6,5,7,3,2,1],"ciphertext_nibbles":[3,8,14,13,9,5,14,2,0,10,14,3,14,0,14,10,0,12,9,6],"ciphertext_hex":"38ed95e20ae3e0ea0c96","byte_length":10,"trace":[{"step":"Input P","value":4,"detail":"0100"},{"step":"AddRoundKey K0","value":13,"detail":"0100 ⊕ 1001 = 1101"},{"step":"SubNibble","value":9,"detail":"S[1101] = 1001"},{"step":"RotateBits","value":3,"detail":"rotl(1001) = 0011"},{"step":"AddRoundKey K1","value":3,"detail":"0011 ⊕ K1 0000 = 0011"}]}},"short":{"key_bits":4,"plaintext_nibbles":[4,8,6,9],"ciphertext_nibbles":[3,8,14,13],"ciphertext_hex":"38ed","byte_length":2,"trace":[{"step":"Input P","value":4,"detail":"0100"},{"step":"AddRoundKey K0","value":13,"detail":"0100 ⊕ 1001 = 1101"},{"step":"SubNibble","value":9,"detail":"S[1101] = 1001"},{"step":"RotateBits","value":3,"detail":"rotl(1001) = 0011"},{"step":"AddRoundKey K1","value":3,"detail":"0011 ⊕ K1 0000 = 0011"}]}}
