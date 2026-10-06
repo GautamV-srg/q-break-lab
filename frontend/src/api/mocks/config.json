@@ -1,0 +1,8 @@
+{
+  "aes_key_bits": [4, 6, 8],
+  "rsa_moduli": [15, 21],
+  "max_shots": 4096,
+  "max_aes_text_chars": 200,
+  "max_rsa_text_chars": 80,
+  "default_known_prefix_chars": 3
+}

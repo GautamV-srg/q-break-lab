@@ -1,0 +1,62 @@
+{
+  "n": 15,
+  "a": 7,
+  "period": 4,
+  "factors": [3, 5],
+  "phi": 8,
+  "d": 3,
+  "decrypted_text": "Hi",
+  "n_count": 8,
+  "n_work": 4,
+  "construction": "textbook-swaps",
+  "attempts": [
+    { "a": 7, "measured": "00000000", "y": 0, "phase": 0.0, "fraction": "0/1", "r_candidate": null, "ok": false, "reason": "phase 0 carries no information about r" },
+    { "a": 7, "measured": "10000000", "y": 128, "phase": 0.5, "fraction": "1/2", "r_candidate": 2, "ok": false, "reason": "7^2 mod 15 = 4 ≠ 1; not the period" },
+    { "a": 7, "measured": "01000000", "y": 64, "phase": 0.25, "fraction": "1/4", "r_candidate": 4, "ok": true, "reason": "7^4 mod 15 = 1; r even; 7^2 mod 15 = 4 ≠ 14" }
+  ],
+  "sim_time_ms": 230.1,
+  "circuit": {
+    "num_qubits": 12,
+    "num_clbits": 8,
+    "depth": 14,
+    "transpiled_depth": 96,
+    "gate_counts": { "h": 12, "cswap": 24, "cp": 28, "swap": 4, "cx": 2, "x": 1, "measure": 8 },
+    "registers": [
+      { "name": "count", "size": 8, "role": "Counting register: superposition over exponents x = 0..255" },
+      { "name": "work", "size": 4, "role": "Holds a^x mod N, starts in |1⟩" }
+    ],
+    "drawings": [
+      {
+        "title": "Full attack circuit",
+        "text": "         ┌───┐                                                       ┌───────┐┌─┐\ncount_0: ┤ H ├──────■────────────────────────────────────────────────┤0      ├┤M├\n         ├───┤      │                                                │       │└╥┘\ncount_1: ┤ H ├──────┼──────────■─────────────────────────────────────┤1      ├─╫─\n         ├───┤      │          │                                     │       │ ║ \ncount_2: ┤ H ├──────┼──────────┼──────────■──────────────────────────┤2      ├─╫─\n         ├───┤      │          │          │                          │       │ ║ \ncount_3: ┤ H ├──────┼──────────┼──────────┼──────────■───────────────┤3 IQFT ├─╫─\n         ├───┤      │          │          │          │               │       │ ║ \ncount_4: ┤ H ├──────┼──────────┼──────────┼──────────┼───── ... ─────┤4      ├─╫─\n         ├───┤      │          │          │          │               │       │ ║ \ncount_5..7 ┤ H ├ ...                                                   │5..7   │   \n         └───┘┌─────┴────┐┌────┴─────┐┌───┴──────┐┌──┴───────┐       └───────┘   \n  work_0: ─X──┤0         ├┤0         ├┤0         ├┤0         ├──────────────────────\n              │          ││          ││          ││          │                      \n  work_1: ────┤1 U^(2^0) ├┤1 U^(2^1) ├┤1 U^(2^2) ├┤1 U^(2^3) ├──────────────────────\n              │          ││          ││          ││          │                      \n  work_2: ────┤2         ├┤2         ├┤2         ├┤2         ├──────────────────────\n              │          ││          ││          ││          │                      \n  work_3: ────┤3         ├┤3         ├┤3         ├┤3         ├──────────────────────\n              └──────────┘└──────────┘└──────────┘└──────────┘                      \n    c: 8/═══════════════════════════════════════════════════════════════════ (mock) ═"
+      },
+      {
+        "title": "Controlled U^(2^0)",
+        "text": "U: |y⟩ → |7·y mod 15⟩   (textbook swap construction)\n\n            ┌──────┐┌──────┐┌──────┐┌───┐┌───┐┌───┐┌───┐\nwork_0: ────┤      ├┤      ├┤ SWAP ├┤ X ├┤   ├┤   ├┤   ├\n            │ SWAP ││ SWAP │└──┬───┘├───┤│   ││ X ││   │\nwork_1: ────┤      ├┤      ├───┼────┤ X ├┤   ├┤   ├┤   ├\n            └──┬───┘└──┬───┘   │    ├───┤│ X ││   ││ X │\nwork_2: ───────┼───────┼───────┼────┤ X ├┤   ├┤   ├┤   ├\n               │       │       │    ├───┤│   ││   ││   │\nwork_3: ───────┼───────┼───────┼────┤ X ├┤   ├┤   ├┤   ├\n               │       │       │    └─┬─┘└─┬─┘└─┬─┘└─┬─┘\ncontrol:───────■───────■───────■──────■────■────■────■──\n"
+      },
+      {
+        "title": "Inverse QFT",
+        "text": "Inverse QFT on t = 8 counting qubits:\n  1. SWAP qubit j with qubit t−1−j  (reverse order)\n  2. for each qubit j: controlled phases cp(−π/2^(j−m)) from every m < j, then H\n\n         ┌───┐                         \nq_0: ─X─┤ H ├─■─────────────■──────── ...\n      │ └───┘ │P(−π/2) ┌───┐│          \nq_1: ─┼───────■────────┤ H ├┼──── ...\n      │                └───┘│P(−π/4)    \nq_2: ─┼─────────────────────■──── ...\n      ...\n"
+      }
+    ],
+    "qasm": "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[12] q;\nbit[8] c;\n// ... (mock data, truncated)\n"
+  },
+  "measurement": {
+    "shots": 1024,
+    "counts": { "00000000": 262, "01000000": 251, "10000000": 259, "11000000": 252 },
+    "top": [
+      { "bitstring": "00000000", "value": 0, "count": 262, "probability": 0.2559, "meaning": "phase 0/256 = 0 → no information" },
+      { "bitstring": "10000000", "value": 128, "count": 259, "probability": 0.2529, "meaning": "phase 128/256 = 1/2 → r candidate 2" },
+      { "bitstring": "11000000", "value": 192, "count": 252, "probability": 0.2461, "meaning": "phase 192/256 = 3/4 → r candidate 4" },
+      { "bitstring": "01000000", "value": 64, "count": 251, "probability": 0.2451, "meaning": "phase 64/256 = 1/4 → r candidate 4" }
+    ]
+  },
+  "verification": [
+    { "name": "Period check", "passed": true, "detail": "7^4 mod 15 = 1 ✓" },
+    { "name": "Factors multiply to N", "passed": true, "detail": "3 × 5 = 15 ✓" },
+    { "name": "Factors are non-trivial", "passed": true, "detail": "1 < 3, 5 < 15 ✓" },
+    { "name": "Private key consistency", "passed": true, "detail": "e·d = 3·3 = 9 ≡ 1 (mod φ = 8) ✓" },
+    { "name": "Re-encryption round trip", "passed": true, "detail": "Decrypted chunks re-encrypt to the intercepted ciphertext ✓" }
+  ],
+  "warnings": ["e = d at this modulus; demonstration of factor recovery only."]
+}

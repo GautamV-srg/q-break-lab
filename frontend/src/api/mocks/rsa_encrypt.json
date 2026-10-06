@@ -1,0 +1,6 @@
+{
+  "plaintext_chunks": [2, 2, 0, 6, 4, 4],
+  "bit_length": 16,
+  "chunk_bits": 3,
+  "ciphertext": [8, 8, 0, 6, 4, 4]
+}

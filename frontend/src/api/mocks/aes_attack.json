@@ -1,0 +1,79 @@
+{
+  "key_bits": 4,
+  "search_space": 16,
+  "pairs_used": [
+    { "plain": 4, "cipher": 3 },
+    { "plain": 8, "cipher": 8 }
+  ],
+  "iterations": 3,
+  "optimal_iterations_formula": "⌊π/4 · √(16/1)⌋ = 3",
+  "recovered_keys": ["1001"],
+  "unique": true,
+  "key": "1001",
+  "decrypted_text": "Hi judges!",
+  "decrypted_nibbles": [4, 8, 6, 9, 2, 0, 6, 10, 7, 5, 6, 4, 6, 7, 6, 5, 7, 3, 2, 1],
+  "candidate_decryptions": [{ "key": "1001", "text": "Hi judges!" }],
+  "attempts": [{ "iterations": 3, "verified_keys": ["1001"] }],
+  "sim_time_ms": 412.5,
+  "circuit": {
+    "num_qubits": 14,
+    "num_clbits": 4,
+    "depth": 9,
+    "transpiled_depth": 1840,
+    "gate_counts": { "x": 300, "cx": 96, "mcx": 410, "h": 40, "measure": 4 },
+    "registers": [
+      { "name": "key", "size": 4, "role": "Candidate key, in superposition over all 16 keys" },
+      { "name": "work", "size": 4, "role": "Reversible cipher state: computes E_k(P) for the known block" },
+      { "name": "sbox", "size": 5, "role": "Ancillas for the reversible S-box lookup (uncomputed after use)" },
+      { "name": "flag", "size": 1, "role": "Phase-kickback qubit in |−⟩: flips the sign of matching keys" }
+    ],
+    "drawings": [
+      {
+        "title": "Full attack circuit",
+        "text": "        ┌───┐┌─────────┐┌───────────┐┌─────────┐┌───────────┐┌─────────┐┌───────────┐┌─┐         \n key_0: ┤ H ├┤0        ├┤0          ├┤0        ├┤0          ├┤0        ├┤0          ├┤M├─────────\n        ├───┤│         ││           ││         ││           ││         ││           │└╥┘┌─┐      \n key_1: ┤ H ├┤1        ├┤1          ├┤1        ├┤1          ├┤1        ├┤1          ├─╫─┤M├──────\n        ├───┤│         ││  Diffuser ││         ││  Diffuser ││         ││  Diffuser │ ║ └╥┘┌─┐   \n key_2: ┤ H ├┤2        ├┤2          ├┤2        ├┤2          ├┤2        ├┤2          ├─╫──╫─┤M├───\n        ├───┤│  Oracle ││           ││  Oracle ││           ││  Oracle ││           │ ║  ║ └╥┘┌─┐\n key_3: ┤ H ├┤3        ├┤3          ├┤3        ├┤3          ├┤3        ├┤3          ├─╫──╫──╫─┤M├\n        └───┘│         │└───────────┘│         │└───────────┘│         │└───────────┘ ║  ║  ║ └╥┘\n work: ═════╡4..7      ╞═════════════╡4..7      ╞═════════════╡4..7      ╞══════════════╬══╬══╬══╬═\n sbox: ═════╡8..12     ╞═════════════╡8..12     ╞═════════════╡8..12     ╞══════════════╬══╬══╬══╬═\n        ┌───┐┌───┐   │         │             │         │             │         │              ║  ║  ║  ║ \n flag: ┤ X ├┤ H ├───┤13       ├─────────────┤13       ├─────────────┤13       ├──────────────╫──╫──╫──╫─\n        └───┘└───┘   └─────────┘             └─────────┘             └─────────┘              ║  ║  ║  ║ \n  c: 4/═══════════════════════════════════════════════════════════════════════════════════════╩══╩══╩══╩═\n                                                                                              0  1  2  3 "
+      },
+      {
+        "title": "Oracle",
+        "text": "Oracle (pairs: P=0x4→C=0x3, P=0x8→C=0x8)\n\n  1. Load known plaintext P into work register (X gates)\n  2. AddRoundKey K0:  work ⊕= key   (4 × CX)\n  3. SubNibble:       reversible S-box via sbox ancillas (MCX network)\n  4. RotateBits:      qubit relabelling (SWAP-free)\n  5. AddRoundKey K1:  work ⊕= rotl(key_hi) ⊕ RCON\n  6. Compare with observed C:  X on bits where C=0, then MCX → flag\n  7. Uncompute steps 5..1 so the key register is left clean\n\n       ┌──────────┐                        ┌──────────┐\n key: ─┤          ├──■──────────────────■──┤          ├─\n       │ E_k(P)   │  │                  │  │ E_k(P)†  │\n work:─┤          ├──■── (= C ?) ──X────■──┤          ├─\n       └──────────┘        │               └──────────┘\n flag: ────────────────────⊕─── (|−⟩: phase flip on match)\n"
+      },
+      {
+        "title": "Diffuser",
+        "text": "        ┌───┐┌───┐          ┌───┐┌───┐\nkey_0: ┤ H ├┤ X ├────■─────┤ X ├┤ H ├\n        ├───┤├───┤    │     ├───┤├───┤\nkey_1: ┤ H ├┤ X ├────■─────┤ X ├┤ H ├\n        ├───┤├───┤    │     ├───┤├───┤\nkey_2: ┤ H ├┤ X ├────■─────┤ X ├┤ H ├\n        ├───┤├───┤┌───┐┌───┐┌───┐├───┤├───┤\nkey_3: ┤ H ├┤ X ├┤ H ├┤ X ├┤ H ├┤ X ├┤ H ├\n        └───┘└───┘└───┘└───┘└───┘└───┘└───┘\n"
+      }
+    ],
+    "qasm": "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[14] q;\nbit[4] c;\nh q[0];\nh q[1];\nh q[2];\nh q[3];\n// ... (mock data, truncated)\nc[0] = measure q[0];\nc[1] = measure q[1];\nc[2] = measure q[2];\nc[3] = measure q[3];\n"
+  },
+  "measurement": {
+    "shots": 1024,
+    "counts": {
+      "1001": 961, "0011": 7, "0110": 6, "1100": 5, "0000": 4, "1111": 4, "0101": 4, "1010": 4,
+      "0001": 4, "0010": 4, "0100": 4, "0111": 3, "1000": 3, "1011": 4, "1101": 4, "1110": 3
+    },
+    "top": [
+      { "bitstring": "1001", "value": 9, "count": 961, "probability": 0.9385, "meaning": "key 1001" },
+      { "bitstring": "0011", "value": 3, "count": 7, "probability": 0.0068, "meaning": "key 0011" },
+      { "bitstring": "0110", "value": 6, "count": 6, "probability": 0.0059, "meaning": "key 0110" },
+      { "bitstring": "1100", "value": 12, "count": 5, "probability": 0.0049, "meaning": "key 1100" },
+      { "bitstring": "0000", "value": 0, "count": 4, "probability": 0.0039, "meaning": "key 0000" },
+      { "bitstring": "0001", "value": 1, "count": 4, "probability": 0.0039, "meaning": "key 0001" },
+      { "bitstring": "0010", "value": 2, "count": 4, "probability": 0.0039, "meaning": "key 0010" },
+      { "bitstring": "0100", "value": 4, "count": 4, "probability": 0.0039, "meaning": "key 0100" },
+      { "bitstring": "0101", "value": 5, "count": 4, "probability": 0.0039, "meaning": "key 0101" },
+      { "bitstring": "1010", "value": 10, "count": 4, "probability": 0.0039, "meaning": "key 1010" },
+      { "bitstring": "1011", "value": 11, "count": 4, "probability": 0.0039, "meaning": "key 1011" },
+      { "bitstring": "1101", "value": 13, "count": 4, "probability": 0.0039, "meaning": "key 1101" },
+      { "bitstring": "1111", "value": 15, "count": 4, "probability": 0.0039, "meaning": "key 1111" },
+      { "bitstring": "0111", "value": 7, "count": 3, "probability": 0.0029, "meaning": "key 0111" },
+      { "bitstring": "1000", "value": 8, "count": 3, "probability": 0.0029, "meaning": "key 1000" },
+      { "bitstring": "1110", "value": 14, "count": 3, "probability": 0.0029, "meaning": "key 1110" }
+    ]
+  },
+  "verification": [
+    { "name": "Re-encrypt known block 1", "passed": true, "detail": "P=0x4 → C=0x3 with key 1001 ✓" },
+    { "name": "Re-encrypt known block 2", "passed": true, "detail": "P=0x8 → C=0x8 with key 1001 ✓" },
+    { "name": "Unique key for known pairs", "passed": true, "detail": "Exactly 1 of 16 keys fits all known pairs" },
+    { "name": "Decryption is valid UTF-8", "passed": true, "detail": "20 nibbles → 10 bytes → \"Hi judges!\"" },
+    { "name": "Decryption starts with known plaintext", "passed": true, "detail": "\"Hi \" is a prefix of the decrypted message ✓" }
+  ],
+  "warnings": []
+}
