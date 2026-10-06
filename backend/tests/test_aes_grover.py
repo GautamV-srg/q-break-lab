@@ -256,8 +256,9 @@ def test_extra_crib_pairs_filter_out_false_keys() -> None:
 @pytest.mark.parametrize("key_bits", (6, 8))
 def test_random_keys_recovered_large(key_bits: int) -> None:
     rng = random.Random(key_bits)
-    for trial in range(8):
-        key = rng.randrange(1 << key_bits)
+    keys = [rng.randrange(1 << key_bits) for _ in range(8)]
+    keys += [0, (1 << key_bits) - 1]  # edge cases: all-zeros and all-ones keys
+    for trial, key in enumerate(keys):
         msg = MESSAGES[trial % len(MESSAGES)]
         ct = encrypt_nibbles(_nibbles(msg), key, key_bits)
         res = run_grover_attack(_nibbles(msg[:3]), ct, key_bits, seed=trial)
