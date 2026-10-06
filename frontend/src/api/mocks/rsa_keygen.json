@@ -1,0 +1,9 @@
+{
+  "n": 15,
+  "e": 3,
+  "victim_secret": { "p": 3, "q": 5, "phi": 8, "d": 3 },
+  "e_equals_d": true,
+  "warnings": [
+    "At N=15 the public and private exponents are equal (e = d = 3). This miniature key demonstrates Shor's factor-recovery workflow; it is not a secure RSA example."
+  ]
+}

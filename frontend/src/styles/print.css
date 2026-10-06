@@ -1,0 +1,79 @@
+/* "Export report": window.print() renders only the Breach Report as a clean light page. */
+@media print {
+  :root {
+    --bg: #fff;
+    --surface: #fff;
+    --surface-2: #f3f4f6;
+    --surface-3: #e5e7eb;
+    --border: #d1d5db;
+    --text: #111827;
+    --text-muted: #4b5563;
+    --accent: #0e7490;
+    --breach: #be123c;
+    --amber: #b45309;
+    --ok: #15803d;
+    color-scheme: light;
+  }
+  @page {
+    margin: 14mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #111827;
+    font-size: 11pt;
+  }
+  .no-print,
+  .test-page > .page-head,
+  .test-page > .notice,
+  .test-page > .duo,
+  .test-page > .stage:not(.stage-report) {
+    display: none !important;
+  }
+  .main {
+    padding: 0;
+    max-width: none;
+  }
+  .stage-report {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+  }
+  .stage-report > .stage-head {
+    display: none;
+  }
+  .verdict {
+    padding: 12px 16px;
+    break-inside: avoid;
+  }
+  .verdict-title {
+    font-size: 26pt;
+  }
+  .big-secret {
+    font-size: 20pt;
+  }
+  .decrypted-text {
+    font-size: 16pt;
+  }
+  .report-section {
+    padding: 8px 0 2px;
+    break-inside: avoid;
+  }
+  .stat {
+    padding: 6px 8px;
+  }
+  .stat-v {
+    font-size: 13pt;
+  }
+  .report-notice .notice {
+    border: 1px solid #9ca3af;
+    background: #f9fafb;
+  }
+  * {
+    animation: none !important;
+    transition: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
