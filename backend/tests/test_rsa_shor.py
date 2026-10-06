@@ -337,3 +337,76 @@ def test_known_periods_larger_n(n: int, a: int, r: int) -> None:
     accepted = [att for att in candidate_periods(run.counts, qc.num_clbits, n, a) if att.ok]
     assert accepted and all(att.r_candidate == r for att in accepted)
     assert factors_from_period(a, r, n) == EXPECTED_FACTORS[n]
+
+
+# --- every base, every modulus, many seeds ---------------------------------
+
+
+def _all_bases(n: int) -> list[int]:
+    return [a for a in range(2, n - 1) if gcd(a, n) == 1]
+
+
+def _usable(a: int, n: int) -> bool:
+    r = _order(a, n)
+    return r % 2 == 0 and pow(a, r // 2, n) != n - 1
+
+
+_BASE_CASES = [(n, a) for n in SHOR_SUPPORTED_N for a in _all_bases(n)]
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("n,a", _BASE_CASES, ids=[f"N{n}-a{a}" for n, a in _BASE_CASES])
+def test_every_base_single_run(n: int, a: int) -> None:
+    """One base, no fallback: usable bases must factor with the TRUE period;
+    unusable ones (odd order, or a^(r/2) ≡ −1) must fail with a clear reason."""
+    res = run_shor_attack(n, a=a, seed=SEED, max_bases=1)
+    assert res.a == a
+    assert all(att.a == a and att.reason for att in res.attempts)
+    if _usable(a, n):
+        assert res.factors == EXPECTED_FACTORS[n]
+        assert res.period == _order(a, n)
+    else:
+        assert res.factors is None and res.period is None
+        assert not any(att.ok for att in res.attempts)
+        r = _order(a, n)
+        expected = "odd" if r % 2 else "≡ −1 mod N"
+        assert any(expected in att.reason for att in res.attempts if att.r_candidate)
+
+
+@pytest.mark.parametrize("a", _all_bases(15))
+@pytest.mark.parametrize("seed", range(5))
+def test_every_base_n15_many_seeds(a: int, seed: int) -> None:
+    res = run_shor_attack(15, a=a, seed=seed, max_bases=1)
+    assert (res.period, res.factors) == (_order(a, 15), (3, 5))
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("n", SHOR_SUPPORTED_N)
+@pytest.mark.parametrize("seed", range(20))
+def test_default_attack_many_seeds(n: int, seed: int) -> None:
+    res = run_shor_attack(n, seed=seed, max_bases=6)
+    assert res.factors == EXPECTED_FACTORS[n]
+    assert pow(res.a, res.period, n) == 1 and res.period == _order(res.a, n)
+
+
+@pytest.mark.parametrize(
+    "n", [15] + [pytest.param(n, marks=pytest.mark.slow) for n in (21, 33, 35)]
+)
+def test_breach_round_trip_every_chunk(n: int) -> None:
+    """Victim encrypts every 3-bit chunk; the adversary, knowing only (n, e) and
+    the ciphertext, factors n, rebuilds d and recovers every chunk."""
+    from qbreak.rsa.minirsa import (
+        decrypt_chunks,
+        encrypt_chunks,
+        generate_keypair,
+        private_exponent,
+    )
+
+    kp = generate_keypair(n)
+    plain = list(range(8)) * 2
+    cipher = encrypt_chunks(plain, kp.n, kp.e)
+    res = run_shor_attack(kp.n, seed=SEED, max_bases=6)
+    assert res.factors is not None
+    d, phi = private_exponent(*res.factors, kp.e)
+    assert (d, phi) == (kp.d, kp.phi)
+    assert decrypt_chunks(cipher, kp.n, d) == plain
