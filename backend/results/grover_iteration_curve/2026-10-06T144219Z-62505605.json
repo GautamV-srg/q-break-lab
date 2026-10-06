@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "experiment": "grover_iteration_curve",
+  "cipher": "miniaes",
+  "size": {
+    "key_bits": 4
+  },
+  "condition": "known_beginning",
+  "seed": 1238,
+  "success": true,
+  "p_success": 0.5732421875,
+  "quantum": {
+    "oracle_calls": 4,
+    "iterations": 4,
+    "qubits": 15,
+    "depth": 11,
+    "transpiled_depth": 1998,
+    "gate_counts": {
+      "x": 2129,
+      "mcx": 1044,
+      "cx": 256,
+      "h": 45,
+      "ccx": 4,
+      "measure": 4
+    }
+  },
+  "classical": {},
+  "noise": {
+    "model": "ideal",
+    "p": null,
+    "backend": null
+  },
+  "extra": {
+    "iterations": 4,
+    "theory_p_success": 0.5817041397094724,
+    "num_solutions": 1,
+    "optimal_iterations": 3
+  },
+  "timestamp": "2026-10-06T14:42:19+00:00"
+}

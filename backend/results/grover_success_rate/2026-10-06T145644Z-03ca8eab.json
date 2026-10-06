@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "experiment": "grover_success_rate",
+  "cipher": "miniaes",
+  "size": {
+    "key_bits": 4
+  },
+  "condition": "ciphertext_only",
+  "seed": 5236,
+  "success": true,
+  "p_success": 0.962890625,
+  "quantum": {
+    "oracle_calls": 18,
+    "iterations": 3,
+    "qubits": 18,
+    "depth": 9,
+    "transpiled_depth": 4169,
+    "gate_counts": {
+      "x": 4621,
+      "mcx": 2106,
+      "cx": 480,
+      "h": 35,
+      "measure": 4
+    }
+  },
+  "classical": {
+    "evaluations": 7,
+    "expected_tries": 8.5,
+    "candidates": 1
+  },
+  "noise": {
+    "model": "ideal",
+    "p": null,
+    "backend": null
+  },
+  "extra": {
+    "message": "Quantum 2026",
+    "unique": true,
+    "recovered": 1,
+    "estimated_m": 1,
+    "sim_time_ms": 390566.128,
+    "classical_ms": 0.04549999994196696
+  },
+  "timestamp": "2026-10-06T14:56:44+00:00"
+}

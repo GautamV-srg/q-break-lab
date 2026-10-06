@@ -1,0 +1,4 @@
+cipher,size,condition,quantum_oracle_calls,classical_evaluations,theory_classical,theory_grover,runs
+miniaes,4,ciphertext_only,17.75,9.0,8.5,3.141592653589793,4
+miniaes,4,known_beginning,18.0,9.0,8.5,3.141592653589793,4
+miniaes,4,known_substring,18.0,9.0,8.5,3.141592653589793,4

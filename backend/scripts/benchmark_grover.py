@@ -1,7 +1,7 @@
 """Benchmark the Grover attack on MiniAES for several key sizes.
 
 Usage (from backend/):
-    python scripts/benchmark_grover.py --bits 4 6 8 --trials 5
+    python scripts/benchmark_grover.py --bits 4 6 8 10 12 --trials 5
 """
 
 from __future__ import annotations
@@ -102,7 +102,7 @@ def bench(key_bits: int, trials: int, shots: int) -> dict[str, object]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--bits", type=int, nargs="+", default=[4], choices=[4, 6, 8])
+    parser.add_argument("--bits", type=int, nargs="+", default=[4], choices=[4, 6, 8, 10, 12])
     parser.add_argument("--trials", type=int, default=5)
     parser.add_argument("--shots", type=int, default=1024)
     args = parser.parse_args()

@@ -1,0 +1,296 @@
+{
+  "scaling": {
+    "series": "scaling",
+    "empty": false,
+    "rows": [
+      {
+        "cipher": "miniaes",
+        "size_kind": "key_bits",
+        "size": 4,
+        "qubits": 15.0,
+        "depth": 9.0,
+        "transpiled_depth": 1511.0,
+        "iterations": 3.0,
+        "runs": 1
+      },
+      {
+        "cipher": "miniaes",
+        "size_kind": "key_bits",
+        "size": 6,
+        "qubits": 18.0,
+        "depth": 15.0,
+        "transpiled_depth": 4449.0,
+        "iterations": 6.0,
+        "runs": 1
+      },
+      {
+        "cipher": "miniaes",
+        "size_kind": "key_bits",
+        "size": 8,
+        "qubits": 20.0,
+        "depth": 27.0,
+        "transpiled_depth": 8895.0,
+        "iterations": 12.0,
+        "runs": 1
+      },
+      {
+        "cipher": "miniaes",
+        "size_kind": "key_bits",
+        "size": 10,
+        "qubits": 22.0,
+        "depth": 53.0,
+        "transpiled_depth": 20028.0,
+        "iterations": 25.0,
+        "runs": 1
+      },
+      {
+        "cipher": "miniaes",
+        "size_kind": "key_bits",
+        "size": 12,
+        "qubits": 24.0,
+        "depth": 103.0,
+        "transpiled_depth": 43453.0,
+        "iterations": 50.0,
+        "runs": 1
+      }
+    ],
+    "description": "Qubits and transpiled depth vs problem size (key bits / modulus)."
+  },
+  "noise": {
+    "series": "noise",
+    "empty": false,
+    "rows": [
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "model": "depolarizing",
+        "backend": null,
+        "p": 0.0,
+        "iterations": null,
+        "p_success": 0.96875,
+        "success_rate": 1.0,
+        "baseline": 0.0625,
+        "transpiled_depth": 37647.0,
+        "runs": 1
+      },
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "model": "depolarizing",
+        "backend": null,
+        "p": 0.001,
+        "iterations": null,
+        "p_success": 0.0390625,
+        "success_rate": 0.0,
+        "baseline": 0.0625,
+        "transpiled_depth": 37647.0,
+        "runs": 1
+      },
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "model": "depolarizing",
+        "backend": null,
+        "p": 0.005,
+        "iterations": null,
+        "p_success": 0.0546875,
+        "success_rate": 0.0,
+        "baseline": 0.0625,
+        "transpiled_depth": 37647.0,
+        "runs": 1
+      },
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "model": "depolarizing",
+        "backend": null,
+        "p": 0.02,
+        "iterations": null,
+        "p_success": 0.0390625,
+        "success_rate": 0.0,
+        "baseline": 0.0625,
+        "transpiled_depth": 37647.0,
+        "runs": 1
+      },
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "model": "fake_backend",
+        "backend": "FakeGuadalupeV2",
+        "p": null,
+        "iterations": 0,
+        "p_success": 0.0546875,
+        "success_rate": 0.0,
+        "baseline": 0.0625,
+        "transpiled_depth": 4.0,
+        "runs": 1
+      },
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "model": "fake_backend",
+        "backend": "FakeGuadalupeV2",
+        "p": null,
+        "iterations": 1,
+        "p_success": 0.03125,
+        "success_rate": 0.0,
+        "baseline": 0.0625,
+        "transpiled_depth": 19422.0,
+        "runs": 1
+      },
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "model": "fake_backend",
+        "backend": "FakeGuadalupeV2",
+        "p": null,
+        "iterations": 3,
+        "p_success": 0.0390625,
+        "success_rate": 0.0,
+        "baseline": 0.0625,
+        "transpiled_depth": 66677.0,
+        "runs": 1
+      }
+    ],
+    "description": "Attack success probability vs noise level, plus fake IBM backend runs."
+  },
+  "iteration_curve": {
+    "series": "iteration_curve",
+    "empty": false,
+    "rows": [
+      {
+        "key_bits": 4,
+        "iterations": 0,
+        "p_success": 0.056640625,
+        "theory": 0.0625,
+        "runs": 1
+      },
+      {
+        "key_bits": 4,
+        "iterations": 1,
+        "p_success": 0.4716796875,
+        "theory": 0.47265625,
+        "runs": 1
+      },
+      {
+        "key_bits": 4,
+        "iterations": 2,
+        "p_success": 0.908203125,
+        "theory": 0.908447265625,
+        "runs": 1
+      },
+      {
+        "key_bits": 4,
+        "iterations": 3,
+        "p_success": 0.9619140625,
+        "theory": 0.9613189697265625,
+        "runs": 1
+      },
+      {
+        "key_bits": 4,
+        "iterations": 4,
+        "p_success": 0.5732421875,
+        "theory": 0.5817041397094724,
+        "runs": 1
+      },
+      {
+        "key_bits": 4,
+        "iterations": 5,
+        "p_success": 0.1279296875,
+        "theory": 0.1254916787147522,
+        "runs": 1
+      },
+      {
+        "key_bits": 4,
+        "iterations": 6,
+        "p_success": 0.02734375,
+        "theory": 0.020380768924951515,
+        "runs": 1
+      }
+    ],
+    "description": "Measured success vs Grover iterations, with the theoretical sin\u00b2 envelope."
+  },
+  "success_rate": {
+    "series": "success_rate",
+    "empty": false,
+    "rows": [
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "condition": "ciphertext_only",
+        "a": null,
+        "success_rate": 1.0,
+        "p_success": 0.842529296875,
+        "unique_rate": 0.75,
+        "runs_to_success": null,
+        "runs": 4
+      },
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "condition": "known_beginning",
+        "a": null,
+        "success_rate": 1.0,
+        "p_success": 0.966552734375,
+        "unique_rate": 1.0,
+        "runs_to_success": null,
+        "runs": 4
+      },
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "condition": "known_substring",
+        "a": null,
+        "success_rate": 1.0,
+        "p_success": 0.966552734375,
+        "unique_rate": 1.0,
+        "runs_to_success": null,
+        "runs": 4
+      }
+    ],
+    "description": "Attack success rate across keys/seeds and conditions (and Shor per base a)."
+  },
+  "comparison": {
+    "series": "comparison",
+    "empty": false,
+    "rows": [
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "condition": "ciphertext_only",
+        "quantum_oracle_calls": 17.75,
+        "classical_evaluations": 9.0,
+        "theory_classical": 8.5,
+        "theory_grover": 3.141592653589793,
+        "runs": 4
+      },
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "condition": "known_beginning",
+        "quantum_oracle_calls": 18.0,
+        "classical_evaluations": 9.0,
+        "theory_classical": 8.5,
+        "theory_grover": 3.141592653589793,
+        "runs": 4
+      },
+      {
+        "cipher": "miniaes",
+        "size": 4,
+        "condition": "known_substring",
+        "quantum_oracle_calls": 18.0,
+        "classical_evaluations": 9.0,
+        "theory_classical": 8.5,
+        "theory_grover": 3.141592653589793,
+        "runs": 4
+      }
+    ],
+    "description": "Quantum oracle calls / circuit runs vs classical tries, per problem size."
+  },
+  "counting": {
+    "series": "counting",
+    "empty": true,
+    "rows": [],
+    "description": "Quantum-counting estimate of the number of matching keys vs the true count."
+  }
+}

@@ -4,16 +4,22 @@ This is NOT a reduced version of the real AES standard. It is a deliberately tin
 deliberately insecure cipher that borrows AES vocabulary so the steps are familiar:
 
     block  = 4 bits (one nibble), one round, every nibble encrypted independently (ECB)
-    key    = 4, 6 or 8 bits
+    key    = 4, 6, 8, 10 or 12 bits
 
     x = p XOR K0          AddRoundKey  (mix in the first round key)
-    s = SBOX[x]           SubNibble    (non-linear substitution, the Mini-AES S-box)
-    y = rotl4(s, 1)       RotateBits   (a stand-in for AES's ShiftRows / MixColumns)
+    s = SBOX[rotl4(x, A)] SubNibble    (non-linear substitution, the Mini-AES S-box)
+    y = rotl4(s, 1 + B)   RotateBits   (a stand-in for AES's ShiftRows / MixColumns)
     c = y XOR K1          AddRoundKey  (mix in the second round key)
 
 Round keys:
     K0 = the low 4 bits of the key
-    H  = the high 4 bits of the key,  K1 = rotl4(H, 1) XOR RCON
+    H  = the high 4 bits of the key (bits 4-7 for 10/12-bit keys),  K1 = rotl4(H, 1) XOR RCON
+    B  = key bits 8-9 (10/12-bit keys only, otherwise 0): extra output rotation
+    A  = key bits 10-11 (12-bit keys only, otherwise 0): input rotation before the S-box
+
+For 4/6/8-bit keys A = B = 0, so those sizes are exactly the original one-round cipher.
+The 10/12-bit keys keep the 8-bit cipher in their low byte and let the extra bits pick
+the rotation amounts, so every one of the 4096 12-bit keys gives a different permutation.
 
 Every key bit affects the result, and every key gives a different permutation of the
 16 nibbles, so a long enough known plaintext always pins down a unique key.
@@ -30,7 +36,7 @@ SBOX: tuple[int, ...] = (
 INV_SBOX: tuple[int, ...] = tuple(SBOX.index(i) for i in range(16))
 RCON: int = 0x3
 
-SUPPORTED_KEY_BITS: tuple[int, ...] = (4, 6, 8)
+SUPPORTED_KEY_BITS: tuple[int, ...] = (4, 6, 8, 10, 12)
 
 
 def _rotl4(v: int) -> int:
@@ -38,9 +44,10 @@ def _rotl4(v: int) -> int:
     return ((v << 1) | (v >> 3)) & 0xF
 
 
-def _rotr4(v: int) -> int:
-    """Rotate a nibble right by one bit."""
-    return ((v >> 1) | (v << 3)) & 0xF
+def _rotl4_by(v: int, r: int) -> int:
+    """Rotate a nibble left by r bits."""
+    r %= 4
+    return ((v << r) | (v >> (4 - r))) & 0xF if r else v
 
 
 def _bin4(v: int) -> str:
@@ -62,28 +69,45 @@ def round_keys(key: int, key_bits: int) -> tuple[int, int]:
 
     Raises ValueError for an unsupported key size or an out-of-range key.
     """
+    _check_key(key, key_bits)
+    k0 = key & 0xF
+    h = (key >> (min(key_bits, 8) - 4)) & 0xF
+    k1 = _rotl4(h) ^ RCON
+    return k0, k1
+
+
+def rotation_amounts(key: int, key_bits: int) -> tuple[int, int]:
+    """The key-selected rotations (A, B): A rotates x before the S-box, B adds to RotateBits.
+
+    Both are 0 for 4/6/8-bit keys. B = key bits 8-9 (10/12-bit), A = key bits 10-11 (12-bit).
+    """
+    _check_key(key, key_bits)
+    b = (key >> 8) & 0x3 if key_bits >= 10 else 0
+    a = (key >> 10) & 0x3 if key_bits >= 12 else 0
+    return a, b
+
+
+def _check_key(key: int, key_bits: int) -> None:
     if key_bits not in SUPPORTED_KEY_BITS:
         raise ValueError(f"key_bits must be one of {SUPPORTED_KEY_BITS}, got {key_bits!r}")
     if not isinstance(key, int) or not 0 <= key < (1 << key_bits):
         raise ValueError(f"key must be an integer in 0..{(1 << key_bits) - 1}, got {key!r}")
-    k0 = key & 0xF
-    h = (key >> (key_bits - 4)) & 0xF
-    k1 = _rotl4(h) ^ RCON
-    return k0, k1
 
 
 def encrypt_nibble(p: int, key: int, key_bits: int) -> int:
     """Encrypt one 4-bit plaintext nibble with MiniAES."""
     _check_nibble(p, "plaintext nibble")
     k0, k1 = round_keys(key, key_bits)
-    return _rotl4(SBOX[p ^ k0]) ^ k1
+    a, b = rotation_amounts(key, key_bits)
+    return _rotl4_by(SBOX[_rotl4_by(p ^ k0, a)], 1 + b) ^ k1
 
 
 def decrypt_nibble(c: int, key: int, key_bits: int) -> int:
     """Decrypt one 4-bit ciphertext nibble with MiniAES (the steps in reverse)."""
     _check_nibble(c, "ciphertext nibble")
     k0, k1 = round_keys(key, key_bits)
-    return INV_SBOX[_rotr4(c ^ k1)] ^ k0
+    a, b = rotation_amounts(key, key_bits)
+    return _rotl4_by(INV_SBOX[_rotl4_by(c ^ k1, -(1 + b))], -a) ^ k0
 
 
 def encrypt_nibbles(ps: list[int], key: int, key_bits: int) -> list[int]:
@@ -106,15 +130,19 @@ def trace_encrypt_nibble(p: int, key: int, key_bits: int) -> list[dict]:
     """
     _check_nibble(p, "plaintext nibble")
     k0, k1 = round_keys(key, key_bits)
+    a, b = rotation_amounts(key, key_bits)
     x = p ^ k0
-    s = SBOX[x]
-    y = _rotl4(s)
+    xr = _rotl4_by(x, a)
+    s = SBOX[xr]
+    y = _rotl4_by(s, 1 + b)
     c = y ^ k1
+    sub = f"S[{_bin4(x)}] = {_bin4(s)}" if key_bits < 12 else f"S[rotl{a}({_bin4(x)}) = {_bin4(xr)}] = {_bin4(s)}"
+    rot = f"rotl({_bin4(s)}) = {_bin4(y)}" if key_bits < 10 else f"rotl{1 + b}({_bin4(s)}) = {_bin4(y)}"
     return [
         {"step": "Input P", "value": p, "detail": _bin4(p)},
         {"step": "AddRoundKey K0", "value": x, "detail": f"{_bin4(p)} ⊕ {_bin4(k0)} = {_bin4(x)}"},
-        {"step": "SubNibble", "value": s, "detail": f"S[{_bin4(x)}] = {_bin4(s)}"},
-        {"step": "RotateBits", "value": y, "detail": f"rotl({_bin4(s)}) = {_bin4(y)}"},
+        {"step": "SubNibble", "value": s, "detail": sub},
+        {"step": "RotateBits", "value": y, "detail": rot},
         {
             "step": "AddRoundKey K1",
             "value": c,
@@ -129,8 +157,7 @@ def matching_keys(pairs: list[tuple[int, int]], key_bits: int) -> list[int]:
     Exists ONLY for tests and verification displays (ground truth). The quantum attack
     in grover.py never calls this.
     """
-    if key_bits not in SUPPORTED_KEY_BITS:
-        raise ValueError(f"key_bits must be one of {SUPPORTED_KEY_BITS}, got {key_bits!r}")
+    _check_key(0, key_bits)
     return [
         k
         for k in range(1 << key_bits)

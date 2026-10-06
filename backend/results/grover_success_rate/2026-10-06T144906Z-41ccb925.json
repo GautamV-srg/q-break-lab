@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "experiment": "grover_success_rate",
+  "cipher": "miniaes",
+  "size": {
+    "key_bits": 4
+  },
+  "condition": "ciphertext_only",
+  "seed": 5234,
+  "success": true,
+  "p_success": 0.4775390625,
+  "quantum": {
+    "oracle_calls": 17,
+    "iterations": 2,
+    "qubits": 17,
+    "depth": 7,
+    "transpiled_depth": 2236,
+    "gate_counts": {
+      "x": 2481,
+      "mcx": 1124,
+      "cx": 256,
+      "h": 25,
+      "measure": 4
+    }
+  },
+  "classical": {
+    "evaluations": 1,
+    "expected_tries": 5.666666666666667,
+    "candidates": 2
+  },
+  "noise": {
+    "model": "ideal",
+    "p": null,
+    "backend": null
+  },
+  "extra": {
+    "message": "Hi judges!",
+    "unique": false,
+    "recovered": 2,
+    "estimated_m": 2,
+    "sim_time_ms": 9408.139799999957,
+    "classical_ms": 0.04590000003190653
+  },
+  "timestamp": "2026-10-06T14:49:06+00:00"
+}

@@ -7,6 +7,8 @@ services:
     envVars:
       - key: QBREAK_KEY_BITS
         value: "4"
+      - key: SYMMETRIC_MAX_KEY_BITS
+        value: "8"
       - key: QBREAK_MODULI
         value: "15"
       - key: QBREAK_MAX_CONCURRENT_SIMS

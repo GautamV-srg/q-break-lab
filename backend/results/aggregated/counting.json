@@ -1,0 +1,6 @@
+{
+  "series": "counting",
+  "empty": true,
+  "rows": [],
+  "description": "Quantum-counting estimate of the number of matching keys vs the true count."
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "experiment": "grover_fake_backend",
+  "cipher": "miniaes",
+  "size": {
+    "key_bits": 4
+  },
+  "condition": "known_beginning",
+  "seed": 1234,
+  "success": false,
+  "p_success": 0.0390625,
+  "quantum": {
+    "oracle_calls": 3,
+    "iterations": 3,
+    "qubits": 15,
+    "depth": 9,
+    "transpiled_depth": 66677,
+    "gate_counts": {
+      "cx": 49457,
+      "rz": 28243,
+      "sx": 6043,
+      "x": 703,
+      "measure": 4
+    }
+  },
+  "classical": {},
+  "noise": {
+    "model": "fake_backend",
+    "p": null,
+    "backend": "FakeGuadalupeV2"
+  },
+  "extra": {
+    "iterations": 3,
+    "uniform_baseline": 0.0625,
+    "backend_qubits": 16,
+    "ideal_p_success": 0.9613189697265625
+  },
+  "timestamp": "2026-10-06T14:48:19+00:00"
+}

@@ -1,0 +1,40 @@
+{
+  "series": "success_rate",
+  "empty": false,
+  "rows": [
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "condition": "ciphertext_only",
+      "a": null,
+      "success_rate": 1.0,
+      "p_success": 0.842529296875,
+      "unique_rate": 0.75,
+      "runs_to_success": null,
+      "runs": 4
+    },
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "condition": "known_beginning",
+      "a": null,
+      "success_rate": 1.0,
+      "p_success": 0.966552734375,
+      "unique_rate": 1.0,
+      "runs_to_success": null,
+      "runs": 4
+    },
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "condition": "known_substring",
+      "a": null,
+      "success_rate": 1.0,
+      "p_success": 0.966552734375,
+      "unique_rate": 1.0,
+      "runs_to_success": null,
+      "runs": 4
+    }
+  ],
+  "description": "Attack success rate across keys/seeds and conditions (and Shor per base a)."
+}
