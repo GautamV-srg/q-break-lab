@@ -53,7 +53,7 @@ from qiskit.circuit.library import UnitaryGate
 from qbreak.common.simulator import run_circuit
 
 # Moduli whose circuits are implemented, tested and benchmarked.
-SHOR_SUPPORTED_N: tuple[int, ...] = (15,)
+SHOR_SUPPORTED_N: tuple[int, ...] = (15, 21)
 
 TEXTBOOK = "textbook-swaps"
 PERMUTATION = "permutation-unitary"
