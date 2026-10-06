@@ -18,6 +18,8 @@ EXPECTED = {
     21: (3, 7, 12, 5, 5, True),
     33: (3, 11, 20, 3, 7, False),
     35: (5, 7, 24, 5, 5, True),
+    55: (5, 11, 40, 3, 27, False),
+    77: (7, 11, 60, 7, 43, False),
 }
 
 
@@ -51,7 +53,7 @@ def test_hi_vector_n15() -> None:
     assert decrypt_chunks(cipher, 15, 3) == chunks
 
 
-@pytest.mark.parametrize("n", [1, 14, 16, 22, 39, 77])
+@pytest.mark.parametrize("n", [1, 14, 16, 22, 39, 49, 91])
 def test_unsupported_modulus_raises(n: int) -> None:
     with pytest.raises(ValueError):
         generate_keypair(n)

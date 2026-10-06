@@ -10,7 +10,7 @@ def test_health_and_config() -> None:
     response = client.get("/api/config")
     assert response.status_code == 200
     assert response.json()["aes_key_bits"] == [4]
-    assert response.json()["rsa_moduli"] == [15]
+    assert response.json()["rsa_moduli"] == [15, 21, 33, 35, 55, 77]
 
 
 def test_aes_encrypt_and_attack_mock_contract() -> None:
@@ -48,5 +48,5 @@ def test_readable_validation_errors() -> None:
     assert isinstance(empty.json()["detail"], str)
     assert client.post("/api/aes/encrypt", json={"plaintext": "Hi", "key": "xyz", "key_bits": 4}).status_code == 422
     assert client.post("/api/aes/attack", json={"key_bits": 4, "known_plaintext": "too long", "ciphertext_nibbles": [1]}).status_code == 422
-    assert client.post("/api/rsa/keygen", json={"n": 21}).status_code == 422
+    assert client.post("/api/rsa/keygen", json={"n": 22}).status_code == 422
     assert client.post("/api/rsa/attack", json={"n": 15, "e": 3, "ciphertext": [15], "bit_length": 3}).status_code == 422

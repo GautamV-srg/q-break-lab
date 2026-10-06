@@ -4,6 +4,8 @@ from collections.abc import Callable
 
 from qiskit import QuantumCircuit, qasm3
 
+_MAX_QASM_UNITARY_QUBITS = 6
+
 
 def _truncate(text: str, limit: int, note: str) -> str:
     return text if len(text) <= limit else text[:limit] + note
@@ -21,10 +23,15 @@ def circuit_info(
         {"title": title, "text": _truncate(str(circuit.decompose().draw(output="text", fold=120)), 60_000, "\n… drawing truncated …")}
         for title, circuit in explain_circuits
     )
-    try:
-        qasm = _truncate(qasm3.dumps(transpiled), 200_000, "\n// … QASM truncated …")
-    except Exception:
-        qasm = None
+    widest_unitary = max((inst.operation.num_qubits for inst in transpiled.data if inst.operation.name == "unitary"), default=0)
+    if widest_unitary > _MAX_QASM_UNITARY_QUBITS:
+        # Exporting would synthesise each 2^k-dimensional block into gates (seconds to minutes from 7 qubits up).
+        qasm = f"// OpenQASM export skipped: the circuit contains {widest_unitary}-qubit permutation blocks; exporting them would require synthesising each into thousands of gates."
+    else:
+        try:
+            qasm = _truncate(qasm3.dumps(transpiled), 200_000, "\n// … QASM truncated …")
+        except Exception:
+            qasm = None
     return {
         "num_qubits": logical.num_qubits,
         "num_clbits": logical.num_clbits,

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "experiment": "shor_fake_backend",
+  "cipher": "minirsa",
+  "size": {
+    "modulus": 15
+  },
+  "condition": null,
+  "seed": null,
+  "success": null,
+  "p_success": null,
+  "quantum": {
+    "qubits": 12
+  },
+  "classical": {
+    "evaluations": 2,
+    "trial_divisions": 2,
+    "order_finding_mults": 3,
+    "order_finding_bases_tried": 1
+  },
+  "noise": {
+    "model": "fake_backend",
+    "p": null,
+    "backend": "fake_manila"
+  },
+  "extra": {
+    "a": 7,
+    "construction": "swap",
+    "uniform_baseline": 0.246094,
+    "device_qubits": 5,
+    "fits_device": false
+  },
+  "timestamp": "2026-10-06T15:23:46+00:00"
+}

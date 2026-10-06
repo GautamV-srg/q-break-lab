@@ -1,7 +1,7 @@
 """Benchmark the Shor attack for each modulus.
 
 Usage (from backend/):
-    python scripts/benchmark_shor.py --n 15 21 33 35 --trials 5
+    python scripts/benchmark_shor.py --n 15 21 33 35 55 77 --trials 5
 
 For each N prints qubits, logical depth, transpiled depth, transpiled gate
 counts, mean / max simulation time, success rate and peak RSS. Moduli not yet
@@ -71,7 +71,7 @@ def benchmark(n: int, trials: int, shots: int) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--n", type=int, nargs="+", default=[15, 21, 33, 35])
+    parser.add_argument("--n", type=int, nargs="+", default=[15, 21, 33, 35, 55, 77])
     parser.add_argument("--trials", type=int, default=5)
     parser.add_argument("--shots", type=int, default=1024)
     args = parser.parse_args()

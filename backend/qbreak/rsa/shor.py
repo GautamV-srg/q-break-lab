@@ -34,7 +34,15 @@ Honesty note on the circuit construction
   computed classically when the circuit is built. This is the standard
   approach in small textbook demonstrations; a full-scale Shor would instead
   need reversible modular-arithmetic circuits built from elementary gates.
-In both cases the period itself is *not* computed classically: it is read
+- ``"iterative-phase-estimation"`` (any supported N): the semiclassical
+  (Griffiths-Niu) version of phase estimation. A **single** counting qubit is
+  reset and reused for t rounds; each round applies one controlled U^(2^k),
+  then phase corrections conditioned on the bits already measured, then a
+  Hadamard and a mid-circuit measurement. It replaces the t-qubit counting
+  register and the inverse QFT, and yields the same output distribution.
+  Its multiplication blocks are the textbook swaps at N = 15 and the
+  classically computed (disclosed) permutation blocks for every other N.
+In every case the period itself is *not* computed classically: it is read
 out of the quantum measurement.
 """
 
@@ -53,17 +61,33 @@ from qiskit.circuit.library import UnitaryGate
 from qbreak.common.simulator import run_circuit
 
 # Moduli whose circuits are implemented, tested and benchmarked.
-SHOR_SUPPORTED_N: tuple[int, ...] = (15, 21, 33, 35)
+SHOR_SUPPORTED_N: tuple[int, ...] = (15, 21, 33, 35, 55, 77)
 
 TEXTBOOK = "textbook-swaps"
 PERMUTATION = "permutation-unitary"
-_CONSTRUCTIONS = (TEXTBOOK, PERMUTATION)
+ITERATIVE = "iterative-phase-estimation"
+_CONSTRUCTIONS = (TEXTBOOK, PERMUTATION, ITERATIVE)
+
+# Short API names for each construction ("auto" = textbook at N = 15, else permutation).
+CONSTRUCTION_KEYS: dict[str, str] = {
+    "swap": TEXTBOOK,
+    "permutation": PERMUTATION,
+    "iterative": ITERATIVE,
+}
 
 _MAX_ATTEMPTS_PER_BASE = 16
 
 REGISTER_ROLES: dict[str, str] = {
     "count": (
         "Exponent register: superposition of x = 0..2^t−1; after IQFT its measurement encodes s/r"
+    ),
+    "work": "Holds a^x mod N, starts at |1⟩",
+}
+
+ITERATIVE_REGISTER_ROLES: dict[str, str] = {
+    "count": (
+        "Single counting qubit, reset and reused for each of the t rounds; each round measures one "
+        "bit of y, with phase corrections conditioned on the bits already measured (no IQFT)"
     ),
     "work": "Holds a^x mod N, starts at |1⟩",
 }
@@ -92,15 +116,18 @@ class ShorResult:
     period: int | None
     factors: tuple[int, int] | None
     counts: dict[str, int]  # counts for the circuit of the successful/last base
-    n_count: int  # counting qubits t
+    n_count: int  # bits of phase precision t (= counting qubits for the register constructions)
     n_work: int  # work qubits
     attempts: list[ShorAttempt]
     circuit: QuantumCircuit
     transpiled: QuantumCircuit
     sim_time_ms: float  # total simulation time over every base tried
-    construction: str  # "textbook-swaps" or "permutation-unitary"
+    construction: str  # "textbook-swaps", "permutation-unitary" or "iterative-phase-estimation"
     explain_circuits: list[tuple[str, QuantumCircuit]]
     register_roles: dict[str, str]
+    counting_qubits: int = 0  # physical counting qubits: t, or 1 for the iterative construction
+    multiplier_blocks: str = ""  # how controlled U^(2^k) is built: textbook-swaps / permutation-unitary
+    circuit_runs: int = 0  # circuits simulated (one per base tried)
 
 
 # ---------------------------------------------------------------------------
@@ -116,6 +143,16 @@ def work_qubits(n: int) -> int:
 def default_count_qubits(n: int) -> int:
     """Default counting-register size t = 2 * n_work (enough precision for s/r)."""
     return 2 * work_qubits(n)
+
+
+def qubit_counts(n: int) -> dict[str, int]:
+    """Total qubits for each construction family at modulus n (t = 2 * n_work).
+
+    The 2n-register circuit needs t counting + n_work work qubits; the
+    iterative circuit needs 1 counting + n_work work qubits.
+    """
+    n_work = work_qubits(n)
+    return {"register_2n": 3 * n_work, "iterative": 1 + n_work}
 
 
 # ---------------------------------------------------------------------------
@@ -202,13 +239,29 @@ def controlled_mult_gate(b: int, n: int, n_work: int, label: str) -> UnitaryGate
     return UnitaryGate(permutation_matrix(b, n, n_work), label=label)
 
 
-def _resolve_construction(n: int, construction: str) -> str:
+def resolve_construction(n: int, construction: str) -> str:
+    """Map "auto", an API key (swap / permutation / iterative) or a full name to a full name."""
+    construction = CONSTRUCTION_KEYS.get(construction, construction)
     if construction == "auto":
         return TEXTBOOK if n == 15 else PERMUTATION
     if construction not in _CONSTRUCTIONS:
         raise ValueError(f"Unknown construction {construction!r}")
     if construction == TEXTBOOK and n != 15:
         raise ValueError("The textbook-swaps construction exists only for N = 15")
+    return construction
+
+
+_resolve_construction = resolve_construction
+
+
+def multiplier_blocks(n: int, construction: str) -> str:
+    """How the controlled U^(2^k) blocks are built for a resolved construction.
+
+    The iterative construction reuses the hand-built swaps at N = 15 and the
+    disclosed, classically computed permutation blocks everywhere else.
+    """
+    if construction == ITERATIVE:
+        return TEXTBOOK if n == 15 else PERMUTATION
     return construction
 
 
@@ -248,6 +301,8 @@ def build_period_finding_circuit(
     if gcd(a, n) != 1:
         raise ValueError(f"gcd({a}, {n}) > 1: that would factor N classically")
     construction = _resolve_construction(n, construction)
+    if construction == ITERATIVE:
+        return build_iterative_circuit(a, n, n_count)
     n_work = work_qubits(n)
     t = n_count if n_count is not None else 2 * n_work
 
@@ -266,19 +321,105 @@ def build_period_finding_circuit(
     return qc
 
 
+def build_iterative_circuit(a: int, n: int, n_count: int | None = None) -> QuantumCircuit:
+    """Iterative (semiclassical) period finding with a single counting qubit.
+
+    Registers: ``count`` (1 qubit, reused), ``work`` (n_work qubits, starts at
+    |1⟩) and the classical register ``c`` (t bits). Round k = t−1 … 0 measures
+    bit y_b with b = t−1−k (least significant bit first):
+
+    1. reset the counting qubit (after the first round) and apply H;
+    2. apply controlled U^(2^k); the eigenphase kicked back is 2π·y/2^(b+1);
+    3. for every bit y_i (i < b) already measured, apply P(−π/2^(b−i)) if
+       y_i = 1, cancelling the lower bits' contribution to that phase;
+    4. apply H and measure into c[b].
+
+    This is the inverse QFT done one qubit at a time with classical
+    feed-forward (Griffiths & Niu, 1996), so c reads the same y ≈ s·2^t/r as
+    the 2n-register circuit, with the same distribution, on 1 + n_work qubits.
+    """
+    if not 2 <= a <= n - 2:
+        raise ValueError(f"a = {a} must satisfy 2 <= a <= N - 2")
+    if gcd(a, n) != 1:
+        raise ValueError(f"gcd({a}, {n}) > 1: that would factor N classically")
+    blocks = multiplier_blocks(n, ITERATIVE)
+    n_work = work_qubits(n)
+    t = n_count if n_count is not None else 2 * n_work
+
+    count = QuantumRegister(1, "count")
+    work = QuantumRegister(n_work, "work")
+    c = ClassicalRegister(t, "c")
+    qc = QuantumCircuit(count, work, c, name=f"Iterative Shor period finding a={a} N={n}")
+
+    qc.x(work[0])  # work register starts at |1⟩ (qubit 0 is the LSB)
+    for k in reversed(range(t)):
+        _append_iterative_round(qc, a, n, n_work, t, k, blocks)
+    return qc
+
+
+def _append_iterative_round(
+    qc: QuantumCircuit, a: int, n: int, n_work: int, t: int, k: int, blocks: str
+) -> None:
+    """One round of iterative phase estimation: controlled U^(2^k), measure y bit t−1−k."""
+    count, work, c = qc.qregs[0][0], qc.qregs[1], qc.cregs[0]
+    bit = t - 1 - k
+    if bit:
+        qc.reset(count)
+    qc.h(count)
+    gate = _controlled_power_gate(a, n, n_work, k, blocks)
+    _append_controlled_power(qc, gate, count, work, blocks)
+    for i in range(bit):
+        with qc.if_test((c[i], 1)):
+            qc.p(-np.pi / float(2 ** (bit - i)), count)
+    qc.h(count)
+    qc.measure(count, c[bit])
+
+
+def _shield_unitaries(qc: QuantumCircuit) -> QuantumCircuit:
+    """Wrap each permutation UnitaryGate one level deep.
+
+    The evidence builder draws explainer circuits after one ``decompose()``;
+    without the wrapper that would synthesise a 2^(n_work+1)-dimensional
+    permutation into thousands of gates (about a minute at N = 77). Wrapped,
+    it is drawn as the single labelled, disclosed block it is.
+    """
+    out = qc.copy_empty_like()
+    for inst in qc.data:
+        op = inst.operation
+        if op.name == "unitary":
+            inner = QuantumCircuit(op.num_qubits, name=op.label)
+            inner.append(op, range(op.num_qubits))
+            op = inner.to_gate(label=op.label)
+        out.append(op, inst.qubits, inst.clbits)
+    return out
+
+
 def _explain_circuits(
     a: int, n: int, t: int, construction: str
 ) -> list[tuple[str, QuantumCircuit]]:
     """Small circuits for the "Pop the Hood" explainer."""
+    blocks = multiplier_blocks(n, construction)
     n_work = work_qubits(n)
     ctrl = QuantumRegister(1, "count0")
     work = QuantumRegister(n_work, "work")
     block = QuantumCircuit(ctrl, work, name="Controlled U^(2^0)")
-    gate = _controlled_power_gate(a, n, n_work, 0, construction)
-    _append_controlled_power(block, gate, ctrl[0], work, construction)
-    if construction == TEXTBOOK:
+    gate = _controlled_power_gate(a, n, n_work, 0, blocks)
+    _append_controlled_power(block, gate, ctrl[0], work, blocks)
+    if blocks == TEXTBOOK:
         block = block.decompose()  # show the controlled swaps / NOTs
-    return [("Controlled U^(2^0)", block), ("Inverse QFT", inverse_qft(t))]
+    else:
+        block = _shield_unitaries(block)
+    if construction != ITERATIVE:
+        return [("Controlled U^(2^0)", block), ("Inverse QFT", inverse_qft(t))]
+    # The third round (y bit 2) shows both conditioned phase corrections.
+    demo = QuantumCircuit(
+        QuantumRegister(1, "count"), QuantumRegister(n_work, "work"), ClassicalRegister(3, "c")
+    )
+    _append_iterative_round(demo, a, n, n_work, 3, 0, blocks)
+    return [
+        ("Controlled U^(2^0)", block),
+        ("One iterative round (measures y bit 2)", _shield_unitaries(demo)),
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -366,6 +507,23 @@ def candidate_periods(counts: dict[str, int], n_count: int, n: int, a: int) -> l
     return attempts
 
 
+def shot_success_probability(counts: dict[str, int], n_count: int, n: int, a: int) -> float:
+    """Fraction of shots whose outcome *on its own* yields the factors of n.
+
+    Every distinct outcome is post-processed exactly as in the attack
+    (continued fractions → period checks → gcd); no secret is consulted.
+    """
+    shots = sum(counts.values())
+    if not shots:
+        return 0.0
+    good = 0
+    for bitstring, count in counts.items():
+        att = candidate_periods({bitstring: count}, n_count, n, a)[0]
+        if att.ok and att.r_candidate and factors_from_period(a, att.r_candidate, n):
+            good += count
+    return good / shots
+
+
 def factors_from_period(a: int, r: int, n: int) -> tuple[int, int] | None:
     """Factors of n from an even period r of a: gcd(a^(r/2) ∓ 1, n).
 
@@ -387,6 +545,9 @@ def run_shor_attack(
     shots: int = 1024,
     seed: int | None = None,
     max_bases: int = 4,
+    construction: str = "auto",
+    noise_p: float | None = None,
+    backend: object | None = None,
 ) -> ShorResult:
     """Factor n with Shor's period finding, simulated on Aer.
 
@@ -399,6 +560,12 @@ def run_shor_attack(
     If the caller passes an ``a`` with gcd(a, n) > 1, it is recorded as a
     skipped attempt (that would be a classical lucky factor, not a quantum
     result) and the attack continues with other bases.
+
+    ``construction`` is "auto", "swap" / "textbook-swaps" (N = 15 only),
+    "permutation" / "permutation-unitary" or "iterative" /
+    "iterative-phase-estimation". ``noise_p`` (depolarising rate) or ``backend``
+    (a fake IBM device) runs the circuits under noise through the shared
+    simulator helper; both default to an ideal run.
     """
     if n not in SHOR_SUPPORTED_N:
         supported = ", ".join(str(k) for k in SHOR_SUPPORTED_N)
@@ -427,15 +594,18 @@ def run_shor_attack(
         else:
             bases = [a] + [b for b in bases if b != a]
 
-    construction = _resolve_construction(n, "auto")
+    construction = _resolve_construction(n, construction)
     n_work = work_qubits(n)
     t = 2 * n_work
     total_ms = 0.0
     result: ShorResult | None = None
+    roles = ITERATIVE_REGISTER_ROLES if construction == ITERATIVE else REGISTER_ROLES
 
     for i, base in enumerate(bases[:max_bases]):
         qc = build_period_finding_circuit(base, n, t, construction)
-        run = run_circuit(qc, shots=shots, seed=None if seed is None else seed + i)
+        run = run_circuit(
+            qc, shots=shots, seed=None if seed is None else seed + i, noise_p=noise_p, backend=backend
+        )
         total_ms += run.sim_time_ms
         base_attempts = candidate_periods(run.counts, t, n, base)
         attempts.extend(base_attempts)
@@ -462,7 +632,10 @@ def run_shor_attack(
             sim_time_ms=total_ms,
             construction=construction,
             explain_circuits=_explain_circuits(base, n, t, construction),
-            register_roles=dict(REGISTER_ROLES),
+            register_roles=dict(roles),
+            counting_qubits=1 if construction == ITERATIVE else t,
+            multiplier_blocks=multiplier_blocks(n, construction),
+            circuit_runs=i + 1,
         )
         if factors is not None:
             break

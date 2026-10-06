@@ -1,0 +1,2079 @@
+{
+  "noise": [
+    {
+      "n": 15,
+      "construction": "iterative",
+      "a": 7,
+      "p": 0.0,
+      "uniform_baseline": 0.246094,
+      "caveat": "At N = 15 every base has order dividing 4, so U^(2^k) is the identity for k >= 2: the iterative circuit's first t-2 rounds contain no two-qubit gates and stay almost noise-free, pinning y's low bits to 0. Even uniformly random values of the two noisy high bits then factor N 3 times in 4, so this curve's floor is 0.75, not the uniform 0.25. Its flatness reflects the N = 15 shortcut, not genuine noise immunity.",
+      "p_success_mean": 0.7646,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "iterative",
+      "a": 7,
+      "p": 0.001,
+      "uniform_baseline": 0.246094,
+      "caveat": "At N = 15 every base has order dividing 4, so U^(2^k) is the identity for k >= 2: the iterative circuit's first t-2 rounds contain no two-qubit gates and stay almost noise-free, pinning y's low bits to 0. Even uniformly random values of the two noisy high bits then factor N 3 times in 4, so this curve's floor is 0.75, not the uniform 0.25. Its flatness reflects the N = 15 shortcut, not genuine noise immunity.",
+      "p_success_mean": 0.748,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "iterative",
+      "a": 7,
+      "p": 0.002,
+      "uniform_baseline": 0.246094,
+      "caveat": "At N = 15 every base has order dividing 4, so U^(2^k) is the identity for k >= 2: the iterative circuit's first t-2 rounds contain no two-qubit gates and stay almost noise-free, pinning y's low bits to 0. Even uniformly random values of the two noisy high bits then factor N 3 times in 4, so this curve's floor is 0.75, not the uniform 0.25. Its flatness reflects the N = 15 shortcut, not genuine noise immunity.",
+      "p_success_mean": 0.7451,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "iterative",
+      "a": 7,
+      "p": 0.005,
+      "uniform_baseline": 0.246094,
+      "caveat": "At N = 15 every base has order dividing 4, so U^(2^k) is the identity for k >= 2: the iterative circuit's first t-2 rounds contain no two-qubit gates and stay almost noise-free, pinning y's low bits to 0. Even uniformly random values of the two noisy high bits then factor N 3 times in 4, so this curve's floor is 0.75, not the uniform 0.25. Its flatness reflects the N = 15 shortcut, not genuine noise immunity.",
+      "p_success_mean": 0.7422,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "iterative",
+      "a": 7,
+      "p": 0.01,
+      "uniform_baseline": 0.246094,
+      "caveat": "At N = 15 every base has order dividing 4, so U^(2^k) is the identity for k >= 2: the iterative circuit's first t-2 rounds contain no two-qubit gates and stay almost noise-free, pinning y's low bits to 0. Even uniformly random values of the two noisy high bits then factor N 3 times in 4, so this curve's floor is 0.75, not the uniform 0.25. Its flatness reflects the N = 15 shortcut, not genuine noise immunity.",
+      "p_success_mean": 0.7422,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "iterative",
+      "a": 7,
+      "p": 0.02,
+      "uniform_baseline": 0.246094,
+      "caveat": "At N = 15 every base has order dividing 4, so U^(2^k) is the identity for k >= 2: the iterative circuit's first t-2 rounds contain no two-qubit gates and stay almost noise-free, pinning y's low bits to 0. Even uniformly random values of the two noisy high bits then factor N 3 times in 4, so this curve's floor is 0.75, not the uniform 0.25. Its flatness reflects the N = 15 shortcut, not genuine noise immunity.",
+      "p_success_mean": 0.7344,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "iterative",
+      "a": 7,
+      "p": 0.05,
+      "uniform_baseline": 0.246094,
+      "caveat": "At N = 15 every base has order dividing 4, so U^(2^k) is the identity for k >= 2: the iterative circuit's first t-2 rounds contain no two-qubit gates and stay almost noise-free, pinning y's low bits to 0. Even uniformly random values of the two noisy high bits then factor N 3 times in 4, so this curve's floor is 0.75, not the uniform 0.25. Its flatness reflects the N = 15 shortcut, not genuine noise immunity.",
+      "p_success_mean": 0.752,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "iterative",
+      "a": 7,
+      "p": 0.1,
+      "uniform_baseline": 0.246094,
+      "caveat": "At N = 15 every base has order dividing 4, so U^(2^k) is the identity for k >= 2: the iterative circuit's first t-2 rounds contain no two-qubit gates and stay almost noise-free, pinning y's low bits to 0. Even uniformly random values of the two noisy high bits then factor N 3 times in 4, so this curve's floor is 0.75, not the uniform 0.25. Its flatness reflects the N = 15 shortcut, not genuine noise immunity.",
+      "p_success_mean": 0.734,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 7,
+      "p": 0.0,
+      "uniform_baseline": 0.246094,
+      "caveat": null,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 7,
+      "p": 0.001,
+      "uniform_baseline": 0.246094,
+      "caveat": null,
+      "p_success_mean": 0.7184,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 7,
+      "p": 0.002,
+      "uniform_baseline": 0.246094,
+      "caveat": null,
+      "p_success_mean": 0.6901,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 7,
+      "p": 0.005,
+      "uniform_baseline": 0.246094,
+      "caveat": null,
+      "p_success_mean": 0.6335,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 7,
+      "p": 0.01,
+      "uniform_baseline": 0.246094,
+      "caveat": null,
+      "p_success_mean": 0.5505,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 7,
+      "p": 0.02,
+      "uniform_baseline": 0.246094,
+      "caveat": null,
+      "p_success_mean": 0.4574,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 7,
+      "p": 0.05,
+      "uniform_baseline": 0.246094,
+      "caveat": null,
+      "p_success_mean": 0.2874,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 7,
+      "p": 0.1,
+      "uniform_baseline": 0.246094,
+      "caveat": null,
+      "p_success_mean": 0.2422,
+      "success_rate": 1,
+      "samples": 3
+    }
+  ],
+  "fake_backend": [
+    {
+      "n": 15,
+      "construction": "iterative",
+      "backend": "fake_brisbane",
+      "fits_device": true,
+      "device_qubits": 127,
+      "qubits": 5,
+      "transpiled_depth": 1109,
+      "caveat": "At N = 15 every base has order dividing 4, so U^(2^k) is the identity for k >= 2: the iterative circuit's first t-2 rounds contain no two-qubit gates and stay almost noise-free, pinning y's low bits to 0. Even uniformly random values of the two noisy high bits then factor N 3 times in 4, so this curve's floor is 0.75, not the uniform 0.25. Its flatness reflects the N = 15 shortcut, not genuine noise immunity.",
+      "p_success_mean": 0.6982,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "iterative",
+      "backend": "fake_manila",
+      "fits_device": true,
+      "device_qubits": 5,
+      "qubits": 5,
+      "transpiled_depth": 579,
+      "caveat": "At N = 15 every base has order dividing 4, so U^(2^k) is the identity for k >= 2: the iterative circuit's first t-2 rounds contain no two-qubit gates and stay almost noise-free, pinning y's low bits to 0. Even uniformly random values of the two noisy high bits then factor N 3 times in 4, so this curve's floor is 0.75, not the uniform 0.25. Its flatness reflects the N = 15 shortcut, not genuine noise immunity.",
+      "p_success_mean": 0.526,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "backend": "fake_brisbane",
+      "fits_device": true,
+      "device_qubits": 127,
+      "qubits": 12,
+      "transpiled_depth": 1288,
+      "caveat": null,
+      "p_success_mean": 0.4346,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "backend": "fake_manila",
+      "fits_device": false,
+      "device_qubits": 5,
+      "qubits": 12,
+      "transpiled_depth": null,
+      "caveat": null,
+      "p_success_mean": null,
+      "success_rate": null,
+      "samples": 1
+    }
+  ],
+  "base_success": [
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 2,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 4,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 7,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 8,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 11,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "a": 13,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "a": 2,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.8245,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "a": 4,
+      "true_order": 3,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "a": 5,
+      "true_order": 6,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "a": 8,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "a": 10,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.8252,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "a": 11,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.8223,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "a": 13,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "a": 16,
+      "true_order": 3,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "a": 17,
+      "true_order": 6,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "a": 19,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.8242,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 2,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 4,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 5,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7962,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 7,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7917,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 8,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 10,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 13,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7946,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 14,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.793,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 16,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 17,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 19,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7952,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 20,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7946,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 23,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 25,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 26,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.793,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 28,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7952,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 29,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "a": 31,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 2,
+      "true_order": 12,
+      "usable": true,
+      "p_success_mean": 0.6579,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 3,
+      "true_order": 12,
+      "usable": true,
+      "p_success_mean": 0.6608,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 4,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.834,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 6,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 8,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 9,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.8324,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 11,
+      "true_order": 3,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 12,
+      "true_order": 12,
+      "usable": true,
+      "p_success_mean": 0.6605,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 13,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 16,
+      "true_order": 3,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 17,
+      "true_order": 12,
+      "usable": true,
+      "p_success_mean": 0.6611,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 18,
+      "true_order": 12,
+      "usable": true,
+      "p_success_mean": 0.6647,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 19,
+      "true_order": 6,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 22,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 23,
+      "true_order": 12,
+      "usable": true,
+      "p_success_mean": 0.6641,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 24,
+      "true_order": 6,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 26,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.8356,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 27,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 29,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 31,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.8333,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 32,
+      "true_order": 12,
+      "usable": true,
+      "p_success_mean": 0.6615,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "a": 33,
+      "true_order": 12,
+      "usable": true,
+      "p_success_mean": 0.6644,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 2,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5703,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 3,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5778,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 4,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7852,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 6,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7835,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 7,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5719,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 8,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5713,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 9,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7842,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 12,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 13,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5778,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 14,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7845,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 16,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 17,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5749,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 18,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5755,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 19,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 21,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 23,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 24,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 26,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 27,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5703,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 28,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5635,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 29,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 31,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 32,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 34,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 36,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 37,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5664,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 38,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5732,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 39,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 41,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7855,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 42,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5781,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 43,
+      "true_order": 4,
+      "usable": true,
+      "p_success_mean": 0.7702,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 46,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7842,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 47,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.583,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 48,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5684,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 49,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7897,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 51,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7855,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 52,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5771,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "a": 53,
+      "true_order": 20,
+      "usable": true,
+      "p_success_mean": 0.5758,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 2,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6667,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 3,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6686,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 4,
+      "true_order": 15,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 5,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6725,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 6,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 8,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.8001,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 9,
+      "true_order": 15,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 10,
+      "true_order": 6,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 12,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.8366,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 13,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 15,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 16,
+      "true_order": 15,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 17,
+      "true_order": 30,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 18,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6755,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 19,
+      "true_order": 30,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 20,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.8008,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 23,
+      "true_order": 3,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 24,
+      "true_order": 30,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 25,
+      "true_order": 15,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 26,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6764,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 27,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7982,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 29,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.8011,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 30,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6742,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 31,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6755,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 32,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.8369,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 34,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 36,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 37,
+      "true_order": 15,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 38,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6751,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 39,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6761,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 40,
+      "true_order": 30,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 41,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 43,
+      "true_order": 2,
+      "usable": true,
+      "p_success_mean": 0.5026,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 45,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.8369,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 46,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6742,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 47,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6751,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 48,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.8014,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 50,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.7995,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 51,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6738,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 52,
+      "true_order": 30,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 53,
+      "true_order": 15,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 54,
+      "true_order": 6,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 57,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.8005,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 58,
+      "true_order": 15,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 59,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6771,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 60,
+      "true_order": 15,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 61,
+      "true_order": 30,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 62,
+      "true_order": 10,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 64,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 65,
+      "true_order": 6,
+      "usable": true,
+      "p_success_mean": 0.8363,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 67,
+      "true_order": 3,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 68,
+      "true_order": 30,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 69,
+      "true_order": 10,
+      "usable": true,
+      "p_success_mean": 0.8001,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 71,
+      "true_order": 5,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 72,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6755,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 73,
+      "true_order": 30,
+      "usable": false,
+      "p_success_mean": 0.0,
+      "success_rate": 0,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 74,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6768,
+      "success_rate": 1,
+      "samples": 3
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "a": 75,
+      "true_order": 30,
+      "usable": true,
+      "p_success_mean": 0.6712,
+      "success_rate": 1,
+      "samples": 3
+    }
+  ],
+  "runs_to_factor": [
+    {
+      "n": 15,
+      "construction": "iterative",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 1.35,
+      "mean_order_finding_mults": 2.6,
+      "trial_divisions": 2,
+      "qubits": 5
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 1.6,
+      "mean_order_finding_mults": 2.6,
+      "trial_divisions": 2,
+      "qubits": 12
+    },
+    {
+      "n": 21,
+      "construction": "iterative",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 2.05,
+      "mean_order_finding_mults": 6.25,
+      "trial_divisions": 2,
+      "qubits": 6
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 2.35,
+      "mean_order_finding_mults": 6.25,
+      "trial_divisions": 2,
+      "qubits": 15
+    },
+    {
+      "n": 33,
+      "construction": "iterative",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 2.25,
+      "mean_order_finding_mults": 13.45,
+      "trial_divisions": 2,
+      "qubits": 7
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 2.65,
+      "mean_order_finding_mults": 13.45,
+      "trial_divisions": 2,
+      "qubits": 18
+    },
+    {
+      "n": 35,
+      "construction": "iterative",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 1.6,
+      "mean_order_finding_mults": 6.85,
+      "trial_divisions": 3,
+      "qubits": 7
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 2,
+      "mean_order_finding_mults": 6.85,
+      "trial_divisions": 3,
+      "qubits": 18
+    },
+    {
+      "n": 55,
+      "construction": "iterative",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 1.8,
+      "mean_order_finding_mults": 16.2,
+      "trial_divisions": 3,
+      "qubits": 7
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 1.75,
+      "mean_order_finding_mults": 16.2,
+      "trial_divisions": 3,
+      "qubits": 18
+    },
+    {
+      "n": 77,
+      "construction": "iterative",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 2.75,
+      "mean_order_finding_mults": 32.3,
+      "trial_divisions": 4,
+      "qubits": 8
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "trials": 20,
+      "success_rate": 1.0,
+      "mean_circuit_runs": 2.55,
+      "mean_order_finding_mults": 32.3,
+      "trial_divisions": 4,
+      "qubits": 21
+    }
+  ],
+  "scaling": [
+    {
+      "n": 15,
+      "construction": "iterative",
+      "qubits": 5,
+      "depth": 67,
+      "transpiled_depth": 421,
+      "counting_qubits": 1,
+      "work_qubits": 4,
+      "cx_count": 162,
+      "mid_circuit_measurements": 8
+    },
+    {
+      "n": 15,
+      "construction": "permutation",
+      "qubits": 12,
+      "depth": 11,
+      "transpiled_depth": 1936,
+      "counting_qubits": 8,
+      "work_qubits": 4,
+      "cx_count": 539,
+      "mid_circuit_measurements": 0
+    },
+    {
+      "n": 15,
+      "construction": "swap",
+      "qubits": 12,
+      "depth": 11,
+      "transpiled_depth": 362,
+      "counting_qubits": 8,
+      "work_qubits": 4,
+      "cx_count": 230,
+      "mid_circuit_measurements": 0
+    },
+    {
+      "n": 21,
+      "construction": "iterative",
+      "qubits": 6,
+      "depth": 94,
+      "transpiled_depth": 40233,
+      "counting_qubits": 1,
+      "work_qubits": 5,
+      "cx_count": 10040,
+      "mid_circuit_measurements": 10
+    },
+    {
+      "n": 21,
+      "construction": "permutation",
+      "qubits": 15,
+      "depth": 13,
+      "transpiled_depth": 40233,
+      "counting_qubits": 10,
+      "work_qubits": 5,
+      "cx_count": 10145,
+      "mid_circuit_measurements": 0
+    },
+    {
+      "n": 33,
+      "construction": "iterative",
+      "qubits": 7,
+      "depth": 125,
+      "transpiled_depth": 196461,
+      "counting_qubits": 1,
+      "work_qubits": 6,
+      "cx_count": 49680,
+      "mid_circuit_measurements": 12
+    },
+    {
+      "n": 33,
+      "construction": "permutation",
+      "qubits": 18,
+      "depth": 15,
+      "transpiled_depth": 196461,
+      "counting_qubits": 12,
+      "work_qubits": 6,
+      "cx_count": 49830,
+      "mid_circuit_measurements": 0
+    },
+    {
+      "n": 35,
+      "construction": "iterative",
+      "qubits": 7,
+      "depth": 125,
+      "transpiled_depth": 196452,
+      "counting_qubits": 1,
+      "work_qubits": 6,
+      "cx_count": 49680,
+      "mid_circuit_measurements": 12
+    },
+    {
+      "n": 35,
+      "construction": "permutation",
+      "qubits": 18,
+      "depth": 15,
+      "transpiled_depth": 196452,
+      "counting_qubits": 12,
+      "work_qubits": 6,
+      "cx_count": 49830,
+      "mid_circuit_measurements": 0
+    },
+    {
+      "n": 55,
+      "construction": "iterative",
+      "qubits": 7,
+      "depth": 125,
+      "transpiled_depth": 196513,
+      "counting_qubits": 1,
+      "work_qubits": 6,
+      "cx_count": 49680,
+      "mid_circuit_measurements": 12
+    },
+    {
+      "n": 55,
+      "construction": "permutation",
+      "qubits": 18,
+      "depth": 15,
+      "transpiled_depth": 196513,
+      "counting_qubits": 12,
+      "work_qubits": 6,
+      "cx_count": 49830,
+      "mid_circuit_measurements": 0
+    },
+    {
+      "n": 77,
+      "construction": "iterative",
+      "qubits": 8,
+      "depth": 160,
+      "transpiled_depth": 924594,
+      "counting_qubits": 1,
+      "work_qubits": 7,
+      "cx_count": 235368,
+      "mid_circuit_measurements": 14
+    },
+    {
+      "n": 77,
+      "construction": "permutation",
+      "qubits": 21,
+      "depth": 17,
+      "transpiled_depth": 924594,
+      "counting_qubits": 14,
+      "work_qubits": 7,
+      "cx_count": 235571,
+      "mid_circuit_measurements": 0
+    }
+  ],
+  "quantum_vs_classical": [
+    {
+      "n": 15,
+      "qubits_register_2n": 12,
+      "qubits_iterative": 5,
+      "shor_mean_circuit_runs": 1.6,
+      "shor_iterative_mean_circuit_runs": 1.35,
+      "trial_divisions": 2,
+      "order_finding_mults_mean": 2.6
+    },
+    {
+      "n": 21,
+      "qubits_register_2n": 15,
+      "qubits_iterative": 6,
+      "shor_mean_circuit_runs": 2.35,
+      "shor_iterative_mean_circuit_runs": 2.05,
+      "trial_divisions": 2,
+      "order_finding_mults_mean": 6.25
+    },
+    {
+      "n": 33,
+      "qubits_register_2n": 18,
+      "qubits_iterative": 7,
+      "shor_mean_circuit_runs": 2.65,
+      "shor_iterative_mean_circuit_runs": 2.25,
+      "trial_divisions": 2,
+      "order_finding_mults_mean": 13.45
+    },
+    {
+      "n": 35,
+      "qubits_register_2n": 18,
+      "qubits_iterative": 7,
+      "shor_mean_circuit_runs": 2,
+      "shor_iterative_mean_circuit_runs": 1.6,
+      "trial_divisions": 3,
+      "order_finding_mults_mean": 6.85
+    },
+    {
+      "n": 55,
+      "qubits_register_2n": 18,
+      "qubits_iterative": 7,
+      "shor_mean_circuit_runs": 1.75,
+      "shor_iterative_mean_circuit_runs": 1.8,
+      "trial_divisions": 3,
+      "order_finding_mults_mean": 16.2
+    },
+    {
+      "n": 77,
+      "qubits_register_2n": 21,
+      "qubits_iterative": 8,
+      "shor_mean_circuit_runs": 2.55,
+      "shor_iterative_mean_circuit_runs": 2.75,
+      "trial_divisions": 4,
+      "order_finding_mults_mean": 32.3
+    }
+  ]
+}

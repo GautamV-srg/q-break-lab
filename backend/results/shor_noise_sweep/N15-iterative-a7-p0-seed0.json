@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "experiment": "shor_noise_sweep",
+  "cipher": "minirsa",
+  "size": {
+    "modulus": 15
+  },
+  "condition": null,
+  "seed": 0,
+  "success": true,
+  "p_success": 0.764648,
+  "quantum": {
+    "circuit_runs": 1,
+    "shots_per_run": 1024,
+    "qubits": 5,
+    "depth": 67,
+    "transpiled_depth": 332,
+    "gate_counts": {
+      "u": 228,
+      "cx": 156,
+      "if_else": 28,
+      "measure": 8,
+      "reset": 7
+    }
+  },
+  "classical": {
+    "evaluations": 2,
+    "trial_divisions": 2,
+    "order_finding_mults": 3,
+    "order_finding_bases_tried": 1
+  },
+  "noise": {
+    "model": "depolarizing",
+    "p": 0.0,
+    "backend": null
+  },
+  "extra": {
+    "a": 7,
+    "construction": "iterative",
+    "uniform_baseline": 0.246094,
+    "caveat": "At N = 15 every base has order dividing 4, so U^(2^k) is the identity for k >= 2: the iterative circuit's first t-2 rounds contain no two-qubit gates and stay almost noise-free, pinning y's low bits to 0. Even uniformly random values of the two noisy high bits then factor N 3 times in 4, so this curve's floor is 0.75, not the uniform 0.25. Its flatness reflects the N = 15 shortcut, not genuine noise immunity."
+  },
+  "timestamp": "2026-10-06T15:23:08+00:00"
+}

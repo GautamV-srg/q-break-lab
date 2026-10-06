@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 
 from qbreak.api.routes_aes import router as aes_router
 from qbreak.api.routes_evaluation import router as evaluation_router
+from qbreak.api.routes_risk import router as risk_router
 from qbreak.api.routes_rsa import router as rsa_router
 from qbreak.api.schemas import ConfigResponse
 from qbreak.config import (
@@ -26,6 +27,7 @@ from qbreak.config import (
     SYMMETRIC_MAX_KEY_BITS,
     aes_key_options,
 )
+from qbreak.services.rsa_service import config_fields as rsa_config_fields
 
 AES_CONDITION_INFO = [
     {"id": "known_beginning", "label": "Known beginning", "needs_known_text": True,
@@ -48,6 +50,7 @@ app.add_middleware(
 app.include_router(aes_router, prefix="/api")
 app.include_router(rsa_router, prefix="/api")
 app.include_router(evaluation_router, prefix="/api")
+app.include_router(risk_router, prefix="/api")
 
 
 @app.exception_handler(RequestValidationError)
@@ -86,6 +89,7 @@ def config() -> dict:
         "aes_noise_max_key_bits": AES_NOISE_MAX_KEY_BITS,
         "aes_max_noise_p": MAX_NOISE_P,
         "aes_max_noisy_shots": MAX_NOISY_SHOTS,
+        **rsa_config_fields(),
     }
 
 
