@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "experiment": "shor_success_rate",
+  "cipher": "minirsa",
+  "size": {
+    "modulus": 15
+  },
+  "condition": null,
+  "seed": 8,
+  "success": true,
+  "p_success": null,
+  "quantum": {
+    "circuit_runs": 1,
+    "shots_per_run": 1,
+    "qubits": 12,
+    "depth": 11,
+    "transpiled_depth": 56,
+    "gate_counts": {
+      "cp": 28,
+      "ccx": 27,
+      "h": 16,
+      "cx": 12,
+      "measure": 8,
+      "swap": 4,
+      "x": 1
+    },
+    "oracle_calls": 1
+  },
+  "classical": {
+    "evaluations": 2,
+    "trial_divisions": 2,
+    "order_finding_mults": 3,
+    "order_finding_bases_tried": 1
+  },
+  "noise": {
+    "model": "ideal",
+    "p": null,
+    "backend": null
+  },
+  "extra": {
+    "construction": "swap",
+    "runs_to_success": 1
+  },
+  "timestamp": "2026-10-06T15:15:35+00:00"
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "experiment": "shor_fake_backend",
+  "cipher": "minirsa",
+  "size": {
+    "modulus": 15
+  },
+  "condition": null,
+  "seed": 2,
+  "success": true,
+  "p_success": 0.443359,
+  "quantum": {
+    "circuit_runs": 1,
+    "shots_per_run": 1024,
+    "qubits": 12,
+    "depth": 11,
+    "transpiled_depth": 1373,
+    "gate_counts": {
+      "rz": 1292,
+      "sx": 889,
+      "ecr": 467,
+      "x": 142,
+      "measure": 8
+    }
+  },
+  "classical": {
+    "evaluations": 2,
+    "trial_divisions": 2,
+    "order_finding_mults": 3,
+    "order_finding_bases_tried": 1
+  },
+  "noise": {
+    "model": "fake_backend",
+    "p": null,
+    "backend": "fake_brisbane"
+  },
+  "extra": {
+    "a": 7,
+    "construction": "swap",
+    "uniform_baseline": 0.246094,
+    "device_qubits": 127,
+    "fits_device": true
+  },
+  "timestamp": "2026-10-06T15:27:47+00:00"
+}

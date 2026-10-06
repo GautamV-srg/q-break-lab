@@ -10,7 +10,8 @@ p and q of the public modulus N, and from them builds the key pair:
 A message chunk m (0 <= m < N) encrypts to c = m^e mod N and decrypts with
 m = c^d mod N. This is textbook RSA with no padding, so equal chunks encrypt
 to equal ciphertexts. At N = 15, 21 and 35 the exponents are even equal
-(e = d). These keys demonstrate Shor's factor-recovery workflow; they are
+(e = d); ``e_equals_d`` flags this for every modulus, so it is reported
+wherever it occurs (it does not at N = 33, 55 or 77). These keys demonstrate Shor's factor-recovery workflow; they are
 not secure RSA examples.
 """
 
@@ -26,6 +27,8 @@ SUPPORTED_MODULI: dict[int, tuple[int, int]] = {
     21: (3, 7),
     33: (3, 11),
     35: (5, 7),
+    55: (5, 11),
+    77: (7, 11),
 }
 
 

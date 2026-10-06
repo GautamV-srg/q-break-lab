@@ -3,7 +3,7 @@
 import asyncio
 from collections.abc import Callable
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
 
 from qbreak.api.schemas import (
@@ -47,3 +47,11 @@ async def encrypt(req: RSAEncryptRequest) -> dict:
 async def attack(req: RSAAttackRequest) -> dict:
     """Run the simulated quantum adversary against public data."""
     return await _run(rsa_service.attack, req)
+
+
+@router.get("/resource-estimate")
+def resource_estimate(modulus_bits: int = Query(default=2048, ge=8, le=16384)) -> dict:
+    """Cited, published resource estimates for factoring real-scale RSA (no simulation)."""
+    from qbreak.rsa.resource_estimate import estimate_rsa_resources
+
+    return estimate_rsa_resources(modulus_bits)

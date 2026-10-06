@@ -27,7 +27,7 @@ from qbreak.rsa.shor import (
 )
 
 SEED = 1234
-EXPECTED_FACTORS = {15: (3, 5), 21: (3, 7), 33: (3, 11), 35: (5, 7)}
+EXPECTED_FACTORS = {15: (3, 5), 21: (3, 7), 33: (3, 11), 35: (5, 7), 55: (5, 11), 77: (7, 11)}
 
 
 def _order(a: int, n: int) -> int:
@@ -103,7 +103,7 @@ def test_amod15_rejects_bad_base() -> None:
         amod15(5, 1)
 
 
-@pytest.mark.parametrize("n", [15, 21, 33, 35])
+@pytest.mark.parametrize("n", [15, 21, 33, 35, 55, 77])
 def test_permutation_matrix_is_controlled_multiplication(n: int) -> None:
     n_work = shor.work_qubits(n)
     for b in (b for b in range(2, n) if gcd(b, n) == 1):
@@ -124,7 +124,8 @@ def test_permutation_matrix_rejects_non_coprime() -> None:
 
 
 @pytest.mark.parametrize(
-    "n,n_work,n_count,total", [(15, 4, 8, 12), (21, 5, 10, 15), (33, 6, 12, 18), (35, 6, 12, 18)]
+    "n,n_work,n_count,total",
+    [(15, 4, 8, 12), (21, 5, 10, 15), (33, 6, 12, 18), (35, 6, 12, 18), (55, 6, 12, 18), (77, 7, 14, 21)],
 )
 def test_register_sizes(n: int, n_work: int, n_count: int, total: int) -> None:
     a = 2
@@ -167,9 +168,12 @@ def test_constructions_agree_at_n15() -> None:
         build_period_finding_circuit(7, 15, construction="permutation-unitary"), seed=SEED
     )
     ideal = {format(y, "08b") for y in (0, 64, 128, 192)}
+    it = run_circuit(build_period_finding_circuit(7, 15, construction="iterative"), seed=SEED)
     assert _top_peaks(tb.counts) == ideal
     assert _top_peaks(pu.counts) == ideal
+    assert _top_peaks(it.counts) == ideal  # third branch: single counting qubit
     assert set(tb.counts) == ideal  # exact peaks: nothing else is ever measured
+    assert set(it.counts) == ideal
 
 
 @pytest.mark.parametrize("a", [2, 4, 7, 8, 11, 13])
@@ -224,7 +228,7 @@ def test_candidate_periods_cap() -> None:
     assert len(candidate_periods(counts, 8, 15, 7)) == 16
 
 
-@pytest.mark.parametrize("n", [15, 21, 33, 35])
+@pytest.mark.parametrize("n", [15, 21, 33, 35, 55, 77])
 def test_factors_from_period_true_orders(n: int) -> None:
     for a in (a for a in range(2, n - 1) if gcd(a, n) == 1):
         r = _order(a, n)
@@ -283,9 +287,10 @@ def test_run_shor_attack_non_coprime_base_is_skipped() -> None:
     assert res.factors == (3, 5) and res.a != 5
 
 
-def test_run_shor_attack_unsupported_n() -> None:
+@pytest.mark.parametrize("n", [22, 39, 49])
+def test_run_shor_attack_unsupported_n(n: int) -> None:
     with pytest.raises(ValueError):
-        run_shor_attack(77)
+        run_shor_attack(n)
 
 
 def test_run_shor_attack_failure_returns_result() -> None:
@@ -312,7 +317,14 @@ def test_shor_does_not_import_minirsa() -> None:
 
 def test_attack_signature_has_no_secrets() -> None:
     forbidden = {"p", "q", "d", "phi", "factors", "private", "secret"}
-    for fn in (run_shor_attack, build_period_finding_circuit, candidate_periods, choose_bases):
+    for fn in (
+        run_shor_attack,
+        build_period_finding_circuit,
+        shor.build_iterative_circuit,
+        shor.shot_success_probability,
+        candidate_periods,
+        choose_bases,
+    ):
         assert forbidden.isdisjoint(inspect.signature(fn).parameters)
 
 
@@ -320,7 +332,7 @@ def test_attack_signature_has_no_secrets() -> None:
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize("n", [n for n in (21, 33, 35) if n in SHOR_SUPPORTED_N])
+@pytest.mark.parametrize("n", [n for n in (21, 33, 35, 55, 77) if n in SHOR_SUPPORTED_N])
 def test_run_shor_attack_larger_n(n: int) -> None:
     res = run_shor_attack(n, seed=SEED)
     assert res.factors == EXPECTED_FACTORS[n]
@@ -390,7 +402,7 @@ def test_default_attack_many_seeds(n: int, seed: int) -> None:
 
 
 @pytest.mark.parametrize(
-    "n", [15] + [pytest.param(n, marks=pytest.mark.slow) for n in (21, 33, 35)]
+    "n", [15] + [pytest.param(n, marks=pytest.mark.slow) for n in (21, 33, 35, 55, 77)]
 )
 def test_breach_round_trip_every_chunk(n: int) -> None:
     """Victim encrypts every 3-bit chunk; the adversary, knowing only (n, e) and

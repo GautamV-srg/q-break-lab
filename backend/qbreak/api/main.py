@@ -10,9 +10,11 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from qbreak.api.routes_aes import router as aes_router
+from qbreak.api.routes_risk import router as risk_router
 from qbreak.api.routes_rsa import router as rsa_router
 from qbreak.api.schemas import ConfigResponse
 from qbreak.config import ENABLED_KEY_BITS, ENABLED_MODULI, MAX_AES_TEXT_CHARS, MAX_RSA_TEXT_CHARS, MAX_SHOTS
+from qbreak.services.rsa_service import config_fields as rsa_config_fields
 
 app = FastAPI(title="Q-Break API", version="0.1.0")
 app.add_middleware(
@@ -24,6 +26,7 @@ app.add_middleware(
 )
 app.include_router(aes_router, prefix="/api")
 app.include_router(rsa_router, prefix="/api")
+app.include_router(risk_router, prefix="/api")
 
 
 @app.exception_handler(RequestValidationError)
@@ -52,6 +55,7 @@ def config() -> dict:
         "max_aes_text_chars": MAX_AES_TEXT_CHARS,
         "max_rsa_text_chars": MAX_RSA_TEXT_CHARS,
         "default_known_prefix_chars": 3,
+        **rsa_config_fields(),
     }
 
 
