@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "experiment": "bb84_key_rate",
+  "cipher": "bb84",
+  "size": {
+    "key_bits": 256
+  },
+  "condition": null,
+  "seed": 2334,
+  "success": false,
+  "p_success": null,
+  "quantum": {
+    "qubits": 64,
+    "circuits": 8,
+    "raw_qubits": 512
+  },
+  "classical": {},
+  "noise": {
+    "model": "depolarizing",
+    "p": 0.02,
+    "backend": null
+  },
+  "extra": {
+    "eve_intercept_fraction": 0.0,
+    "channel_noise": 0.02,
+    "qber": 0.06451612903225806,
+    "qber_all_sifted": 0.0321285140562249,
+    "theory_qber": 0.02,
+    "qber_threshold": 0.11,
+    "detected": false,
+    "accepted": false,
+    "raw_qubits": 512,
+    "sifted_bits": 249,
+    "sample_bits": 62,
+    "final_key_bits": 0,
+    "secure_bits_estimate": 45,
+    "sim_time_ms": 16.824500000439002,
+    "key_rate": 0.0,
+    "secure_rate": 0.087890625
+  },
+  "timestamp": "2026-10-06T18:27:27+00:00"
+}

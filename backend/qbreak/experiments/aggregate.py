@@ -24,6 +24,10 @@ SERIES_DESCRIPTIONS: dict[str, str] = {
     "success_rate": "Attack success rate across keys/seeds and conditions (and Shor per base a).",
     "comparison": "Quantum oracle calls / circuit runs vs classical tries, per problem size.",
     "counting": "Quantum-counting estimate of the number of matching keys vs the true count.",
+    "bb84_qber_vs_eve": "BB84: measured QBER vs Eve's intercept fraction, with the theory fraction/4 and the abort threshold.",
+    "bb84_qber_vs_noise": "BB84: measured QBER vs channel noise, with the 11% abort threshold.",
+    "bb84_key_rate": "BB84: key bits per raw qubit by raw qubits and channel noise. key_rate = delivered key (always 256 bits, 0 when aborted) / raw; secure_rate = estimated extractable secret bits / raw.",
+    "defence_overhead": "AES-256 / ML-KEM-768 / BB84: measured sizes and timings by message length.",
 }
 SERIES = tuple(SERIES_DESCRIPTIONS)
 
@@ -145,6 +149,55 @@ def _counting(records: list[dict]) -> list[dict]:
     ]
 
 
+def _bb84_qber(records: list[dict], experiment: str, x: str) -> list[dict]:
+    picked = [r for r in records if r["experiment"] == experiment]
+    rows = []
+    for value, rs in sorted(_group(picked, lambda r: r["extra"][x]).items()):
+        rows.append({
+            x: value,
+            "qber": _mean([r["extra"]["qber"] for r in rs]),
+            "qber_all_sifted": _mean([r["extra"]["qber_all_sifted"] for r in rs]),
+            "theory_qber": _mean([r["extra"]["theory_qber"] for r in rs]),
+            "qber_threshold": _mean([r["extra"]["qber_threshold"] for r in rs]),
+            "detection_rate": _mean([float(r["extra"]["detected"]) for r in rs]),
+            "acceptance_rate": _mean([float(r["extra"]["accepted"]) for r in rs]),
+            "runs": len(rs),
+        })
+    return rows
+
+
+def _bb84_key_rate(records: list[dict]) -> list[dict]:
+    picked = [r for r in records if r["experiment"] == "bb84_key_rate"]
+    rows = []
+    key = lambda r: (r["extra"]["raw_qubits"], r["extra"]["channel_noise"])
+    for (raw, noise), rs in sorted(_group(picked, key).items()):
+        rows.append({
+            "raw_qubits": raw, "channel_noise": noise,
+            "key_rate": _mean([r["extra"]["key_rate"] for r in rs]),
+            "secure_rate": _mean([r["extra"]["secure_rate"] for r in rs]),
+            "sifted_fraction": _mean([r["extra"]["sifted_bits"] / raw for r in rs]),
+            "acceptance_rate": _mean([float(r["extra"]["accepted"]) for r in rs]),
+            "runs": len(rs),
+        })
+    return rows
+
+
+def _defence_overhead(records: list[dict]) -> list[dict]:
+    picked = [r for r in records if r["experiment"] == "defence_overhead"]
+    rows = []
+    for (method, chars), rs in sorted(_group(picked, lambda r: (r["cipher"], r["extra"]["plaintext_chars"])).items()):
+        sizes = sorted({k for r in rs for k in r["extra"]["sizes"]})
+        timings = sorted({k for r in rs for k in r["extra"]["timings_ms"]})
+        rows.append({
+            "method": method, "plaintext_chars": chars,
+            **{f"size_{k}": _mean([r["extra"]["sizes"].get(k) for r in rs]) for k in sizes},
+            **{f"ms_{k}": _mean([r["extra"]["timings_ms"].get(k) for r in rs]) for k in timings},
+            "roundtrip_rate": _mean([float(r["success"]) for r in rs if r["success"] is not None]),
+            "runs": len(rs),
+        })
+    return rows
+
+
 _BUILDERS = {
     "scaling": _scaling,
     "noise": _noise,
@@ -152,6 +205,10 @@ _BUILDERS = {
     "success_rate": _success_rate,
     "comparison": _comparison,
     "counting": _counting,
+    "bb84_qber_vs_eve": lambda records: _bb84_qber(records, "bb84_qber_vs_eve", "eve_intercept_fraction"),
+    "bb84_qber_vs_noise": lambda records: _bb84_qber(records, "bb84_qber_vs_noise", "channel_noise"),
+    "bb84_key_rate": _bb84_key_rate,
+    "defence_overhead": _defence_overhead,
 }
 
 
@@ -179,7 +236,8 @@ def write_aggregates(directory: Path | None = None) -> Path:
         rows = series["rows"]
         with (out / f"{name}.csv").open("w", newline="", encoding="utf-8") as fh:
             if rows:
-                writer = csv.DictWriter(fh, fieldnames=list(rows[0]))
+                # Rows may differ in columns (e.g. defence_overhead per method): use their union.
+                writer = csv.DictWriter(fh, fieldnames=list(dict.fromkeys(k for row in rows for k in row)), restval="")
                 writer.writeheader()
                 writer.writerows(rows)
     return out

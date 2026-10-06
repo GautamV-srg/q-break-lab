@@ -11,7 +11,7 @@ into chart-ready series for the Evaluation page.
                      grover_scaling | grover_success_rate | grover_counting_accuracy |
                      grover_classical_comparison | shor_noise_sweep | shor_base_success |
                      shor_scaling | shor_classical_comparison | ...",
-      "cipher": "miniaes | minirsa",
+      "cipher": "miniaes | minirsa | aes256 | mlkem | bb84",
       "size": {"key_bits": 8}            # or {"modulus": 15}
       "condition": "known_beginning | known_substring | ciphertext_only | null",
       "seed": 1234,                       # int or null
@@ -47,7 +47,7 @@ SCHEMA_VERSION = 1
 RESULT_SCHEMA: dict = {
     "schema_version": "int (currently 1)",
     "experiment": "str: experiment family, e.g. grover_noise_sweep or shor_base_success",
-    "cipher": "'miniaes' | 'minirsa'",
+    "cipher": "'miniaes' | 'minirsa' | 'aes256' | 'mlkem' | 'bb84' (defence records: size {'key_bits': 256})",
     "size": "{'key_bits': int} | {'modulus': int}",
     "condition": "'known_beginning' | 'known_substring' | 'ciphertext_only' | null",
     "seed": "int | null",
@@ -61,7 +61,7 @@ RESULT_SCHEMA: dict = {
 }
 """Field-by-field description of a record, for docs and for Backend B to mirror."""
 
-CIPHERS = ("miniaes", "minirsa")
+CIPHERS = ("miniaes", "minirsa", "aes256", "mlkem", "bb84")
 CONDITIONS = ("known_beginning", "known_substring", "ciphertext_only", None)
 NOISE_MODELS = ("ideal", "depolarizing", "fake_backend")
 

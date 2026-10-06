@@ -1,5 +1,7 @@
 """Pydantic models for the stable Q-Break HTTP contract."""
 
+import base64
+import binascii
 from typing import Any, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -7,9 +9,17 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from qbreak.common.encoding import text_to_nibbles
 from qbreak.config import (
     AES_NOISE_MAX_KEY_BITS,
+    BB84_DEFAULT_RAW_QUBITS,
+    BB84_MAX_CHANNEL_NOISE,
+    BB84_MAX_QBER_THRESHOLD,
+    BB84_MAX_RAW_QUBITS,
+    BB84_MIN_QBER_THRESHOLD,
+    BB84_MIN_RAW_QUBITS,
+    BB84_QBER_THRESHOLD,
     ENABLED_KEY_BITS,
     ENABLED_MODULI,
     MAX_AES_TEXT_CHARS,
+    MAX_DEFENCE_TEXT_CHARS,
     MAX_NOISE_P,
     MAX_NOISY_SHOTS,
     MAX_RSA_TEXT_CHARS,
@@ -104,6 +114,28 @@ class RSAConstructionOption(StrictModel):
     headline: bool
 
 
+class BB84Defaults(StrictModel):
+    eve: bool
+    eve_intercept_fraction: float
+    channel_noise: float
+    raw_qubits: int
+    qber_threshold: float
+    seed: int | None
+
+
+class BB84Limits(StrictModel):
+    defaults: BB84Defaults
+    min_raw_qubits: int
+    max_raw_qubits: int
+    batch_qubits: int
+    qber_threshold: float
+    min_qber_threshold: float
+    max_qber_threshold: float
+    max_channel_noise: float
+    sample_fraction: float
+    final_key_bits: int
+
+
 class ConfigResponse(StrictModel):
     aes_key_bits: list[int]
     rsa_moduli: list[int]
@@ -124,6 +156,10 @@ class ConfigResponse(StrictModel):
     rsa_constructions: list[RSAConstructionOption]
     rsa_noise_moduli: list[int]
     rsa_max_noise_p: float
+    # --- defence section ---
+    defence_methods: list[str] = []
+    defence_max_text_chars: int = 1000
+    defence_bb84: BB84Limits | None = None
 
 
 class AESEncryptRequest(StrictModel):
@@ -470,3 +506,256 @@ class MoscaInfoResponse(StrictModel):
     explanation: str
     citation: dict[str, str | int]
     default_result: MoscaResponse
+
+
+# --------------------------------------------------------------------------------------
+# Defence (protect -> re-attack -> compare). Bundles are strict: any key, secret or
+# plaintext field is an undocumented field and is rejected with 422 (extra="forbid").
+# --------------------------------------------------------------------------------------
+
+DefenceMethod = Literal["aes256", "mlkem", "bb84"]
+
+
+def _check_b64(value: str, name: str) -> str:
+    try:
+        base64.b64decode(value.encode("ascii"), validate=True)
+    except (binascii.Error, UnicodeEncodeError) as exc:
+        raise ValueError(f"{name} must be base64") from exc
+    return value
+
+
+class BB84Options(StrictModel):
+    eve: bool = False
+    eve_intercept_fraction: float = Field(default=1.0, ge=0, le=1)
+    channel_noise: float = Field(default=0.0, ge=0, le=BB84_MAX_CHANNEL_NOISE)
+    raw_qubits: int = Field(default=BB84_DEFAULT_RAW_QUBITS, ge=BB84_MIN_RAW_QUBITS, le=BB84_MAX_RAW_QUBITS)
+    qber_threshold: float = Field(default=BB84_QBER_THRESHOLD, ge=BB84_MIN_QBER_THRESHOLD, le=BB84_MAX_QBER_THRESHOLD)
+    seed: int | None = None
+
+
+class ProtectRequest(StrictModel):
+    plaintext: str = Field(min_length=1, max_length=MAX_DEFENCE_TEXT_CHARS)
+    methods: list[DefenceMethod] = Field(default_factory=lambda: ["aes256", "mlkem", "bb84"], min_length=1, max_length=3)
+    bb84: BB84Options = Field(default_factory=BB84Options)
+
+    @model_validator(mode="after")
+    def unique_methods(self) -> Self:
+        if len(set(self.methods)) != len(self.methods):
+            raise ValueError("methods must not repeat")
+        return self
+
+
+class PublicMetrics(StrictModel):
+    """Non-secret sizes and timings, carried in the bundle so the comparison can cite them."""
+
+    sizes: dict[str, int]
+    timings_ms: dict[str, float]
+
+
+class AES256Bundle(StrictModel):
+    ciphertext_b64: str = Field(min_length=1, max_length=8 * MAX_DEFENCE_TEXT_CHARS)
+    nonce_b64: str = Field(min_length=1, max_length=64)
+    public_metrics: PublicMetrics | None = None
+
+    @model_validator(mode="after")
+    def base64_fields(self) -> Self:
+        _check_b64(self.ciphertext_b64, "ciphertext_b64")
+        _check_b64(self.nonce_b64, "nonce_b64")
+        return self
+
+
+class MLKEMBundle(AES256Bundle):
+    parameter_set: Literal["ML-KEM-768"] = "ML-KEM-768"
+    encapsulation_key_b64: str = Field(min_length=1, max_length=4096)
+    kem_ciphertext_b64: str = Field(min_length=1, max_length=4096)
+
+    @model_validator(mode="after")
+    def kem_base64_fields(self) -> Self:
+        _check_b64(self.encapsulation_key_b64, "encapsulation_key_b64")
+        _check_b64(self.kem_ciphertext_b64, "kem_ciphertext_b64")
+        return self
+
+
+class BB84ChannelRecord(StrictModel):
+    """The public classical channel: what Alice and Bob announced. No bit of the final key."""
+
+    raw_qubits: int = Field(ge=BB84_MIN_RAW_QUBITS, le=BB84_MAX_RAW_QUBITS)
+    alice_bases: str = Field(pattern=r"^[ZX]*$", max_length=BB84_MAX_RAW_QUBITS)
+    bob_bases: str = Field(pattern=r"^[ZX]*$", max_length=BB84_MAX_RAW_QUBITS)
+    sample_positions: list[int] = Field(max_length=BB84_MAX_RAW_QUBITS)
+    sample_alice_bits: list[int] = Field(max_length=BB84_MAX_RAW_QUBITS)
+    sample_bob_bits: list[int] = Field(max_length=BB84_MAX_RAW_QUBITS)
+    qber: float = Field(ge=0, le=1)
+    qber_threshold: float = Field(ge=BB84_MIN_QBER_THRESHOLD, le=BB84_MAX_QBER_THRESHOLD)
+    disclosed_parity_bits: int = Field(ge=0)
+    confirmation_tag_bits: int = Field(ge=0)
+    accepted: bool
+
+
+class BB84Bundle(AES256Bundle):
+    channel: BB84ChannelRecord
+
+
+class QKDPhoton(StrictModel):
+    alice_bit: int
+    alice_basis: Literal["Z", "X"]
+    eve_basis: Literal["Z", "X"] | None
+    bob_basis: Literal["Z", "X"]
+    bob_bit: int
+    kept: bool
+    error: bool
+
+
+class QKDSummary(StrictModel):
+    raw_bits: int
+    sifted_bits: int
+    sample_bits: int
+    final_key_bits: int
+    qber: float
+    qber_threshold: float
+    accepted: bool
+    reason: str
+    photon_preview: list[QKDPhoton]
+    reconciliation: dict[str, Any]
+    privacy_amplification: dict[str, Any]
+
+
+class AES256ProtectResult(StrictModel):
+    method: Literal["aes256"]
+    status: Literal["protected"]
+    bundle: AES256Bundle
+    sizes: dict[str, int]
+    timings_ms: dict[str, float]
+    roundtrip_ok: bool
+    steps: list[str]
+
+
+class MLKEMProtectResult(StrictModel):
+    method: Literal["mlkem"]
+    status: Literal["protected"]
+    parameter_set: Literal["ML-KEM-768"]
+    honesty_note: str
+    bundle: MLKEMBundle
+    sizes: dict[str, int]
+    timings_ms: dict[str, float]
+    roundtrip_ok: bool
+    steps: list[str]
+
+
+class BB84ProtectResult(StrictModel):
+    method: Literal["bb84"]
+    status: Literal["protected", "aborted"]
+    bundle: BB84Bundle | None
+    qkd: QKDSummary
+    evidence: dict[str, Any]
+    sizes: dict[str, int]
+    timings_ms: dict[str, float]
+    roundtrip_ok: bool
+    steps: list[str]
+
+
+class ProtectResults(StrictModel):
+    aes256: AES256ProtectResult | None = None
+    mlkem: MLKEMProtectResult | None = None
+    bb84: BB84ProtectResult | None = None
+
+
+class ProtectResponse(StrictModel):
+    results: ProtectResults
+
+
+class ReattackBundles(StrictModel):
+    """Public bundles only. bb84 may be null (an aborted exchange): BB84 is still re-attacked."""
+
+    aes256: AES256Bundle | None = None
+    mlkem: MLKEMBundle | None = None
+    bb84: BB84Bundle | None = None
+
+
+class BB84AttackOptions(StrictModel):
+    eve_intercept_fraction: float = Field(default=1.0, ge=0, le=1)
+    channel_noise: float = Field(default=0.0, ge=0, le=BB84_MAX_CHANNEL_NOISE)
+    raw_qubits: int | None = Field(default=None, ge=BB84_MIN_RAW_QUBITS, le=BB84_MAX_RAW_QUBITS)
+    seed: int | None = None
+
+
+class OriginalAttack(StrictModel):
+    cipher: Literal["miniaes", "minirsa"]
+    verdict: Literal["breached", "ambiguous", "not_breached"] = "breached"
+
+
+class ReattackRequest(StrictModel):
+    bundles: ReattackBundles
+    bb84_attack: BB84AttackOptions = Field(default_factory=BB84AttackOptions)
+    original_attack: OriginalAttack | None = None
+
+    @model_validator(mode="after")
+    def something_to_attack(self) -> Self:
+        if not self.bundles.model_fields_set:
+            raise ValueError("bundles must include at least one of aes256, mlkem, bb84")
+        return self
+
+
+class Citation(StrictModel):
+    id: str
+    text: str
+
+
+class ReattackVerdict(StrictModel):
+    method: DefenceMethod
+    attack: str
+    executed: bool
+    verdict: Literal["infeasible", "not_applicable", "detected", "undetected_low_intercept"]
+    explanation: str
+    evidence: dict[str, Any]
+    citations: list[Citation]
+
+
+class ReattackVerdicts(StrictModel):
+    aes256: ReattackVerdict | None = None
+    mlkem: ReattackVerdict | None = None
+    bb84: ReattackVerdict | None = None
+
+
+class ComparisonRow(StrictModel):
+    label: str
+    aes256: str
+    mlkem: str
+    bb84: str
+
+
+class DefenceComparison(StrictModel):
+    rows: list[ComparisonRow]
+
+
+class Recommendation(StrictModel):
+    text: str
+    rule: str
+
+
+class OriginalAttackContext(StrictModel):
+    cipher: Literal["miniaes", "minirsa"]
+    verdict: str
+    text: str
+
+
+class ReattackResponse(StrictModel):
+    verdicts: ReattackVerdicts
+    comparison: DefenceComparison
+    recommendation: Recommendation
+    before: OriginalAttackContext | None = None
+
+
+class DefenceMethodInfo(StrictModel):
+    id: DefenceMethod
+    label: str
+
+
+class DefenceInfoResponse(StrictModel):
+    methods: list[DefenceMethodInfo]
+    comparison: DefenceComparison
+    citations: list[Citation]
+    bb84: BB84Limits
+    max_text_chars: int
+    honesty_notes: list[str]
+    rules: dict[str, str]

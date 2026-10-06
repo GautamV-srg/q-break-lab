@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "experiment": "bb84_qber_vs_eve",
+  "cipher": "bb84",
+  "size": {
+    "key_bits": 256
+  },
+  "condition": null,
+  "seed": 1935,
+  "success": false,
+  "p_success": null,
+  "quantum": {
+    "qubits": 64,
+    "circuits": 55,
+    "raw_qubits": 2048
+  },
+  "classical": {},
+  "noise": {
+    "model": "ideal",
+    "p": null,
+    "backend": null
+  },
+  "extra": {
+    "eve_intercept_fraction": 0.7,
+    "channel_noise": 0.0,
+    "qber": 0.18846153846153846,
+    "qber_all_sifted": 0.1729106628242075,
+    "theory_qber": 0.175,
+    "qber_threshold": 0.11,
+    "detected": true,
+    "accepted": false,
+    "raw_qubits": 2048,
+    "sifted_bits": 1041,
+    "sample_bits": 260,
+    "final_key_bits": 0,
+    "secure_bits_estimate": 0,
+    "sim_time_ms": 88.00129999872297
+  },
+  "timestamp": "2026-10-06T18:27:20+00:00"
+}

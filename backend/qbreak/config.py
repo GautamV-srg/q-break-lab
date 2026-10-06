@@ -117,3 +117,30 @@ RSA_DISABLED_MODULI: tuple[dict, ...] = (
 # Noisy attacks need gate-level circuits; only N = 15 transpiles quickly enough per request.
 RSA_NOISE_MODULI: tuple[int, ...] = (15,)
 RSA_MAX_NOISE_P = 0.2
+
+# --------------------------------------------------------------------------------------
+# Defence (protect -> re-attack -> compare) — owned by Defence Backend A.
+# --------------------------------------------------------------------------------------
+
+DEFENCE_METHODS: tuple[str, ...] = ("aes256", "mlkem", "bb84")
+"""Exactly three defences: AES-256-GCM, ML-KEM-768 + AES-256-GCM, BB84 QKD + AES-256-GCM."""
+
+MAX_DEFENCE_TEXT_CHARS = MAX_AES_TEXT_CHARS
+"""Protect takes the organization's message up to the symmetric text limit."""
+
+DEFENCE_REQUEST_TIMEOUT_S: float = float(os.getenv("QBREAK_DEFENCE_TIMEOUT_S", "60"))
+
+BB84_DEFAULT_RAW_QUBITS = 1024
+"""About 512 sifted bits, 384 after the QBER sample: enough for a 256-bit key on a clean channel."""
+BB84_MIN_RAW_QUBITS = 128
+BB84_MAX_RAW_QUBITS: int = int(os.getenv("QBREAK_BB84_MAX_RAW_QUBITS", "4096"))
+BB84_BATCH_QUBITS = 64
+"""Photons per circuit: each photon is an independent qubit, so circuits stay narrow."""
+BB84_QBER_THRESHOLD = 0.11
+BB84_MIN_QBER_THRESHOLD = 0.01
+BB84_MAX_QBER_THRESHOLD = 0.25
+BB84_MAX_CHANNEL_NOISE = 0.25
+"""channel_noise is the per-photon bit-flip probability; 0.25 already guarantees an abort."""
+BB84_SAMPLE_FRACTION = 0.25
+"""Share of sifted bits disclosed publicly to estimate the QBER (then discarded)."""
+BB84_PREVIEW_PHOTONS = 16

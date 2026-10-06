@@ -13,6 +13,8 @@ dependencies = [
   "fastapi>=0.115",
   "uvicorn[standard]>=0.30",
   "pydantic>=2.7",
+  "cryptography>=44,<51",
+  "kyber-py==1.2.0",
 ]
 
 [project.optional-dependencies]

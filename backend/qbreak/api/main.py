@@ -10,16 +10,19 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from qbreak.api.routes_aes import router as aes_router
+from qbreak.api.routes_defence import router as defence_router
 from qbreak.api.routes_evaluation import router as evaluation_router
 from qbreak.api.routes_risk import router as risk_router
 from qbreak.api.routes_rsa import router as rsa_router
 from qbreak.api.schemas import ConfigResponse
 from qbreak.config import (
     AES_NOISE_MAX_KEY_BITS,
+    DEFENCE_METHODS,
     ENABLED_KEY_BITS,
     ENABLED_MODULI,
     KEY_BITS_16_NOTE,
     MAX_AES_TEXT_CHARS,
+    MAX_DEFENCE_TEXT_CHARS,
     MAX_NOISE_P,
     MAX_NOISY_SHOTS,
     MAX_RSA_TEXT_CHARS,
@@ -51,6 +54,7 @@ app.include_router(aes_router, prefix="/api")
 app.include_router(rsa_router, prefix="/api")
 app.include_router(evaluation_router, prefix="/api")
 app.include_router(risk_router, prefix="/api")
+app.include_router(defence_router, prefix="/api")
 
 
 @app.exception_handler(RequestValidationError)
@@ -73,6 +77,7 @@ def health() -> dict[str, str]:
 def config() -> dict:
     """Return enabled test sizes and public request limits."""
     from qbreak.aes.counting import COUNTING_MAX_KEY_BITS
+    from qbreak.defence.compare import bb84_limits
 
     return {
         "aes_key_bits": ENABLED_KEY_BITS,
@@ -90,6 +95,9 @@ def config() -> dict:
         "aes_max_noise_p": MAX_NOISE_P,
         "aes_max_noisy_shots": MAX_NOISY_SHOTS,
         **rsa_config_fields(),
+        "defence_methods": list(DEFENCE_METHODS),
+        "defence_max_text_chars": MAX_DEFENCE_TEXT_CHARS,
+        "defence_bb84": bb84_limits(),
     }
 
 

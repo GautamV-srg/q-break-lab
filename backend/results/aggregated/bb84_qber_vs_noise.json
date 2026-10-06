@@ -1,0 +1,107 @@
+{
+  "series": "bb84_qber_vs_noise",
+  "empty": false,
+  "rows": [
+    {
+      "channel_noise": 0.0,
+      "qber": 0.0,
+      "qber_all_sifted": 0.0,
+      "theory_qber": 0.0,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.0,
+      "acceptance_rate": 1.0,
+      "runs": 5
+    },
+    {
+      "channel_noise": 0.01,
+      "qber": 0.011387915142341595,
+      "qber_all_sifted": 0.010856072070779293,
+      "theory_qber": 0.01,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.0,
+      "acceptance_rate": 0.8,
+      "runs": 5
+    },
+    {
+      "channel_noise": 0.02,
+      "qber": 0.018712245172832036,
+      "qber_all_sifted": 0.02154426710862235,
+      "theory_qber": 0.02,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.0,
+      "acceptance_rate": 0.4,
+      "runs": 5
+    },
+    {
+      "channel_noise": 0.04,
+      "qber": 0.0379588647420946,
+      "qber_all_sifted": 0.042704865037770566,
+      "theory_qber": 0.04,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.0,
+      "acceptance_rate": 0.4,
+      "runs": 5
+    },
+    {
+      "channel_noise": 0.06,
+      "qber": 0.05709662785580716,
+      "qber_all_sifted": 0.06083351621276104,
+      "theory_qber": 0.06,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.0,
+      "acceptance_rate": 0.2,
+      "runs": 5
+    },
+    {
+      "channel_noise": 0.08,
+      "qber": 0.07795720903928838,
+      "qber_all_sifted": 0.08044480788732429,
+      "theory_qber": 0.08,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.0,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    },
+    {
+      "channel_noise": 0.1,
+      "qber": 0.09680628967822877,
+      "qber_all_sifted": 0.09870074338957018,
+      "theory_qber": 0.1,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.0,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    },
+    {
+      "channel_noise": 0.12,
+      "qber": 0.11803013114697744,
+      "qber_all_sifted": 0.11443589818877756,
+      "theory_qber": 0.12,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.8,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    },
+    {
+      "channel_noise": 0.15,
+      "qber": 0.14455938780246985,
+      "qber_all_sifted": 0.1426862063798984,
+      "theory_qber": 0.15,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.8,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    },
+    {
+      "channel_noise": 0.2,
+      "qber": 0.18906788306621555,
+      "qber_all_sifted": 0.19650106312924764,
+      "theory_qber": 0.2,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 1.0,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    }
+  ],
+  "description": "BB84: measured QBER vs channel noise, with the 11% abort threshold."
+}

@@ -643,3 +643,49 @@ def run_shor_attack(
     assert result is not None  # bases is never empty for a supported n
     result.sim_time_ms = total_ms
     return result
+
+
+# ---------------------------------------------------------------------------
+# Input stage: is there anything here for Shor to attack?
+# ---------------------------------------------------------------------------
+
+_MODULUS_FIELDS = ("n", "modulus", "rsa_modulus")
+_GROUP_FIELDS = ("p", "g", "generator", "group_order", "curve")
+
+
+def shor_input_stage(public_material: dict) -> dict:
+    """The pipeline's first step, run on whatever public material the attacker intercepted.
+
+    Shor's algorithm needs hidden *period* structure: an RSA modulus N (order finding of
+    a^x mod N), or a discrete-logarithm group (finite field / elliptic curve). This looks for
+    either among the public fields and reports whether the attack applies. It does not
+    try to reinterpret arbitrary bytes (keys, ciphertexts) as integers to factor: an
+    encapsulation key or a ciphertext is not a modulus.
+    """
+    fields = sorted(public_material)
+    modulus = next((public_material[k] for k in _MODULUS_FIELDS if k in public_material), None)
+    if isinstance(modulus, int) and not isinstance(modulus, bool) and modulus > 3:
+        if modulus % 2 == 0:
+            reason = f"N = {modulus} is even: one division by 2 factors it classically."
+        elif modulus in SHOR_SUPPORTED_N:
+            reason = f"Found an RSA modulus N = {modulus}: order finding of a^x mod N applies."
+        else:
+            reason = f"Found an RSA modulus N = {modulus}: Shor applies in principle, but this N is outside the simulated set {list(SHOR_SUPPORTED_N)}."
+        return {"applicable": modulus % 2 == 1, "target": "rsa_modulus", "n": modulus, "fields_seen": fields, "reason": reason}
+    group = [k for k in _GROUP_FIELDS if k in public_material]
+    if group:
+        return {
+            "applicable": True,
+            "target": "discrete_log_group",
+            "n": None,
+            "fields_seen": fields,
+            "reason": f"Found discrete-logarithm group parameters ({', '.join(group)}): Shor's discrete-log variant applies in principle (not implemented here).",
+        }
+    return {
+        "applicable": False,
+        "target": None,
+        "n": None,
+        "fields_seen": fields,
+        "reason": "No RSA modulus and no discrete-logarithm group in the public material: there is no "
+        "factoring or period-finding problem for Shor's algorithm to solve.",
+    }

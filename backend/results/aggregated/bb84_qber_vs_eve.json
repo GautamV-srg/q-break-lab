@@ -1,0 +1,117 @@
+{
+  "series": "bb84_qber_vs_eve",
+  "empty": false,
+  "rows": [
+    {
+      "eve_intercept_fraction": 0.0,
+      "qber": 0.0,
+      "qber_all_sifted": 0.0,
+      "theory_qber": 0.0,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.0,
+      "acceptance_rate": 1.0,
+      "runs": 5
+    },
+    {
+      "eve_intercept_fraction": 0.1,
+      "qber": 0.01827550130268136,
+      "qber_all_sifted": 0.025556546983579963,
+      "theory_qber": 0.025,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.0,
+      "acceptance_rate": 0.2,
+      "runs": 5
+    },
+    {
+      "eve_intercept_fraction": 0.2,
+      "qber": 0.03630639769213671,
+      "qber_all_sifted": 0.04409702648122369,
+      "theory_qber": 0.05,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.0,
+      "acceptance_rate": 0.2,
+      "runs": 5
+    },
+    {
+      "eve_intercept_fraction": 0.3,
+      "qber": 0.07930186826981497,
+      "qber_all_sifted": 0.0702318932906131,
+      "theory_qber": 0.075,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.0,
+      "acceptance_rate": 0.2,
+      "runs": 5
+    },
+    {
+      "eve_intercept_fraction": 0.4,
+      "qber": 0.0924257048514097,
+      "qber_all_sifted": 0.09044834520367885,
+      "theory_qber": 0.1,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.2,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    },
+    {
+      "eve_intercept_fraction": 0.5,
+      "qber": 0.11386732026405481,
+      "qber_all_sifted": 0.11994836859722913,
+      "theory_qber": 0.125,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.6,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    },
+    {
+      "eve_intercept_fraction": 0.6,
+      "qber": 0.16191919874818167,
+      "qber_all_sifted": 0.1587387205589624,
+      "theory_qber": 0.15,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 0.8,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    },
+    {
+      "eve_intercept_fraction": 0.7,
+      "qber": 0.18563074569597543,
+      "qber_all_sifted": 0.1723981192183238,
+      "theory_qber": 0.175,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 1.0,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    },
+    {
+      "eve_intercept_fraction": 0.8,
+      "qber": 0.19159787257950428,
+      "qber_all_sifted": 0.19275248019831712,
+      "theory_qber": 0.2,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 1.0,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    },
+    {
+      "eve_intercept_fraction": 0.9,
+      "qber": 0.20938807211235222,
+      "qber_all_sifted": 0.2177772268949089,
+      "theory_qber": 0.225,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 1.0,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    },
+    {
+      "eve_intercept_fraction": 1.0,
+      "qber": 0.25579650446404434,
+      "qber_all_sifted": 0.25342742688474634,
+      "theory_qber": 0.25,
+      "qber_threshold": 0.11000000000000001,
+      "detection_rate": 1.0,
+      "acceptance_rate": 0.0,
+      "runs": 5
+    }
+  ],
+  "description": "BB84: measured QBER vs Eve's intercept fraction, with the theory fraction/4 and the abort threshold."
+}

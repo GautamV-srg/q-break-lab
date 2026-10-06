@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "experiment": "defence_overhead",
+  "cipher": "aes256",
+  "size": {
+    "key_bits": 256
+  },
+  "condition": null,
+  "seed": 1434,
+  "success": true,
+  "p_success": null,
+  "quantum": {},
+  "classical": {},
+  "noise": {
+    "model": "ideal",
+    "p": null,
+    "backend": null
+  },
+  "extra": {
+    "plaintext_chars": 1000,
+    "status": "protected",
+    "sizes": {
+      "plaintext_bytes": 1000,
+      "ciphertext_bytes": 1016,
+      "tag_bytes": 16,
+      "nonce_bytes": 12,
+      "key_bytes": 32
+    },
+    "timings_ms": {
+      "keygen": 0.011,
+      "encrypt": 0.015,
+      "decrypt": 0.009
+    },
+    "qber_threshold": 0.11
+  },
+  "timestamp": "2026-10-06T18:27:31+00:00"
+}

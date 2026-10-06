@@ -2686,5 +2686,534 @@
       }
     ],
     "description": "Quantum-counting estimate of the number of matching keys vs the true count."
+  },
+  "bb84_qber_vs_eve": {
+    "series": "bb84_qber_vs_eve",
+    "empty": false,
+    "rows": [
+      {
+        "eve_intercept_fraction": 0.0,
+        "qber": 0.0,
+        "qber_all_sifted": 0.0,
+        "theory_qber": 0.0,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.0,
+        "acceptance_rate": 1.0,
+        "runs": 5
+      },
+      {
+        "eve_intercept_fraction": 0.1,
+        "qber": 0.01827550130268136,
+        "qber_all_sifted": 0.025556546983579963,
+        "theory_qber": 0.025,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.0,
+        "acceptance_rate": 0.2,
+        "runs": 5
+      },
+      {
+        "eve_intercept_fraction": 0.2,
+        "qber": 0.03630639769213671,
+        "qber_all_sifted": 0.04409702648122369,
+        "theory_qber": 0.05,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.0,
+        "acceptance_rate": 0.2,
+        "runs": 5
+      },
+      {
+        "eve_intercept_fraction": 0.3,
+        "qber": 0.07930186826981497,
+        "qber_all_sifted": 0.0702318932906131,
+        "theory_qber": 0.075,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.0,
+        "acceptance_rate": 0.2,
+        "runs": 5
+      },
+      {
+        "eve_intercept_fraction": 0.4,
+        "qber": 0.0924257048514097,
+        "qber_all_sifted": 0.09044834520367885,
+        "theory_qber": 0.1,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.2,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      },
+      {
+        "eve_intercept_fraction": 0.5,
+        "qber": 0.11386732026405481,
+        "qber_all_sifted": 0.11994836859722913,
+        "theory_qber": 0.125,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.6,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      },
+      {
+        "eve_intercept_fraction": 0.6,
+        "qber": 0.16191919874818167,
+        "qber_all_sifted": 0.1587387205589624,
+        "theory_qber": 0.15,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.8,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      },
+      {
+        "eve_intercept_fraction": 0.7,
+        "qber": 0.18563074569597543,
+        "qber_all_sifted": 0.1723981192183238,
+        "theory_qber": 0.175,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 1.0,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      },
+      {
+        "eve_intercept_fraction": 0.8,
+        "qber": 0.19159787257950428,
+        "qber_all_sifted": 0.19275248019831712,
+        "theory_qber": 0.2,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 1.0,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      },
+      {
+        "eve_intercept_fraction": 0.9,
+        "qber": 0.20938807211235222,
+        "qber_all_sifted": 0.2177772268949089,
+        "theory_qber": 0.225,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 1.0,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      },
+      {
+        "eve_intercept_fraction": 1.0,
+        "qber": 0.25579650446404434,
+        "qber_all_sifted": 0.25342742688474634,
+        "theory_qber": 0.25,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 1.0,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      }
+    ],
+    "description": "BB84: measured QBER vs Eve's intercept fraction, with the theory fraction/4 and the abort threshold."
+  },
+  "bb84_qber_vs_noise": {
+    "series": "bb84_qber_vs_noise",
+    "empty": false,
+    "rows": [
+      {
+        "channel_noise": 0.0,
+        "qber": 0.0,
+        "qber_all_sifted": 0.0,
+        "theory_qber": 0.0,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.0,
+        "acceptance_rate": 1.0,
+        "runs": 5
+      },
+      {
+        "channel_noise": 0.01,
+        "qber": 0.011387915142341595,
+        "qber_all_sifted": 0.010856072070779293,
+        "theory_qber": 0.01,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.0,
+        "acceptance_rate": 0.8,
+        "runs": 5
+      },
+      {
+        "channel_noise": 0.02,
+        "qber": 0.018712245172832036,
+        "qber_all_sifted": 0.02154426710862235,
+        "theory_qber": 0.02,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.0,
+        "acceptance_rate": 0.4,
+        "runs": 5
+      },
+      {
+        "channel_noise": 0.04,
+        "qber": 0.0379588647420946,
+        "qber_all_sifted": 0.042704865037770566,
+        "theory_qber": 0.04,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.0,
+        "acceptance_rate": 0.4,
+        "runs": 5
+      },
+      {
+        "channel_noise": 0.06,
+        "qber": 0.05709662785580716,
+        "qber_all_sifted": 0.06083351621276104,
+        "theory_qber": 0.06,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.0,
+        "acceptance_rate": 0.2,
+        "runs": 5
+      },
+      {
+        "channel_noise": 0.08,
+        "qber": 0.07795720903928838,
+        "qber_all_sifted": 0.08044480788732429,
+        "theory_qber": 0.08,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.0,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      },
+      {
+        "channel_noise": 0.1,
+        "qber": 0.09680628967822877,
+        "qber_all_sifted": 0.09870074338957018,
+        "theory_qber": 0.1,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.0,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      },
+      {
+        "channel_noise": 0.12,
+        "qber": 0.11803013114697744,
+        "qber_all_sifted": 0.11443589818877756,
+        "theory_qber": 0.12,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.8,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      },
+      {
+        "channel_noise": 0.15,
+        "qber": 0.14455938780246985,
+        "qber_all_sifted": 0.1426862063798984,
+        "theory_qber": 0.15,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 0.8,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      },
+      {
+        "channel_noise": 0.2,
+        "qber": 0.18906788306621555,
+        "qber_all_sifted": 0.19650106312924764,
+        "theory_qber": 0.2,
+        "qber_threshold": 0.11000000000000001,
+        "detection_rate": 1.0,
+        "acceptance_rate": 0.0,
+        "runs": 5
+      }
+    ],
+    "description": "BB84: measured QBER vs channel noise, with the 11% abort threshold."
+  },
+  "bb84_key_rate": {
+    "series": "bb84_key_rate",
+    "empty": false,
+    "rows": [
+      {
+        "raw_qubits": 256,
+        "channel_noise": 0.0,
+        "key_rate": 0.0,
+        "secure_rate": 0.08072916666666667,
+        "sifted_fraction": 0.5,
+        "acceptance_rate": 0.0,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 256,
+        "channel_noise": 0.02,
+        "key_rate": 0.0,
+        "secure_rate": 0.028645833333333332,
+        "sifted_fraction": 0.5078125,
+        "acceptance_rate": 0.0,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 256,
+        "channel_noise": 0.05,
+        "key_rate": 0.0,
+        "secure_rate": 0.026041666666666668,
+        "sifted_fraction": 0.5143229166666666,
+        "acceptance_rate": 0.0,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 512,
+        "channel_noise": 0.0,
+        "key_rate": 0.0,
+        "secure_rate": 0.21419270833333334,
+        "sifted_fraction": 0.484375,
+        "acceptance_rate": 0.0,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 512,
+        "channel_noise": 0.02,
+        "key_rate": 0.0,
+        "secure_rate": 0.14518229166666666,
+        "sifted_fraction": 0.505859375,
+        "acceptance_rate": 0.0,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 512,
+        "channel_noise": 0.05,
+        "key_rate": 0.0,
+        "secure_rate": 0.057291666666666664,
+        "sifted_fraction": 0.4993489583333333,
+        "acceptance_rate": 0.0,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 1024,
+        "channel_noise": 0.0,
+        "key_rate": 0.25,
+        "secure_rate": 0.2906901041666667,
+        "sifted_fraction": 0.4951171875,
+        "acceptance_rate": 1.0,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 1024,
+        "channel_noise": 0.02,
+        "key_rate": 0.0,
+        "secure_rate": 0.23046875,
+        "sifted_fraction": 0.4973958333333333,
+        "acceptance_rate": 0.0,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 1024,
+        "channel_noise": 0.05,
+        "key_rate": 0.0,
+        "secure_rate": 0.14029947916666666,
+        "sifted_fraction": 0.5026041666666666,
+        "acceptance_rate": 0.0,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 2048,
+        "channel_noise": 0.0,
+        "key_rate": 0.125,
+        "secure_rate": 0.3302408854166667,
+        "sifted_fraction": 0.5011393229166666,
+        "acceptance_rate": 1.0,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 2048,
+        "channel_noise": 0.02,
+        "key_rate": 0.08333333333333333,
+        "secure_rate": 0.2692057291666667,
+        "sifted_fraction": 0.4993489583333333,
+        "acceptance_rate": 0.6666666666666666,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 2048,
+        "channel_noise": 0.05,
+        "key_rate": 0.08333333333333333,
+        "secure_rate": 0.1708984375,
+        "sifted_fraction": 0.5006510416666666,
+        "acceptance_rate": 0.6666666666666666,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 4096,
+        "channel_noise": 0.0,
+        "key_rate": 0.0625,
+        "secure_rate": 0.3407389322916667,
+        "sifted_fraction": 0.4921061197916667,
+        "acceptance_rate": 1.0,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 4096,
+        "channel_noise": 0.02,
+        "key_rate": 0.041666666666666664,
+        "secure_rate": 0.2764485677083333,
+        "sifted_fraction": 0.498046875,
+        "acceptance_rate": 0.6666666666666666,
+        "runs": 3
+      },
+      {
+        "raw_qubits": 4096,
+        "channel_noise": 0.05,
+        "key_rate": 0.041666666666666664,
+        "secure_rate": 0.207763671875,
+        "sifted_fraction": 0.4966634114583333,
+        "acceptance_rate": 0.6666666666666666,
+        "runs": 3
+      }
+    ],
+    "description": "BB84: key bits per raw qubit by raw qubits and channel noise. key_rate = delivered key (always 256 bits, 0 when aborted) / raw; secure_rate = estimated extractable secret bits / raw."
+  },
+  "defence_overhead": {
+    "series": "defence_overhead",
+    "empty": false,
+    "rows": [
+      {
+        "method": "aes256",
+        "plaintext_chars": 16,
+        "size_ciphertext_bytes": 32.0,
+        "size_key_bytes": 32.0,
+        "size_nonce_bytes": 12.0,
+        "size_plaintext_bytes": 16.0,
+        "size_tag_bytes": 16.0,
+        "ms_decrypt": 0.0048000000000000004,
+        "ms_encrypt": 0.014000000000000002,
+        "ms_keygen": 0.35540000000000005,
+        "roundtrip_rate": 1.0,
+        "runs": 5
+      },
+      {
+        "method": "aes256",
+        "plaintext_chars": 100,
+        "size_ciphertext_bytes": 116.0,
+        "size_key_bytes": 32.0,
+        "size_nonce_bytes": 12.0,
+        "size_plaintext_bytes": 100.0,
+        "size_tag_bytes": 16.0,
+        "ms_decrypt": 0.0036000000000000003,
+        "ms_encrypt": 0.0068000000000000005,
+        "ms_keygen": 0.011399999999999999,
+        "roundtrip_rate": 1.0,
+        "runs": 5
+      },
+      {
+        "method": "aes256",
+        "plaintext_chars": 1000,
+        "size_ciphertext_bytes": 1016.0,
+        "size_key_bytes": 32.0,
+        "size_nonce_bytes": 12.0,
+        "size_plaintext_bytes": 1000.0,
+        "size_tag_bytes": 16.0,
+        "ms_decrypt": 0.0042,
+        "ms_encrypt": 0.007000000000000001,
+        "ms_keygen": 0.0108,
+        "roundtrip_rate": 1.0,
+        "runs": 5
+      },
+      {
+        "method": "bb84",
+        "plaintext_chars": 16,
+        "size_ciphertext_bytes": 32.0,
+        "size_final_key_bits": 256.0,
+        "size_key_bytes": 32.0,
+        "size_nonce_bytes": 12.0,
+        "size_plaintext_bytes": 16.0,
+        "size_raw_qubits": 1024.0,
+        "size_sample_bits": 126.0,
+        "size_sifted_bits": 503.6,
+        "size_tag_bytes": 16.0,
+        "ms_decrypt": 0.0056,
+        "ms_encrypt": 0.028200000000000003,
+        "ms_key_exchange": 42.2966,
+        "ms_simulation": 30.1238,
+        "roundtrip_rate": 1.0,
+        "runs": 5
+      },
+      {
+        "method": "bb84",
+        "plaintext_chars": 100,
+        "size_ciphertext_bytes": 116.0,
+        "size_final_key_bits": 256.0,
+        "size_key_bytes": 32.0,
+        "size_nonce_bytes": 12.0,
+        "size_plaintext_bytes": 100.0,
+        "size_raw_qubits": 1024.0,
+        "size_sample_bits": 126.0,
+        "size_sifted_bits": 504.6,
+        "size_tag_bytes": 16.0,
+        "ms_decrypt": 0.0056,
+        "ms_encrypt": 0.030199999999999998,
+        "ms_key_exchange": 43.8098,
+        "ms_simulation": 31.093600000000002,
+        "roundtrip_rate": 1.0,
+        "runs": 5
+      },
+      {
+        "method": "bb84",
+        "plaintext_chars": 1000,
+        "size_ciphertext_bytes": 1016.0,
+        "size_final_key_bits": 256.0,
+        "size_key_bytes": 32.0,
+        "size_nonce_bytes": 12.0,
+        "size_plaintext_bytes": 1000.0,
+        "size_raw_qubits": 2048.0,
+        "size_sample_bits": 258.0,
+        "size_sifted_bits": 1031.4,
+        "size_tag_bytes": 16.0,
+        "ms_decrypt": 0.0062,
+        "ms_encrypt": 0.0284,
+        "ms_key_exchange": 84.2674,
+        "ms_simulation": 60.1896,
+        "roundtrip_rate": 1.0,
+        "runs": 5
+      },
+      {
+        "method": "mlkem",
+        "plaintext_chars": 16,
+        "size_ciphertext_bytes": 32.0,
+        "size_decapsulation_key_bytes": 2400.0,
+        "size_encapsulation_key_bytes": 1184.0,
+        "size_kem_ciphertext_bytes": 1088.0,
+        "size_nonce_bytes": 12.0,
+        "size_plaintext_bytes": 16.0,
+        "size_shared_secret_bytes": 32.0,
+        "size_tag_bytes": 16.0,
+        "ms_decaps": 3.7880000000000003,
+        "ms_decrypt": 0.0164,
+        "ms_encaps": 2.8152,
+        "ms_encrypt": 0.0546,
+        "ms_keygen": 2.193,
+        "roundtrip_rate": 1.0,
+        "runs": 5
+      },
+      {
+        "method": "mlkem",
+        "plaintext_chars": 100,
+        "size_ciphertext_bytes": 116.0,
+        "size_decapsulation_key_bytes": 2400.0,
+        "size_encapsulation_key_bytes": 1184.0,
+        "size_kem_ciphertext_bytes": 1088.0,
+        "size_nonce_bytes": 12.0,
+        "size_plaintext_bytes": 100.0,
+        "size_shared_secret_bytes": 32.0,
+        "size_tag_bytes": 16.0,
+        "ms_decaps": 3.8522,
+        "ms_decrypt": 0.026000000000000002,
+        "ms_encaps": 2.8044000000000002,
+        "ms_encrypt": 0.0328,
+        "ms_keygen": 2.2018,
+        "roundtrip_rate": 1.0,
+        "runs": 5
+      },
+      {
+        "method": "mlkem",
+        "plaintext_chars": 1000,
+        "size_ciphertext_bytes": 1016.0,
+        "size_decapsulation_key_bytes": 2400.0,
+        "size_encapsulation_key_bytes": 1184.0,
+        "size_kem_ciphertext_bytes": 1088.0,
+        "size_nonce_bytes": 12.0,
+        "size_plaintext_bytes": 1000.0,
+        "size_shared_secret_bytes": 32.0,
+        "size_tag_bytes": 16.0,
+        "ms_decaps": 3.7868000000000004,
+        "ms_decrypt": 0.0154,
+        "ms_encaps": 2.7990000000000004,
+        "ms_encrypt": 0.028000000000000004,
+        "ms_keygen": 2.1174,
+        "roundtrip_rate": 1.0,
+        "runs": 5
+      }
+    ],
+    "description": "AES-256 / ML-KEM-768 / BB84: measured sizes and timings by message length."
   }
 }

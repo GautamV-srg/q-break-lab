@@ -14,6 +14,10 @@ Usage (from backend/):
     python -m qbreak.experiments.runner --only grover_noise_sweep
 Then: python -m qbreak.experiments.aggregate
 
+The defence experiments (bb84_qber_vs_eve, bb84_qber_vs_noise, bb84_key_rate,
+defence_overhead) live in `qbreak.defence.experiments` and are registered below, so
+`--only bb84_qber_vs_eve` works the same way.
+
 Benchmark instances are self-generated (see README "Dataset"): every key of each size
 (or a seeded sample for 10/12-bit), the fixed MESSAGES below, and fixed seeds.
 """
@@ -37,6 +41,8 @@ from qbreak.aes.grover import (
 )
 from qbreak.common.encoding import text_to_nibbles
 from qbreak.common.simulator import run_circuit
+from qbreak.defence.experiments import EXPERIMENTS as DEFENCE_EXPERIMENTS
+from qbreak.defence.experiments import QUICK_ARGS as DEFENCE_QUICK_ARGS
 from qbreak.experiments.schema import append_record, make_record
 
 MESSAGES: tuple[str, ...] = ("Hi judges!", "Top secret plan", "Quantum 2026", "Hello, world", "meet me at noon")
@@ -245,6 +251,7 @@ EXPERIMENTS = {
     "grover_scaling": grover_scaling,
     "grover_success_rate": grover_success_rate,
     "grover_counting_accuracy": grover_counting_accuracy,
+    **DEFENCE_EXPERIMENTS,
 }
 
 QUICK_ARGS: dict[str, dict] = {
@@ -254,11 +261,12 @@ QUICK_ARGS: dict[str, dict] = {
     "grover_scaling": {},
     "grover_success_rate": {"key_sizes": (4,), "keys_per_size": 4},
     "grover_counting_accuracy": {},
+    **DEFENCE_QUICK_ARGS,
 }
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run Grover experiments into results/.")
+    parser = argparse.ArgumentParser(description="Run Grover and defence experiments into results/.")
     parser.add_argument("--only", nargs="+", choices=sorted(EXPERIMENTS))
     parser.add_argument("--quick", action="store_true", help="small settings for a fast smoke run")
     args = parser.parse_args()

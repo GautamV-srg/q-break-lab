@@ -27,7 +27,8 @@ def schema() -> dict:
 
 @router.get("/{name}", response_model=EvaluationSeries)
 def one_series(name: str) -> dict:
-    """One series: scaling, noise, iteration_curve (or iteration-curve), success_rate, comparison, counting."""
+    """One series: scaling, noise, iteration_curve (or iteration-curve), success_rate, comparison, counting,
+    bb84_qber_vs_eve, bb84_qber_vs_noise, bb84_key_rate, defence_overhead."""
     key = name.replace("-", "_")
     if key not in SERIES:
         raise HTTPException(status_code=404, detail=f"Unknown series {name!r}; choose from {list(SERIES)}")
