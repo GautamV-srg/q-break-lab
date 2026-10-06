@@ -4,6 +4,7 @@ import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import SymmetricTest from "./pages/SymmetricTest";
 import PublicKeyTest from "./pages/PublicKeyTest";
+import Protect from "./pages/Protect";
 import Evaluation from "./pages/Evaluation";
 import Mosca from "./pages/Mosca";
 import Readiness from "./pages/Readiness";
@@ -14,6 +15,7 @@ const TITLES: Record<string, string> = {
   "/": "Q-Break · Quantum red-team engine",
   "/test/symmetric": "Symmetric breach test · Q-Break",
   "/test/public-key": "Public-key breach test · Q-Break",
+  "/protect": "Protect a message · Q-Break",
   "/evaluation": "Evaluation · Q-Break",
   "/mosca": "Mosca risk calculator · Q-Break",
   "/readiness": "Quantum Readiness Check · Q-Break",
@@ -33,6 +35,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/test/symmetric" element={<SymmetricTest />} />
         <Route path="/test/public-key" element={<PublicKeyTest />} />
+        <Route path="/protect" element={<Protect />} />
         <Route path="/evaluation" element={<Evaluation />} />
         <Route path="/mosca" element={<Mosca />} />
         <Route path="/readiness" element={<Readiness />} />

@@ -1,4 +1,7 @@
-/* "Export report": window.print() renders only the Breach Report as a clean light page. */
+/* "Export report": window.print() renders only the Breach Report as a clean light page.
+   "Download Defence Report" adds .print-defence to <html> first: the Breach Report (when there is
+   one) prints, followed by the Defence Report (protection, re-attack verdicts, comparison,
+   recommendation). */
 @media print {
   :root {
     --bg: #fff;
@@ -14,6 +17,12 @@
     --ok: #15803d;
     --series-1: #2a78d6;
     --series-2: #eb6834;
+    --series-3: #1baf7a;
+    --series-4: #eda100;
+    --def: #0f766e;
+    --def-strong: #0d9488;
+    --def-deep: #134e4a;
+    --def-ink: #ffffff;
     color-scheme: light;
   }
   @page {
@@ -29,8 +38,34 @@
   .test-page > .page-head,
   .test-page > .notice,
   .test-page > .duo,
-  .test-page > .stage:not(.stage-report) {
+  .test-page > .stage:not(.stage-report),
+  .act-defend {
     display: none !important;
+  }
+  /* Defence Report mode */
+  .print-defence .act-defend {
+    display: block !important;
+  }
+  .print-defence .act-defend > :not(.stage-compare) {
+    display: none !important;
+  }
+  .print-defence .test-page:not(.protect-page) .stage-compare {
+    break-before: page;
+  }
+  .stage-compare {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+  }
+  .stage-compare > .stage-head {
+    display: none;
+  }
+  .verdict-list li,
+  .compare-table tr,
+  .chart-figure,
+  .reco-def {
+    break-inside: avoid;
   }
   .main {
     padding: 0;

@@ -5,11 +5,16 @@ import type {
   AesEncryptResponse,
   AesResources,
   ConfigResponse,
+  DefenceInfo,
   EvaluationResponse,
   HealthResponse,
   MoscaInfo,
   MoscaRequest,
   MoscaResult,
+  ProtectRequest,
+  ProtectResponse,
+  ReattackRequest,
+  ReattackResponse,
   RsaAttackRequest,
   RsaAttackResponse,
   RsaEncryptRequest,
@@ -18,7 +23,7 @@ import type {
   RsaKeygenResponse,
   RsaResourceEstimate,
 } from "./types";
-import { assertNoSecrets } from "./payloads";
+import { assertNoSecrets, assertNoSecretsDeep } from "./payloads";
 
 export class ApiError extends Error {
   status: number | null;
@@ -46,8 +51,8 @@ type MockEngine = typeof import("./mocks/engine");
  */
 async function mock<T>(answer: (engine: MockEngine) => unknown, delayMs = MOCK_DELAY_MS): Promise<T> {
   const [engine] = await Promise.all([import("./mocks/engine"), new Promise((r) => setTimeout(r, delayMs))]);
-  // Deep copy so callers can't mutate the fixtures.
-  return JSON.parse(JSON.stringify(answer(engine))) as T;
+  // Deep copy so callers can't mutate the fixtures. Some answers (defence) are async.
+  return JSON.parse(JSON.stringify(await answer(engine))) as T;
 }
 
 function detailToMessage(detail: unknown): string | null {
@@ -161,6 +166,27 @@ export function getAesResources(): Promise<AesResources> {
 export function getRsaResourceEstimate(modulusBits: number): Promise<RsaResourceEstimate> {
   if (MOCK_MODE) return mock((m) => m.rsaResourceEstimate(), 200);
   return request("GET", `/rsa/resource-estimate?modulus_bits=${modulusBits}`);
+}
+
+// ---------- Defence (round 3) ----------
+
+/** Static comparison rows, method descriptions, BB84 defaults and limits, honesty notes. */
+export function getDefenceInfo(): Promise<DefenceInfo> {
+  if (MOCK_MODE) return mock((m) => m.defenceInfo(), 200);
+  return request("GET", "/defence/info");
+}
+
+/** Organization side: may carry the plaintext. Returns public bundles plus round-trip checks. */
+export function defenceProtect(req: ProtectRequest): Promise<ProtectResponse> {
+  if (MOCK_MODE) return mock((m) => m.defenceProtect(req), 1400);
+  return request("POST", "/defence/protect", req);
+}
+
+/** Adversary side: blind. Build the request with buildReattackRequest (api/payloads.ts). */
+export function defenceReattack(req: ReattackRequest): Promise<ReattackResponse> {
+  assertNoSecretsDeep(req); // last line of defence: only public bundles reach /reattack
+  if (MOCK_MODE) return mock((m) => m.defenceReattack(req), 1600);
+  return request("POST", "/defence/reattack", req);
 }
 
 /** Friendly message for any thrown value. */

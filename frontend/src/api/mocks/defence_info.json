@@ -1,0 +1,93 @@
+{
+ "methods": [
+  {
+   "id": "aes256",
+   "name": "AES-256",
+   "description": "Symmetric encryption with a key big enough that Grover's quadratic speed-up still leaves 128-bit security.",
+   "kind": "Real AES-256-GCM encryption"
+  },
+  {
+   "id": "mlkem",
+   "name": "ML-KEM-768",
+   "description": "NIST's post-quantum key-encapsulation standard (FIPS 203): a lattice-based key exchange, then AES-256-GCM.",
+   "kind": "Real KEM + AES-256-GCM (educational implementation)"
+  },
+  {
+   "id": "bb84",
+   "name": "BB84 QKD",
+   "description": "Quantum key distribution: photons in random bases, so an eavesdropper leaves detectable errors.",
+   "kind": "Simulated in Qiskit; its 256-bit key drives AES-256-GCM"
+  }
+ ],
+ "comparison_rows": [
+  {
+   "label": "Quantum-safe, and why",
+   "aes256": "Yes: Grover only halves effective strength, to about 128-bit",
+   "mlkem": "Yes: lattice problem (Module-LWE), no known quantum attack",
+   "bb84": "Yes: physics, measuring a photon disturbs it"
+  },
+  {
+   "label": "Detects eavesdroppers",
+   "aes256": "No",
+   "mlkem": "No",
+   "bb84": "Yes (QBER)"
+  },
+  {
+   "label": "Key-exchange problem solved",
+   "aes256": "No: needs a way to share the key",
+   "mlkem": "Yes",
+   "bb84": "Yes"
+  },
+  {
+   "label": "Special hardware",
+   "aes256": "None",
+   "mlkem": "None",
+   "bb84": "Photon source + quantum channel"
+  },
+  {
+   "label": "Distance",
+   "aes256": "Unlimited",
+   "mlkem": "Unlimited",
+   "bb84": "~100 km fibre without trusted relays"
+  },
+  {
+   "label": "Maturity",
+   "aes256": "Standard for decades",
+   "mlkem": "NIST FIPS 203 (2024)",
+   "bb84": "Niche deployments"
+  }
+ ],
+ "citations": {
+  "FIPS203": "NIST, \"Module-Lattice-Based Key-Encapsulation Mechanism Standard\", FIPS 203, August 2024.",
+  "BB84": "C. H. Bennett, G. Brassard, \"Quantum cryptography: Public key distribution and coin tossing\", Proc. IEEE ICCSSP, 1984.",
+  "GLRS16": "M. Grassl, B. Langenberg, M. Roetteler, R. Steinwandt, \"Applying Grover's algorithm to AES: quantum resource estimates\", PQCrypto 2016, arXiv:1512.04965.",
+  "NIST16": "NIST, \"Submission Requirements and Evaluation Criteria for the Post-Quantum Cryptography Standardization Process\", 2016, Section 4.A.5."
+ },
+ "bb84": {
+  "defaults": {
+   "eve": false,
+   "eve_intercept_fraction": 1,
+   "channel_noise": 0,
+   "raw_qubits": 1024,
+   "qber_threshold": 0.11,
+   "seed": null
+  },
+  "limits": {
+   "raw_qubits_min": 256,
+   "raw_qubits_max": 4096,
+   "eve_intercept_fraction_min": 0,
+   "eve_intercept_fraction_max": 1,
+   "channel_noise_min": 0,
+   "channel_noise_max": 0.25,
+   "qber_threshold_min": 0.01,
+   "qber_threshold_max": 0.25
+  }
+ },
+ "honesty_notes": [
+  "AES-256 and ML-KEM really encrypt your message; the round trip is checked on the server.",
+  "BB84 is a faithful simulation in Qiskit. Real QKD needs a photon source and a quantum channel.",
+  "The ML-KEM implementation is an educational implementation of FIPS 203, not a vetted constant-time production library.",
+  "ML-KEM has no known efficient quantum attack. That is not the same as proven unbreakable."
+ ],
+ "max_text_chars": 1000
+}

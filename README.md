@@ -201,3 +201,32 @@ uvicorn qbreak.api.main:app --reload
 ```
 
 The health endpoint is available at `http://localhost:8000/api/health`.
+
+## Run it locally (frontend)
+
+The React UI lives in `frontend/`. In development Vite proxies `/api` to the backend on port 8000
+(start it as above). On Windows, from the repository root in PowerShell:
+
+```powershell
+cd frontend
+npm install
+npm run dev          # http://localhost:5173, against the backend on :8000
+```
+
+No backend? Mock mode answers every call from the fixtures in `frontend/src/api/mocks/`:
+
+```powershell
+npm run dev:mock     # or add ?mock=1 to any page URL
+```
+
+Tests and a production build (FastAPI serves `frontend/dist/` in production):
+
+```powershell
+npm test
+npm run build
+```
+
+To try the full loop in the browser: open **Symmetric test** (or **Public-key test**) and press
+**▶ Run full demo**. It runs Act I (configure → intercept → breach test → Breach Report) and then
+Act II (protect with AES-256, ML-KEM and BB84 with the eavesdropper on → re-attack → compare).
+**Protect** in the top navigation opens Act II on its own with a fresh message.

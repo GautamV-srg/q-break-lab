@@ -1,0 +1,226 @@
+{
+ "bb84_qber_vs_eve": {
+  "series": "bb84_qber_vs_eve",
+  "empty": false,
+  "rows": [
+   {
+    "eve_intercept_fraction": 0,
+    "qber": 0,
+    "theory": 0,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "eve_intercept_fraction": 0.1,
+    "qber": 0.0297,
+    "theory": 0.025,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "eve_intercept_fraction": 0.2,
+    "qber": 0.054,
+    "theory": 0.05,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "eve_intercept_fraction": 0.3,
+    "qber": 0.0849,
+    "theory": 0.075,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "eve_intercept_fraction": 0.4,
+    "qber": 0.1085,
+    "theory": 0.1,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "eve_intercept_fraction": 0.5,
+    "qber": 0.1269,
+    "theory": 0.125,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "eve_intercept_fraction": 0.6,
+    "qber": 0.1748,
+    "theory": 0.15,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "eve_intercept_fraction": 0.7,
+    "qber": 0.1816,
+    "theory": 0.175,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "eve_intercept_fraction": 0.8,
+    "qber": 0.1827,
+    "theory": 0.2,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "eve_intercept_fraction": 0.9,
+    "qber": 0.212,
+    "theory": 0.225,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "eve_intercept_fraction": 1,
+    "qber": 0.2645,
+    "theory": 0.25,
+    "qber_threshold": 0.11,
+    "runs": 5
+   }
+  ],
+  "description": "QBER as the eavesdropper intercepts a growing fraction of photons, against the fraction/4 theory. MOCK DATA: synthetic stand-in for the defence engine, not a recording of it."
+ },
+ "bb84_qber_vs_noise": {
+  "series": "bb84_qber_vs_noise",
+  "empty": false,
+  "rows": [
+   {
+    "channel_noise": 0,
+    "qber": 0,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "channel_noise": 0.02,
+    "qber": 0.0234,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "channel_noise": 0.04,
+    "qber": 0.0376,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "channel_noise": 0.06,
+    "qber": 0.0612,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "channel_noise": 0.08,
+    "qber": 0.0832,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "channel_noise": 0.1,
+    "qber": 0.1097,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "channel_noise": 0.12,
+    "qber": 0.1286,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "channel_noise": 0.15,
+    "qber": 0.163,
+    "qber_threshold": 0.11,
+    "runs": 5
+   },
+   {
+    "channel_noise": 0.2,
+    "qber": 0.2055,
+    "qber_threshold": 0.11,
+    "runs": 5
+   }
+  ],
+  "description": "QBER as channel bit-flip noise rises, with no eavesdropper, against the 11% abort threshold. MOCK DATA: synthetic stand-in for the defence engine, not a recording of it."
+ },
+ "bb84_key_rate": {
+  "series": "bb84_key_rate",
+  "empty": false,
+  "rows": [
+   {
+    "raw_qubits": 256,
+    "sifted_bits": 128.8,
+    "final_key_bits": 0,
+    "key_rate": 0,
+    "accepted_rate": 0,
+    "runs": 5
+   },
+   {
+    "raw_qubits": 512,
+    "sifted_bits": 259.6,
+    "final_key_bits": 0,
+    "key_rate": 0,
+    "accepted_rate": 0,
+    "runs": 5
+   },
+   {
+    "raw_qubits": 1024,
+    "sifted_bits": 515.6,
+    "final_key_bits": 256,
+    "key_rate": 0.25,
+    "accepted_rate": 1,
+    "runs": 5
+   },
+   {
+    "raw_qubits": 2048,
+    "sifted_bits": 1023.6,
+    "final_key_bits": 256,
+    "key_rate": 0.125,
+    "accepted_rate": 1,
+    "runs": 5
+   },
+   {
+    "raw_qubits": 4096,
+    "sifted_bits": 2054.4,
+    "final_key_bits": 256,
+    "key_rate": 0.0625,
+    "accepted_rate": 1,
+    "runs": 5
+   }
+  ],
+  "description": "Final key bits per raw qubit, no eavesdropper and no noise. MOCK DATA: synthetic stand-in for the defence engine, not a recording of it."
+ },
+ "defence_overhead": {
+  "series": "defence_overhead",
+  "empty": false,
+  "rows": [
+   {
+    "method": "aes256",
+    "public_bytes": 0,
+    "ciphertext_bytes": 26,
+    "key_bytes": 32,
+    "total_ms": 0.21,
+    "runs": 5
+   },
+   {
+    "method": "mlkem",
+    "public_bytes": 2272,
+    "ciphertext_bytes": 26,
+    "key_bytes": 32,
+    "total_ms": 145.3,
+    "runs": 5
+   },
+   {
+    "method": "bb84",
+    "public_bytes": 0,
+    "ciphertext_bytes": 26,
+    "key_bytes": 32,
+    "raw_qubits": 1024,
+    "total_ms": 215.9,
+    "runs": 5
+   }
+  ],
+  "description": "Bytes on the wire and time per method for a 10-character message. MOCK DATA: synthetic stand-in for the defence engine, not a recording of it."
+ }
+}

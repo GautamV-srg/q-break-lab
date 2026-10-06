@@ -19,6 +19,10 @@ export default function About() {
           <em>could a quantum attacker breach our encrypted messages?</em> This hackathon build is the working
           prototype at miniature scale. The “once scaled” story is a vision, not a current capability.
         </p>
+        <p className="lede">
+          Q-Break shows how a quantum attacker would breach your encryption, then protects it with post-quantum and
+          quantum methods, and compares them so you can choose the right defence.
+        </p>
       </section>
 
       <section>
@@ -45,6 +49,22 @@ export default function About() {
             means at real scale. <strong>Pop the Hood</strong> shows the circuit, measurements, maths, every
             verification step, and a noise lab that re-runs the breach under simulated hardware noise. Every result
             is re-checked classically before it is reported.
+          </li>
+          <li>
+            <strong>Protect.</strong> Act II re-encrypts the same message three ways: <em>AES-256</em> (AES-256-GCM),{" "}
+            <em>ML-KEM-768</em> (the NIST post-quantum key-encapsulation standard, FIPS 203, then AES-256-GCM) and{" "}
+            <em>BB84 quantum key distribution</em>, simulated in Qiskit, whose 256-bit key then drives AES-256-GCM. You can
+            put an eavesdropper on the BB84 channel and watch the error rate give her away.
+          </li>
+          <li>
+            <strong>Re-attack.</strong> The same blind adversary receives only the public bundles (ciphertexts, nonces,
+            public keys, KEM ciphertexts, announced bases) and tries again. Each verdict says what was actually run:
+            AES-256 is <em>infeasible</em> (a cited estimate, no circuit is run), ML-KEM is <em>not applicable</em> (Shor
+            finds nothing to factor), and BB84 eavesdropping is <em>detected</em> (a fresh exchange really runs).
+          </li>
+          <li>
+            <strong>Compare.</strong> A side-by-side table, measured overhead and a rule-based recommendation, printable as
+            a Defence Report.
           </li>
         </ol>
       </section>
@@ -97,6 +117,32 @@ export default function About() {
             <Link to="/evaluation">Evaluation page</Link> show with data.
           </li>
         </ul>
+        <h3>The defences</h3>
+        <ul className="honesty">
+          <li>
+            <strong>AES-256 and ML-KEM really encrypt your message.</strong> The engine encrypts it, decrypts it again on
+            the organization's side and reports whether the round trip matches. Keys and shared secrets never leave the
+            server and never reach the re-attack.
+          </li>
+          <li>
+            <strong>BB84 is a faithful simulation, not quantum hardware.</strong> Real QKD needs a photon source and a
+            quantum channel (optical fibre or free space). Here every photon is a small Qiskit circuit on the Aer
+            simulator, the eavesdropper is modelled as intercept-resend, and reconciliation is a simplified single pass.
+          </li>
+          <li>
+            <strong>The ML-KEM implementation is educational, not production-grade.</strong> It follows FIPS 203, but a
+            real system should use a vetted, constant-time library.
+          </li>
+          <li>
+            <strong>“No known quantum attack” is not “proven unbreakable”.</strong> ML-KEM rests on the Module-LWE
+            lattice problem, for which no efficient quantum algorithm is known. Nothing in Q-Break claims any defence is
+            unbreakable.
+          </li>
+          <li>
+            <strong>AES-256's verdict is an estimate, not a run.</strong> No simulator can hold a Grover search over 2
+            <sup>256</sup> keys; the report quotes the cited resource estimate (Grassl et al., 2016) instead.
+          </li>
+        </ul>
       </section>
 
       <section>
@@ -128,6 +174,10 @@ export default function About() {
           </li>
           <li>
             Grover roughly halves the effective security of a symmetric key. Use <strong>256-bit symmetric keys</strong>.
+          </li>
+          <li>
+            Quantum key distribution (BB84) detects eavesdroppers through physics, but needs dedicated photon hardware
+            and limited distances. <Link to="/protect">Compare all three defences →</Link>
           </li>
           <li>
             <strong>Harvest now, decrypt later:</strong> data intercepted today can be decrypted once the hardware

@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { errorMessage, rsaAttack, rsaEncrypt, rsaKeygen } from "../api/client";
 import { buildRsaAttackRequest, type InterceptedRsa } from "../api/payloads";
 import type { RsaAttackResponse, RsaEncryptResponse, RsaKeygenResponse } from "../api/types";
-import BreachReport from "../components/BreachReport";
+import BreachReport, { verdictOf } from "../components/BreachReport";
 import ChunkTable from "../components/ChunkTable";
+import DefenceAct from "../components/defence/DefenceAct";
+import { useDefence } from "../components/defence/useDefence";
 import Duo from "../components/Duo";
 import ErrorBox from "../components/ErrorBox";
 import InterceptionWall from "../components/InterceptionWall";
@@ -14,15 +16,18 @@ import RunProgress from "../components/RunProgress";
 import ShotsSlider from "../components/ShotsSlider";
 import StageCard from "../components/StageCard";
 import Stepper from "../components/Stepper";
-import { randomSeed, sleep, useAliveRef, useScrollToStage } from "../components/flow";
+import { focusStage, randomSeed, sleep, useAliveRef, useScrollToStage } from "../components/flow";
 import { useConfig } from "../config";
 
 const ID = "pk";
 const STEPS = [
-  { label: "Configure", side: "Your organization" },
-  { label: "Intercept", side: "The wall" },
-  { label: "Breach test", side: "Quantum adversary" },
-  { label: "Report", side: "Breach Report" },
+  { label: "Configure", side: "Your organization", act: "attack" as const },
+  { label: "Intercept", side: "The wall", act: "attack" as const },
+  { label: "Breach test", side: "Quantum adversary", act: "attack" as const },
+  { label: "Report", side: "Breach Report", act: "attack" as const },
+  { label: "Protect", side: "Your organization", act: "defend" as const },
+  { label: "Re-attack", side: "Quantum adversary", act: "defend" as const },
+  { label: "Compare", side: "Defence Report", act: "defend" as const },
 ];
 
 const DEMO_MESSAGE = "Hi judges!";
@@ -67,6 +72,15 @@ export default function PublicKeyTest() {
   const [demoRunning, setDemoRunning] = useState(false);
   const [completedOnce, setCompletedOnce] = useState(false);
 
+  // ---- Act II (blue team): protect the same message, re-attack, compare. ----
+  const defence = useDefence();
+  const [actOpen, setActOpen] = useState(false);
+  // A new breach (or none) starts Act II over.
+  useEffect(() => {
+    defence.reset();
+    setActOpen(false);
+  }, [attack]);
+
   // Keep the selections valid when /api/config arrives or the modulus changes.
   useEffect(() => {
     if (config.rsa_moduli.length > 0 && !config.rsa_moduli.includes(n)) setN(config.rsa_moduli[0]);
@@ -76,11 +90,21 @@ export default function PublicKeyTest() {
       setConstruction(AUTO);
   }, [n, construction, config.rsa_constructions]);
 
-  const stage = attack ? 4 : intercepted ? 3 : enc ? 2 : 1;
+  const stage = attack
+    ? defence.reattack
+      ? 7
+      : defence.protect || actOpen
+        ? 5 + (defence.protect ? 1 : 0)
+        : 4
+    : intercepted
+      ? 3
+      : enc
+        ? 2
+        : 1;
   useScrollToStage(ID, stage);
 
   const configReady = !loading && !configError && config.rsa_moduli.length > 0;
-  const busy = keygenBusy || encrypting || attacking || demoRunning || !configReady;
+  const busy = keygenBusy || encrypting || attacking || demoRunning || defence.busy || !configReady;
   const messageValid = message.length > 0 && message.length <= config.max_rsa_text_chars;
   const selectedModulus = modulusOptions.find((o) => o.n === n);
   const chosen = constructions.find((c) => c.key === construction);
@@ -146,8 +170,12 @@ export default function PublicKeyTest() {
     setAttackError(null);
   }
 
-  async function runAttack(target: InterceptedRsa | null = intercepted, a: number | null = aNum, seed: number | null = null) {
-    if (!target || inFlight.current) return; // never fire twice
+  async function runAttack(
+    target: InterceptedRsa | null = intercepted,
+    a: number | null = aNum,
+    seed: number | null = null,
+  ): Promise<RsaAttackResponse | null> {
+    if (!target || inFlight.current) return null; // never fire twice
     inFlight.current = true;
     setAttacking(true);
     setAttackError(null);
@@ -155,11 +183,13 @@ export default function PublicKeyTest() {
       // The request is built ONLY from the adversary's intercepted data (see api/payloads.ts).
       const req = buildRsaAttackRequest(target, { a, shots, seed, ...(construction !== AUTO ? { construction } : {}) });
       const r = await rsaAttack(req);
-      if (!alive.current) return;
+      if (!alive.current) return null;
       setAttack(r);
       setCompletedOnce(true);
+      return r;
     } catch (e) {
       if (alive.current) setAttackError(errorMessage(e));
+      return null;
     } finally {
       inFlight.current = false;
       if (alive.current) setAttacking(false);
@@ -193,10 +223,42 @@ export default function PublicKeyTest() {
       setBaseA(a === null ? "" : String(a));
       await sleep(500);
       if (!alive.current) return;
-      await runAttack({ n: k.n, e: k.e, ciphertext: r.ciphertext, bit_length: r.bit_length }, a);
+      const res = await runAttack({ n: k.n, e: k.e, ciphertext: r.ciphertext, bit_length: r.bit_length }, a);
+      if (!res || !alive.current) return;
+      await sleep(2500); // let the Breach Report land
+      if (!alive.current) return;
+      await runDefenceDemo(msg, originalOf(res));
     } finally {
       if (alive.current) setDemoRunning(false);
     }
+  }
+
+  function originalOf(a: RsaAttackResponse) {
+    const v = verdictOf({ kind: "public-key", resp: a });
+    return {
+      cipher: "minirsa" as const,
+      verdict: v === "safe" ? "not_breached" : v,
+      label: `MiniRSA, N = ${a.n} · Shor`,
+    };
+  }
+
+  /** Act II of the demo: protect with all three methods, Eve ON so the detection shows, re-attack, compare. */
+  async function runDefenceDemo(msg: string, original: ReturnType<typeof originalOf>) {
+    const s = defence.settings;
+    if (!s) return;
+    setActOpen(true);
+    const bb84 = { ...s.defaults, eve: true };
+    defence.setMethods(s.methods);
+    defence.setBb84(bb84);
+    await sleep(1500);
+    if (!alive.current) return;
+    const p = await defence.runProtect(msg, { bb84, methods: s.methods });
+    if (!p || !alive.current) return;
+    await sleep(4500); // let the photon stream and the QBER verdict play
+    if (!alive.current) return;
+    const attack = { eve_intercept_fraction: s.defaults.eve_intercept_fraction, channel_noise: s.defaults.channel_noise };
+    defence.setAttack(attack);
+    await defence.runReattack(p, { attack, original });
   }
 
   const modulusChoices: Option<number>[] = modulusOptions.map((o) => ({
@@ -243,7 +305,7 @@ export default function PublicKeyTest() {
           </p>
         </div>
         <button className="btn btn-demo no-print" onClick={runDemo} disabled={busy}>
-          {demoRunning ? "Demo running…" : "▶ Run demo test"}
+          {demoRunning ? "Demo running…" : "▶ Run full demo"}
         </button>
       </div>
 
@@ -503,6 +565,10 @@ export default function PublicKeyTest() {
             input={reportInput}
             onRetry={() => void runAttack(intercepted, null, randomSeed())}
             retrying={attacking}
+            onProtect={() => {
+              setActOpen(true);
+              focusStage(ID, 5);
+            }}
             popTheHood={
               <PopTheHood
                 input={reportInput}
@@ -513,6 +579,21 @@ export default function PublicKeyTest() {
           />
         )}
       </StageCard>
+
+      {/* ---------- Act II: stages 5–7 ---------- */}
+      <DefenceAct
+        d={defence}
+        idPrefix={ID}
+        startN={5}
+        handOff
+        unlocked={!!attack}
+        lockedHint="Finish the breach test first: Act II protects the same message."
+        message={encMessage}
+        carriedFrom="Carried over from Act I, on the organization's side. It goes to the protect step only, never to the re-attack."
+        original={attack ? originalOf(attack) : undefined}
+        origin="Public-key breach test, Act II"
+        demoRunning={demoRunning}
+      />
     </div>
   );
 }

@@ -9,14 +9,15 @@ export default function Home() {
         <div className="eyebrow">Quantum red-team engine · working prototype</div>
         <h1 className="hero-title">Can your encrypted messages survive a quantum attacker?</h1>
         <p className="hero-lede">
-          Q-Break is a quantum red-team engine for breach testing encrypted communications. Your organization encrypts
-          a message with a miniature cipher; Q-Break plays the adversary, runs genuine quantum attack circuits on a
-          classical simulator, and hands you a Breach Report with a verdict, the evidence, and what it means for your
-          real keys.
+          Q-Break shows how a quantum attacker would breach your encryption, then protects it with post-quantum and
+          quantum methods, and compares them so you can choose the right defence.
         </p>
         <div className="hero-cta">
           <Link to="/test/symmetric" className="btn btn-attack-inline btn-large">
             Run a breach test
+          </Link>
+          <Link to="/protect" className="btn btn-defend btn-large">
+            Protect a message
           </Link>
           <Link to="/about" className="btn btn-ghost btn-large">
             Rules of engagement
@@ -50,32 +51,61 @@ export default function Home() {
           </p>
           <span className="card-go">Start engagement →</span>
         </Link>
+        <Link to="/protect" className="test-card card-def">
+          <div className="test-card-kicker">Engagement 03 · Protect, re-attack, compare</div>
+          <h2>AES-256 · ML-KEM · BB84 QKD</h2>
+          <p>
+            Re-encrypt a message three ways, send the same quantum adversary after each one, and compare the defences.
+            Both breach tests run this as Act II; open it here with a fresh message.
+          </p>
+          <span className="card-go">Start defending →</span>
+        </Link>
       </section>
 
       <section className="how" aria-labelledby="how-title">
-        <h2 id="how-title">How a Q-Break engagement works</h2>
-        <ol className="how-strip">
+        <h2 id="how-title">The Q-Break loop</h2>
+        <ol className="how-strip loop-strip">
           <li>
             <span className="how-n">1</span>
-            <h3>Configure</h3>
-            <p>Your organization encrypts a message with its own key.</p>
+            <h3>Attack</h3>
+            <p>
+              Your organization encrypts a message with a miniature cipher. The quantum adversary intercepts only what an
+              eavesdropper would and runs a genuine Grover or Shor circuit: the Breach Report says Breached.
+            </p>
           </li>
-          <li>
+          <li className="loop-def">
             <span className="how-n">2</span>
-            <h3>Intercept</h3>
-            <p>The quantum adversary captures only what an eavesdropper would: never your key.</p>
+            <h3>Protect</h3>
+            <p>
+              The same message is re-encrypted with AES-256, ML-KEM-768 (the post-quantum standard) and BB84 quantum key
+              distribution, simulated in Qiskit.
+            </p>
           </li>
-          <li>
+          <li className="loop-def">
             <span className="how-n">3</span>
-            <h3>Breach test</h3>
-            <p>Q-Break runs a genuine Grover or Shor circuit against the intercepted data.</p>
+            <h3>Re-attack</h3>
+            <p>
+              The same adversary attacks each protected version: AES-256 is infeasible, ML-KEM has no known quantum attack,
+              and BB84 detects the eavesdropper.
+            </p>
           </li>
-          <li>
+          <li className="loop-def">
             <span className="how-n">4</span>
-            <h3>Breach Report</h3>
-            <p>A verdict, the recovered secret, quantum vs classical cost, and a recommendation. Then pop the hood.</p>
+            <h3>Compare</h3>
+            <p>A side-by-side comparison, measured overhead, and a recommendation you can print as a Defence Report.</p>
           </li>
         </ol>
+        <p className="hero-cta">
+          <Link to="/test/symmetric" className="btn btn-ghost">
+            Symmetric test (Grover) →
+          </Link>
+          <Link to="/test/public-key" className="btn btn-ghost">
+            Public-key test (Shor) →
+          </Link>
+          <Link to="/protect" className="btn btn-ghost">
+            Protect only →
+          </Link>
+        </p>
       </section>
 
       <section className="evidence" aria-labelledby="evidence-title">

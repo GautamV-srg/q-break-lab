@@ -30,3 +30,17 @@ export function useAliveRef() {
   }, []);
   return alive;
 }
+
+/** Scrolls to a stage and moves keyboard focus to its heading (for CTAs that jump ahead). */
+export function focusStage(idPrefix: string, n: number) {
+  setTimeout(() => {
+    const el = document.getElementById(`${idPrefix}-stage-${n}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    const h = document.getElementById(`${idPrefix}-stage-${n}-title`);
+    if (h) {
+      h.setAttribute("tabindex", "-1");
+      h.focus({ preventScroll: true });
+    }
+  }, 80);
+}

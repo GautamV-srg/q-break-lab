@@ -15,6 +15,7 @@ import {
 import { ApiError, errorMessage, getEvaluation } from "../api/client";
 import type { EvaluationResponse, EvaluationSeries, SeriesRow } from "../api/types";
 import { ChartFigure, EmptyState, fmtNum, fmtPct, num, TableView, Tip, type SeriesDef } from "../components/charts";
+import DefenceEvaluation, { DEFENCE_SERIES } from "../components/defence/DefenceEvaluation";
 import ErrorBox from "../components/ErrorBox";
 import PrototypeNotice from "../components/PrototypeNotice";
 import { useThemeColors, type ThemeColors } from "../components/useThemeColors";
@@ -35,6 +36,7 @@ const SECTIONS = [
   { id: "iteration_curve", title: "Grover iteration curve" },
   { id: "success_rate", title: "Success rates" },
   { id: "counting", title: "Quantum counting" },
+  { id: "defence", title: "Defence" },
 ] as const;
 
 function groupBy<T>(rows: T[], key: (r: T) => string): [string, T[]][] {
@@ -120,7 +122,10 @@ export default function Evaluation() {
 
       <nav className="eval-nav no-print" aria-label="Evaluation sections">
         {SECTIONS.map((s) => {
-          const has = !!series(s.id) && !series(s.id)!.empty;
+          const has =
+            s.id === "defence"
+              ? DEFENCE_SERIES.some((d) => !!series(d) && !series(d)!.empty)
+              : !!series(s.id) && !series(s.id)!.empty;
           return (
             <a key={s.id} href={`#eval-${s.id}`} className={has ? "eval-chip" : "eval-chip eval-chip-empty"}>
               <span aria-hidden="true">{loading ? "…" : has ? "●" : "∅"}</span> {s.title}
@@ -158,6 +163,20 @@ export default function Evaluation() {
         <Section id="counting" title="Quantum counting accuracy" series={series("counting")} loading={loading}>
           {(rows) => <CountingTable rows={rows} />}
         </Section>
+        <section className="eval-section eval-section-def" id="eval-defence" aria-labelledby="eval-defence-title">
+          <h2 id="eval-defence-title">Defence: BB84 under attack, and what protection costs</h2>
+          <p className="muted">
+            Stored runs of the defence experiments: the BB84 error rate as an eavesdropper intercepts more photons and as
+            channel noise rises, the final key rate, and the measured overhead of the three defences.
+          </p>
+          {loading && !data ? (
+            <div className="empty-state" role="status">
+              <span className="empty-icon" aria-hidden="true">…</span> Loading stored results…
+            </div>
+          ) : (
+            <DefenceEvaluation series={series} />
+          )}
+        </section>
       </div>
 
       <p className="small muted">

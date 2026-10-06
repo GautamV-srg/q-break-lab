@@ -21,6 +21,26 @@ Nothing here was written by hand.
 | `evaluation.json` | `GET /api/evaluation` after running both branches' experiment runners with their `--quick` settings. |
 | `mosca_info.json`, `aes_resources.json`, `rsa_resource_estimate.json` | `GET /api/risk/mosca`, `/api/aes/resources`, `/api/rsa/resource-estimate?modulus_bits=2048`. |
 
+### Defence fixtures are synthetic, not recordings
+
+The defence backend (`/api/defence/*`) had not merged when the defence UI was built, so the
+`defence_*.json` and `evaluation_defence.json` fixtures were **generated**, not recorded, by
+`npm run gen:defence-mocks` (`scripts/gen-defence-mocks.ts`) from `defenceSynth.ts`:
+
+| File | Contents |
+|---|---|
+| `defence_info.json` | `GET /api/defence/info`: methods, static comparison rows, citations, BB84 defaults and limits, honesty notes. |
+| `defence_config.json` | The `defence` block merged into the mock `/api/config`. |
+| `defence_protect.json` | `POST /api/defence/protect` for the demo message: `accepted` (Eve off) and `aborted` (Eve at full intercept). |
+| `defence_reattack.json` | `POST /api/defence/reattack` for the accepted bundles. |
+| `evaluation_defence.json` | The four defence series merged into the mock `/api/evaluation`. |
+
+AES-256-GCM in them is real (WebCrypto, seeded keys); the ML-KEM encapsulation key and KEM
+ciphertext are random bytes of the standard sizes; BB84 is a seeded classical Monte Carlo of the
+protocol, not Qiskit. Every response says `MOCK DATA` in its steps or evidence. Other inputs are
+computed live by the same stand-in. **Replace these with recordings of the live engine** once the
+defence backend merges.
+
 Circuit drawings and OpenQASM are truncated (and say so) to keep the files small. Noise recordings
 keep only the fields that change with the noise level.
 

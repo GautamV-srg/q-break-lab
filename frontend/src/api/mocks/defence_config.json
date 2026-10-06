@@ -1,0 +1,26 @@
+{
+ "methods": [
+  "aes256",
+  "mlkem",
+  "bb84"
+ ],
+ "max_text_chars": 1000,
+ "bb84_defaults": {
+  "eve": false,
+  "eve_intercept_fraction": 1,
+  "channel_noise": 0,
+  "raw_qubits": 1024,
+  "qber_threshold": 0.11,
+  "seed": null
+ },
+ "bb84_limits": {
+  "raw_qubits_min": 256,
+  "raw_qubits_max": 4096,
+  "eve_intercept_fraction_min": 0,
+  "eve_intercept_fraction_max": 1,
+  "channel_noise_min": 0,
+  "channel_noise_max": 0.25,
+  "qber_threshold_min": 0.01,
+  "qber_threshold_max": 0.25
+ }
+}

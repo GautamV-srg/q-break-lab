@@ -4,7 +4,7 @@ interface Props {
   id: string;
   n: number;
   title: string;
-  side: "org" | "adv" | "wall" | "report";
+  side: "org" | "adv" | "wall" | "report" | "def";
   sideLabel: string;
   locked: boolean;
   lockedHint?: string;
