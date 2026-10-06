@@ -1,0 +1,6 @@
+cipher,size_kind,size,qubits,depth,transpiled_depth,iterations,runs
+miniaes,key_bits,4,15.0,9.0,1511.0,3.0,1
+miniaes,key_bits,6,18.0,15.0,4449.0,6.0,1
+miniaes,key_bits,8,20.0,27.0,8895.0,12.0,1
+miniaes,key_bits,10,22.0,53.0,20028.0,25.0,1
+miniaes,key_bits,12,24.0,103.0,43453.0,50.0,1

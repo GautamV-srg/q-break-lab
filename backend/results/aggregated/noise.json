@@ -1,0 +1,98 @@
+{
+  "series": "noise",
+  "empty": false,
+  "rows": [
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "model": "depolarizing",
+      "backend": null,
+      "p": 0.0,
+      "iterations": null,
+      "p_success": 0.96875,
+      "success_rate": 1.0,
+      "baseline": 0.0625,
+      "transpiled_depth": 37647.0,
+      "runs": 1
+    },
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "model": "depolarizing",
+      "backend": null,
+      "p": 0.001,
+      "iterations": null,
+      "p_success": 0.0390625,
+      "success_rate": 0.0,
+      "baseline": 0.0625,
+      "transpiled_depth": 37647.0,
+      "runs": 1
+    },
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "model": "depolarizing",
+      "backend": null,
+      "p": 0.005,
+      "iterations": null,
+      "p_success": 0.0546875,
+      "success_rate": 0.0,
+      "baseline": 0.0625,
+      "transpiled_depth": 37647.0,
+      "runs": 1
+    },
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "model": "depolarizing",
+      "backend": null,
+      "p": 0.02,
+      "iterations": null,
+      "p_success": 0.0390625,
+      "success_rate": 0.0,
+      "baseline": 0.0625,
+      "transpiled_depth": 37647.0,
+      "runs": 1
+    },
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "model": "fake_backend",
+      "backend": "FakeGuadalupeV2",
+      "p": null,
+      "iterations": 0,
+      "p_success": 0.0546875,
+      "success_rate": 0.0,
+      "baseline": 0.0625,
+      "transpiled_depth": 4.0,
+      "runs": 1
+    },
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "model": "fake_backend",
+      "backend": "FakeGuadalupeV2",
+      "p": null,
+      "iterations": 1,
+      "p_success": 0.03125,
+      "success_rate": 0.0,
+      "baseline": 0.0625,
+      "transpiled_depth": 19422.0,
+      "runs": 1
+    },
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "model": "fake_backend",
+      "backend": "FakeGuadalupeV2",
+      "p": null,
+      "iterations": 3,
+      "p_success": 0.0390625,
+      "success_rate": 0.0,
+      "baseline": 0.0625,
+      "transpiled_depth": 66677.0,
+      "runs": 1
+    }
+  ],
+  "description": "Attack success probability vs noise level, plus fake IBM backend runs."
+}

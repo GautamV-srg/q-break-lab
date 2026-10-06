@@ -1,0 +1,56 @@
+{
+  "series": "iteration_curve",
+  "empty": false,
+  "rows": [
+    {
+      "key_bits": 4,
+      "iterations": 0,
+      "p_success": 0.056640625,
+      "theory": 0.0625,
+      "runs": 1
+    },
+    {
+      "key_bits": 4,
+      "iterations": 1,
+      "p_success": 0.4716796875,
+      "theory": 0.47265625,
+      "runs": 1
+    },
+    {
+      "key_bits": 4,
+      "iterations": 2,
+      "p_success": 0.908203125,
+      "theory": 0.908447265625,
+      "runs": 1
+    },
+    {
+      "key_bits": 4,
+      "iterations": 3,
+      "p_success": 0.9619140625,
+      "theory": 0.9613189697265625,
+      "runs": 1
+    },
+    {
+      "key_bits": 4,
+      "iterations": 4,
+      "p_success": 0.5732421875,
+      "theory": 0.5817041397094724,
+      "runs": 1
+    },
+    {
+      "key_bits": 4,
+      "iterations": 5,
+      "p_success": 0.1279296875,
+      "theory": 0.1254916787147522,
+      "runs": 1
+    },
+    {
+      "key_bits": 4,
+      "iterations": 6,
+      "p_success": 0.02734375,
+      "theory": 0.020380768924951515,
+      "runs": 1
+    }
+  ],
+  "description": "Measured success vs Grover iterations, with the theoretical sin\u00b2 envelope."
+}

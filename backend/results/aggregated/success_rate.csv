@@ -1,0 +1,4 @@
+cipher,size,condition,a,success_rate,p_success,unique_rate,runs_to_success,runs
+miniaes,4,ciphertext_only,,1.0,0.842529296875,0.75,,4
+miniaes,4,known_beginning,,1.0,0.966552734375,1.0,,4
+miniaes,4,known_substring,,1.0,0.966552734375,1.0,,4

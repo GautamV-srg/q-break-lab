@@ -1,0 +1,37 @@
+{
+  "series": "comparison",
+  "empty": false,
+  "rows": [
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "condition": "ciphertext_only",
+      "quantum_oracle_calls": 17.75,
+      "classical_evaluations": 9.0,
+      "theory_classical": 8.5,
+      "theory_grover": 3.141592653589793,
+      "runs": 4
+    },
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "condition": "known_beginning",
+      "quantum_oracle_calls": 18.0,
+      "classical_evaluations": 9.0,
+      "theory_classical": 8.5,
+      "theory_grover": 3.141592653589793,
+      "runs": 4
+    },
+    {
+      "cipher": "miniaes",
+      "size": 4,
+      "condition": "known_substring",
+      "quantum_oracle_calls": 18.0,
+      "classical_evaluations": 9.0,
+      "theory_classical": 8.5,
+      "theory_grover": 3.141592653589793,
+      "runs": 4
+    }
+  ],
+  "description": "Quantum oracle calls / circuit runs vs classical tries, per problem size."
+}

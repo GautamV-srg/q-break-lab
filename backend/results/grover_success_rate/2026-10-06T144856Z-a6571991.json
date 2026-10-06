@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "experiment": "grover_success_rate",
+  "cipher": "miniaes",
+  "size": {
+    "key_bits": 4
+  },
+  "condition": "known_substring",
+  "seed": 5237,
+  "success": true,
+  "p_success": 0.9697265625,
+  "quantum": {
+    "oracle_calls": 18,
+    "iterations": 3,
+    "qubits": 15,
+    "depth": 9,
+    "transpiled_depth": 1505,
+    "gate_counts": {
+      "x": 1621,
+      "mcx": 783,
+      "cx": 192,
+      "h": 35,
+      "measure": 4,
+      "ccx": 3
+    }
+  },
+  "classical": {
+    "evaluations": 12,
+    "expected_tries": 8.5,
+    "candidates": 1
+  },
+  "noise": {
+    "model": "ideal",
+    "p": null,
+    "backend": null
+  },
+  "extra": {
+    "message": "Hello, world",
+    "unique": true,
+    "recovered": 1,
+    "estimated_m": 1,
+    "sim_time_ms": 2606.2765000000354,
+    "classical_ms": 0.03479999998035055
+  },
+  "timestamp": "2026-10-06T14:48:56+00:00"
+}

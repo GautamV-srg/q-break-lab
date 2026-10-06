@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "experiment": "grover_noise_sweep",
+  "cipher": "miniaes",
+  "size": {
+    "key_bits": 4
+  },
+  "condition": "known_beginning",
+  "seed": 1236,
+  "success": false,
+  "p_success": 0.0546875,
+  "quantum": {
+    "oracle_calls": 3,
+    "iterations": 3,
+    "qubits": 15,
+    "depth": 9,
+    "transpiled_depth": 37647,
+    "gate_counts": {
+      "u": 23905,
+      "cx": 19714,
+      "measure": 4
+    }
+  },
+  "classical": {},
+  "noise": {
+    "model": "depolarizing",
+    "p": 0.005,
+    "backend": null
+  },
+  "extra": {
+    "uniform_baseline": 0.0625,
+    "shots": 128
+  },
+  "timestamp": "2026-10-06T14:43:48+00:00"
+}

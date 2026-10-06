@@ -1,0 +1,57 @@
+{
+  "series": "scaling",
+  "empty": false,
+  "rows": [
+    {
+      "cipher": "miniaes",
+      "size_kind": "key_bits",
+      "size": 4,
+      "qubits": 15.0,
+      "depth": 9.0,
+      "transpiled_depth": 1511.0,
+      "iterations": 3.0,
+      "runs": 1
+    },
+    {
+      "cipher": "miniaes",
+      "size_kind": "key_bits",
+      "size": 6,
+      "qubits": 18.0,
+      "depth": 15.0,
+      "transpiled_depth": 4449.0,
+      "iterations": 6.0,
+      "runs": 1
+    },
+    {
+      "cipher": "miniaes",
+      "size_kind": "key_bits",
+      "size": 8,
+      "qubits": 20.0,
+      "depth": 27.0,
+      "transpiled_depth": 8895.0,
+      "iterations": 12.0,
+      "runs": 1
+    },
+    {
+      "cipher": "miniaes",
+      "size_kind": "key_bits",
+      "size": 10,
+      "qubits": 22.0,
+      "depth": 53.0,
+      "transpiled_depth": 20028.0,
+      "iterations": 25.0,
+      "runs": 1
+    },
+    {
+      "cipher": "miniaes",
+      "size_kind": "key_bits",
+      "size": 12,
+      "qubits": 24.0,
+      "depth": 103.0,
+      "transpiled_depth": 43453.0,
+      "iterations": 50.0,
+      "runs": 1
+    }
+  ],
+  "description": "Qubits and transpiled depth vs problem size (key bits / modulus)."
+}

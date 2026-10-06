@@ -10,9 +10,32 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from qbreak.api.routes_aes import router as aes_router
+from qbreak.api.routes_evaluation import router as evaluation_router
 from qbreak.api.routes_rsa import router as rsa_router
 from qbreak.api.schemas import ConfigResponse
-from qbreak.config import ENABLED_KEY_BITS, ENABLED_MODULI, MAX_AES_TEXT_CHARS, MAX_RSA_TEXT_CHARS, MAX_SHOTS
+from qbreak.config import (
+    AES_NOISE_MAX_KEY_BITS,
+    ENABLED_KEY_BITS,
+    ENABLED_MODULI,
+    KEY_BITS_16_NOTE,
+    MAX_AES_TEXT_CHARS,
+    MAX_NOISE_P,
+    MAX_NOISY_SHOTS,
+    MAX_RSA_TEXT_CHARS,
+    MAX_SHOTS,
+    SYMMETRIC_MAX_KEY_BITS,
+    aes_key_options,
+)
+
+AES_CONDITION_INFO = [
+    {"id": "known_beginning", "label": "Known beginning", "needs_known_text": True,
+     "description": "The attacker knows how the message starts (e.g. a standard greeting)."},
+    {"id": "known_substring", "label": "Known substring", "needs_known_text": True,
+     "description": "The attacker knows a piece of text that appears somewhere in the message, position unknown."},
+    {"id": "ciphertext_only", "label": "Ciphertext only", "needs_known_text": False,
+     "description": "No known plaintext: a key is a candidate if the whole message decrypts to ASCII text. "
+     "Expect several candidates (an Ambiguous verdict)."},
+]
 
 app = FastAPI(title="Q-Break API", version="0.1.0")
 app.add_middleware(
@@ -24,6 +47,7 @@ app.add_middleware(
 )
 app.include_router(aes_router, prefix="/api")
 app.include_router(rsa_router, prefix="/api")
+app.include_router(evaluation_router, prefix="/api")
 
 
 @app.exception_handler(RequestValidationError)
@@ -45,6 +69,8 @@ def health() -> dict[str, str]:
 @app.get("/api/config", response_model=ConfigResponse)
 def config() -> dict:
     """Return enabled test sizes and public request limits."""
+    from qbreak.aes.counting import COUNTING_MAX_KEY_BITS
+
     return {
         "aes_key_bits": ENABLED_KEY_BITS,
         "rsa_moduli": ENABLED_MODULI,
@@ -52,6 +78,14 @@ def config() -> dict:
         "max_aes_text_chars": MAX_AES_TEXT_CHARS,
         "max_rsa_text_chars": MAX_RSA_TEXT_CHARS,
         "default_known_prefix_chars": 3,
+        "aes_key_options": aes_key_options(),
+        "aes_max_key_bits": SYMMETRIC_MAX_KEY_BITS,
+        "aes_key_bits_16_note": KEY_BITS_16_NOTE,
+        "aes_conditions": AES_CONDITION_INFO,
+        "aes_counting_max_key_bits": COUNTING_MAX_KEY_BITS,
+        "aes_noise_max_key_bits": AES_NOISE_MAX_KEY_BITS,
+        "aes_max_noise_p": MAX_NOISE_P,
+        "aes_max_noisy_shots": MAX_NOISY_SHOTS,
     }
 
 

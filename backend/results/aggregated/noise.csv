@@ -1,0 +1,8 @@
+cipher,size,model,backend,p,iterations,p_success,success_rate,baseline,transpiled_depth,runs
+miniaes,4,depolarizing,,0.0,,0.96875,1.0,0.0625,37647.0,1
+miniaes,4,depolarizing,,0.001,,0.0390625,0.0,0.0625,37647.0,1
+miniaes,4,depolarizing,,0.005,,0.0546875,0.0,0.0625,37647.0,1
+miniaes,4,depolarizing,,0.02,,0.0390625,0.0,0.0625,37647.0,1
+miniaes,4,fake_backend,FakeGuadalupeV2,,0,0.0546875,0.0,0.0625,4.0,1
+miniaes,4,fake_backend,FakeGuadalupeV2,,1,0.03125,0.0,0.0625,19422.0,1
+miniaes,4,fake_backend,FakeGuadalupeV2,,3,0.0390625,0.0,0.0625,66677.0,1

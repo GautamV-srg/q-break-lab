@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "experiment": "grover_scaling",
+  "cipher": "miniaes",
+  "size": {
+    "key_bits": 6
+  },
+  "condition": "known_beginning",
+  "seed": 1240,
+  "success": null,
+  "p_success": null,
+  "quantum": {
+    "oracle_calls": 6,
+    "iterations": 6,
+    "qubits": 18,
+    "depth": 15,
+    "transpiled_depth": 4449,
+    "gate_counts": {
+      "x": 4705,
+      "mcx": 2352,
+      "cx": 576,
+      "h": 91,
+      "measure": 6
+    }
+  },
+  "classical": {
+    "evaluations": 32.5
+  },
+  "noise": {
+    "model": "ideal",
+    "p": null,
+    "backend": null
+  },
+  "extra": {
+    "statevector_mb": 4.0,
+    "transpile_ms": 101.54499999998734
+  },
+  "timestamp": "2026-10-06T14:42:20+00:00"
+}
