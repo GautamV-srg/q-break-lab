@@ -271,6 +271,16 @@ def test_records_pass_shared_validator_when_present(tmp_path: Path) -> None:
         schema.validate_record(record)
 
 
+def test_aggregate_scaling_keeps_constructions_apart() -> None:
+    aggregate = pytest.importorskip("qbreak.experiments.aggregate")
+    records = [record for _, record in experiments.scaling(moduli=(15,))]
+    rows = aggregate.build_series("scaling", records)["rows"]
+    by_construction = {row["construction"]: row for row in rows}
+    assert set(by_construction) == {"swap", "permutation", "iterative"}
+    assert all(row["runs"] == 1 for row in rows)  # one circuit per row, never a mean over circuits
+    assert by_construction["iterative"]["qubits"] < by_construction["swap"]["qubits"]
+
+
 @pytest.mark.slow
 def test_fake_backend_runs() -> None:
     pytest.importorskip("qiskit_ibm_runtime")

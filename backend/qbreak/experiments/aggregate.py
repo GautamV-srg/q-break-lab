@@ -36,6 +36,16 @@ def _size_kind(record: dict) -> str:
     return next(iter(record["size"]))
 
 
+def _construction(record: dict) -> str | None:
+    """Shor circuit construction (swap / permutation / iterative); None for Grover records.
+
+    Scaling and noise rows are split by it: the constructions are different circuits, so a
+    mean over them describes none of them. Ideal success rates are pooled, since every
+    construction samples the same phase distribution.
+    """
+    return record["extra"].get("construction")
+
+
 def _mean(values: list) -> float | None:
     values = [v for v in values if v is not None]
     return statistics.fmean(values) if values else None
@@ -51,9 +61,10 @@ def _group(records: list[dict], key) -> dict:
 def _scaling(records: list[dict]) -> list[dict]:
     rows = []
     picked = [r for r in records if r["experiment"].endswith("_scaling")]
-    for (cipher, kind, size), rs in sorted(_group(picked, lambda r: (r["cipher"], _size_kind(r), _size(r))).items()):
+    key = lambda r: (r["cipher"], _size_kind(r), _size(r), _construction(r))
+    for (cipher, kind, size, construction), rs in sorted(_group(picked, key).items(), key=lambda kv: tuple("" if v is None else v for v in kv[0])):
         rows.append({
-            "cipher": cipher, "size_kind": kind, "size": size,
+            "cipher": cipher, "size_kind": kind, "size": size, "construction": construction,
             "qubits": _mean([r["quantum"].get("qubits") for r in rs]),
             "depth": _mean([r["quantum"].get("depth") for r in rs]),
             "transpiled_depth": _mean([r["quantum"].get("transpiled_depth") for r in rs]),
@@ -66,10 +77,10 @@ def _scaling(records: list[dict]) -> list[dict]:
 def _noise(records: list[dict]) -> list[dict]:
     rows = []
     picked = [r for r in records if r["experiment"].endswith(("_noise_sweep", "_fake_backend"))]
-    key = lambda r: (r["cipher"], _size(r), r["noise"]["model"], r["noise"].get("backend"), r["noise"].get("p"), r["extra"].get("iterations"))
-    for (cipher, size, model, backend, p, iterations), rs in sorted(_group(picked, key).items(), key=lambda kv: tuple("" if v is None else v for v in kv[0])):
+    key = lambda r: (r["cipher"], _size(r), _construction(r), r["noise"]["model"], r["noise"].get("backend"), r["noise"].get("p"), r["extra"].get("iterations"))
+    for (cipher, size, construction, model, backend, p, iterations), rs in sorted(_group(picked, key).items(), key=lambda kv: tuple("" if v is None else v for v in kv[0])):
         rows.append({
-            "cipher": cipher, "size": size, "model": model, "backend": backend, "p": p, "iterations": iterations,
+            "cipher": cipher, "size": size, "construction": construction, "model": model, "backend": backend, "p": p, "iterations": iterations,
             "p_success": _mean([r["p_success"] for r in rs]),
             "success_rate": _mean([float(r["success"]) for r in rs if r["success"] is not None]),
             "baseline": _mean([r["extra"].get("uniform_baseline") for r in rs]),

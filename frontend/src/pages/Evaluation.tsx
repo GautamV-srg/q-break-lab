@@ -471,8 +471,10 @@ function NoiseCharts({ rows }: { rows: SeriesRow[] }) {
     <>
       {sweeps.length > 0 && (
         <div className="chart-grid">
-          {groupBy(sweeps, (r) => `${r.cipher}|${r.size}`).map(([key, rs]) => {
+          {/* One chart per circuit: Shor's constructions are different circuits with different noise behaviour. */}
+          {groupBy(sweeps, (r) => `${r.cipher}|${r.size}|${r.construction ?? ""}`).map(([key, rs]) => {
             const cipher = String(rs[0].cipher);
+            const construction = rs[0].construction != null ? `, ${String(rs[0].construction)} circuit` : "";
             const data = [...rs]
               .sort((a, b) => (num(a, "p") ?? 0) - (num(b, "p") ?? 0))
               .map((r) => ({ ...r, x: String(r.p ?? 0), y: num(r, "p_success") ?? num(r, "success_rate") }));
@@ -481,7 +483,7 @@ function NoiseCharts({ rows }: { rows: SeriesRow[] }) {
             return (
               <ChartFigure
                 key={key}
-                title={`${CIPHER_NAME[cipher] ?? cipher}, ${sizeLabel(cipher, rs[0].size)}: success vs noise`}
+                title={`${CIPHER_NAME[cipher] ?? cipher}, ${sizeLabel(cipher, rs[0].size)}${construction}: success vs noise`}
                 note="Depolarising error per two-qubit gate. The share of shots that land on the secret."
                 ariaLabel={`Success probability by noise: ${data.map((r) => `p ${r.x}: ${fmtPct(r.y)}`).join(", ")}`}
                 table={
@@ -550,6 +552,7 @@ function NoiseCharts({ rows }: { rows: SeriesRow[] }) {
                   <tr key={i}>
                     <th scope="row">
                       {CIPHER_NAME[String(r.cipher)] ?? String(r.cipher)}, {sizeLabel(r.cipher, r.size)}
+                      {r.construction != null && `, ${String(r.construction)}`}
                     </th>
                     <td className="mono">{String(r.backend ?? "—")}</td>
                     <td className="mono">{fmtNum(r.iterations)}</td>
