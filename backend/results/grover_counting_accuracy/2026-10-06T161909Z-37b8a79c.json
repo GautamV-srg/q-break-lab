@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "experiment": "grover_counting_accuracy",
+  "cipher": "miniaes",
+  "size": {
+    "key_bits": 4
+  },
+  "condition": "ciphertext_only",
+  "seed": 1236,
+  "success": true,
+  "p_success": null,
+  "quantum": {
+    "oracle_calls": 15,
+    "qubits": 22,
+    "transpiled_depth": 20932
+  },
+  "classical": {},
+  "noise": {
+    "model": "ideal",
+    "p": null,
+    "backend": null
+  },
+  "extra": {
+    "true_m": 1,
+    "estimated_m": 1,
+    "peak_m_estimate": 0.6089637399097054,
+    "counting_qubits": 4,
+    "message": "Quantum 2026"
+  },
+  "timestamp": "2026-10-06T16:19:09+00:00"
+}

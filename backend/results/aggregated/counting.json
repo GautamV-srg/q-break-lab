@@ -1,6 +1,167 @@
 {
   "series": "counting",
-  "empty": true,
-  "rows": [],
+  "empty": false,
+  "rows": [
+    {
+      "key_bits": 4,
+      "condition": "known_beginning",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097063,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_beginning",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_substring",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "ciphertext_only",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_beginning",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097063,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_beginning",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097063,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_substring",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097063,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "ciphertext_only",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_beginning",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_beginning",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_substring",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "ciphertext_only",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_beginning",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_beginning",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_substring",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "ciphertext_only",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_beginning",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_beginning",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "known_substring",
+      "true_m": 1,
+      "estimated_m": 1,
+      "peak_m_estimate": 0.6089637399097054,
+      "correct": true
+    },
+    {
+      "key_bits": 4,
+      "condition": "ciphertext_only",
+      "true_m": 4,
+      "estimated_m": 4,
+      "peak_m_estimate": 4.938532541079283,
+      "correct": true
+    }
+  ],
   "description": "Quantum-counting estimate of the number of matching keys vs the true count."
 }

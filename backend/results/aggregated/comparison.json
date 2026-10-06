@@ -31,6 +31,66 @@
       "theory_classical": 8.5,
       "theory_grover": 3.141592653589793,
       "runs": 4
+    },
+    {
+      "cipher": "minirsa",
+      "size": 15,
+      "condition": null,
+      "quantum_oracle_calls": 1.475,
+      "classical_evaluations": 2.0,
+      "theory_classical": null,
+      "theory_grover": null,
+      "runs": 40
+    },
+    {
+      "cipher": "minirsa",
+      "size": 21,
+      "condition": null,
+      "quantum_oracle_calls": 2.2,
+      "classical_evaluations": 2.0,
+      "theory_classical": null,
+      "theory_grover": null,
+      "runs": 40
+    },
+    {
+      "cipher": "minirsa",
+      "size": 33,
+      "condition": null,
+      "quantum_oracle_calls": 2.45,
+      "classical_evaluations": 2.0,
+      "theory_classical": null,
+      "theory_grover": null,
+      "runs": 40
+    },
+    {
+      "cipher": "minirsa",
+      "size": 35,
+      "condition": null,
+      "quantum_oracle_calls": 1.8,
+      "classical_evaluations": 3.0,
+      "theory_classical": null,
+      "theory_grover": null,
+      "runs": 40
+    },
+    {
+      "cipher": "minirsa",
+      "size": 55,
+      "condition": null,
+      "quantum_oracle_calls": 1.775,
+      "classical_evaluations": 3.0,
+      "theory_classical": null,
+      "theory_grover": null,
+      "runs": 40
+    },
+    {
+      "cipher": "minirsa",
+      "size": 77,
+      "condition": null,
+      "quantum_oracle_calls": 2.65,
+      "classical_evaluations": 4.0,
+      "theory_classical": null,
+      "theory_grover": null,
+      "runs": 40
     }
   ],
   "description": "Quantum oracle calls / circuit runs vs classical tries, per problem size."
