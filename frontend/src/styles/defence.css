@@ -1065,3 +1065,41 @@ code.rule {
 .hero {
   overflow-x: clip;
 }
+
+/* ---- Who's who in BB84 (Alice, Bob, Eve) ---- */
+.cast-intro {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--def);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--def) 6%, var(--surface));
+}
+.cast-intro h4 {
+  margin: 0 0 4px;
+}
+.cast-intro p {
+  margin: 6px 0;
+}
+.cast-list {
+  list-style: none;
+  margin: 10px 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.cast-member {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.cast-member .ps-avatar {
+  flex: none;
+  width: 34px;
+  height: 34px;
+}
+.cast-text {
+  display: block;
+  margin-top: 2px;
+}

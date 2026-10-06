@@ -3,7 +3,7 @@ import type { Bb84Options, DefenceMethod, ProtectResult } from "../../api/types"
 import ErrorBox from "../ErrorBox";
 import RunProgress from "../RunProgress";
 import StageCard from "../StageCard";
-import { Bb84Verdict, PhotonStream, PhotonTable, QberGauge, SiftingFunnel } from "./Bb84Visual";
+import { Bb84Verdict, CastIntro, PhotonStream, PhotonTable, QberGauge, SiftingFunnel } from "./Bb84Visual";
 import { fmtMs, fmtValue, humanize, PublicBundleView } from "./bits";
 import DefenceHood from "./DefenceHood";
 import { ALL_METHODS, methodName } from "./settings";
@@ -194,6 +194,7 @@ export default function ProtectStage({ d, id, n, locked, lockedHint, message, on
         {bb84On && draft && s && (
           <fieldset className="bb84-panel" disabled={busy}>
             <legend>BB84 channel settings</legend>
+            <CastIntro />
             <div className="field">
               <label className="switch">
                 <input type="checkbox" checked={draft.eve} onChange={(e) => patch({ eve: e.target.checked })} />

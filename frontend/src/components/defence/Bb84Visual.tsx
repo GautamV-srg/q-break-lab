@@ -224,3 +224,55 @@ export function Bb84Verdict({ qkd }: { qkd: QkdSummary }) {
     </div>
   );
 }
+
+/** Who Alice, Bob and Eve are: the standard cast of cryptography, introduced before BB84 runs. */
+export function CastIntro() {
+  const cast = [
+    {
+      cls: "ps-alice",
+      letter: "A",
+      name: "Alice",
+      side: "Your organization · sender",
+      text: "Wants to send the message. She creates the secret key by sending single photons, one random bit each, in a randomly chosen basis.",
+    },
+    {
+      cls: "ps-bob",
+      letter: "B",
+      name: "Bob",
+      side: "Your organization · receiver",
+      text: "The intended recipient, e.g. another office or a partner. He measures each photon in his own random basis, then compares notes with Alice in public.",
+    },
+    {
+      cls: "ps-eve",
+      letter: "E",
+      name: "Eve",
+      side: "The quantum adversary · eavesdropper",
+      text: "Taps the channel between them. To learn the key she must measure the photons, and measuring a photon in the wrong basis changes it. Those changes show up as errors.",
+    },
+  ];
+  return (
+    <section className="cast-intro" aria-labelledby="cast-intro-title">
+      <h4 id="cast-intro-title">Who's who in BB84</h4>
+      <p className="small muted">
+        Alice, Bob and Eve are the standard names cryptographers use for the sender, the receiver and the
+        eavesdropper (Eve, as in "eavesdropper"). Here, Alice and Bob are two sides of your organization, and Eve
+        is the same quantum adversary from the breach test.
+      </p>
+      <ul className="cast-list">
+        {cast.map((c) => (
+          <li key={c.name} className={`cast-member ${c.cls}`}>
+            <span className="ps-avatar" aria-hidden="true">{c.letter}</span>
+            <span>
+              <strong>{c.name}</strong> <span className="small muted">· {c.side}</span>
+              <span className="cast-text small">{c.text}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="small muted">
+        The key is safe if Eve's disturbance can be measured: Alice and Bob compare a sample of their bits, and if more
+        than 11% disagree (the QBER), they throw the key away and nothing is ever encrypted with it.
+      </p>
+    </section>
+  );
+}
