@@ -7,6 +7,7 @@ import ChunkTable from "../components/ChunkTable";
 import Duo from "../components/Duo";
 import ErrorBox from "../components/ErrorBox";
 import InterceptionWall from "../components/InterceptionWall";
+import OptionGroup, { type Option } from "../components/OptionGroup";
 import PopTheHood from "../components/PopTheHood";
 import PrototypeNotice from "../components/PrototypeNotice";
 import RunProgress from "../components/RunProgress";
@@ -24,9 +25,22 @@ const STEPS = [
   { label: "Report", side: "Breach Report" },
 ];
 
+const DEMO_MESSAGE = "Hi judges!";
+/** "" lets the engine choose the construction (the field is then left out of the request). */
+const AUTO = "";
+
 export default function PublicKeyTest() {
-  const { config } = useConfig();
+  const { config, loading, error: configError } = useConfig();
   const alive = useAliveRef();
+
+  // Everything selectable is driven by /api/config. Engines without the Track 5 fields
+  // fall back to the plain list of enabled moduli and no construction selector.
+  const modulusOptions = config.rsa_moduli_options?.length
+    ? config.rsa_moduli_options
+    : config.rsa_moduli.map((m) => ({
+        n: m, label: `N = ${m}`, enabled: true, kind: "supported", reason: null, qubits_register_2n: null, qubits_iterative: null,
+      }));
+  const constructions = config.rsa_constructions ?? [];
 
   // ---- Organization (victim) state. Never read when building the attack request. ----
   const [n, setN] = useState(config.rsa_moduli[0] ?? 15);
@@ -34,7 +48,7 @@ export default function PublicKeyTest() {
   const [reveal, setReveal] = useState(false);
   const [keygenBusy, setKeygenBusy] = useState(false);
   const [keygenError, setKeygenError] = useState<string | null>(null);
-  const [message, setMessage] = useState("Hi judges!");
+  const [message, setMessage] = useState(DEMO_MESSAGE);
   const [enc, setEnc] = useState<RsaEncryptResponse | null>(null);
   const [encMessage, setEncMessage] = useState("");
   const [encrypting, setEncrypting] = useState(false);
@@ -43,6 +57,7 @@ export default function PublicKeyTest() {
   // ---- Adversary state. Holds only what crossed the wall. ----
   const [intercepted, setIntercepted] = useState<InterceptedRsa | null>(null);
   const [baseA, setBaseA] = useState("");
+  const [construction, setConstruction] = useState(AUTO);
   const [shots, setShots] = useState(1024);
   const [attack, setAttack] = useState<RsaAttackResponse | null>(null);
   const [attacking, setAttacking] = useState(false);
@@ -52,15 +67,23 @@ export default function PublicKeyTest() {
   const [demoRunning, setDemoRunning] = useState(false);
   const [completedOnce, setCompletedOnce] = useState(false);
 
+  // Keep the selections valid when /api/config arrives or the modulus changes.
   useEffect(() => {
-    if (!config.rsa_moduli.includes(n)) setN(config.rsa_moduli[0] ?? 15);
+    if (config.rsa_moduli.length > 0 && !config.rsa_moduli.includes(n)) setN(config.rsa_moduli[0]);
   }, [config.rsa_moduli, n]);
+  useEffect(() => {
+    if (construction !== AUTO && !config.rsa_constructions?.some((c) => c.key === construction && c.moduli.includes(n)))
+      setConstruction(AUTO);
+  }, [n, construction, config.rsa_constructions]);
 
   const stage = attack ? 4 : intercepted ? 3 : enc ? 2 : 1;
   useScrollToStage(ID, stage);
 
-  const busy = keygenBusy || encrypting || attacking || demoRunning;
+  const configReady = !loading && !configError && config.rsa_moduli.length > 0;
+  const busy = keygenBusy || encrypting || attacking || demoRunning || !configReady;
   const messageValid = message.length > 0 && message.length <= config.max_rsa_text_chars;
+  const selectedModulus = modulusOptions.find((o) => o.n === n);
+  const chosen = constructions.find((c) => c.key === construction);
 
   const aTrim = baseA.trim();
   const aNum = aTrim === "" ? null : Number(aTrim);
@@ -130,7 +153,7 @@ export default function PublicKeyTest() {
     setAttackError(null);
     try {
       // The request is built ONLY from the adversary's intercepted data (see api/payloads.ts).
-      const req = buildRsaAttackRequest(target, { a, shots, seed });
+      const req = buildRsaAttackRequest(target, { a, shots, seed, ...(construction !== AUTO ? { construction } : {}) });
       const r = await rsaAttack(req);
       if (!alive.current) return;
       setAttack(r);
@@ -146,8 +169,9 @@ export default function PublicKeyTest() {
   async function runDemo() {
     setDemoRunning(true);
     try {
-      const modulus = config.rsa_moduli.includes(15) ? 15 : (config.rsa_moduli[0] ?? 15);
-      const msg = "Hi judges!";
+      // The demo runs the modulus and construction currently selected.
+      const modulus = config.rsa_moduli.includes(n) ? n : (config.rsa_moduli[0] ?? 15);
+      const msg = DEMO_MESSAGE;
       setN(modulus);
       setMessage(msg);
       setBaseA("");
@@ -175,11 +199,42 @@ export default function PublicKeyTest() {
     }
   }
 
+  const modulusChoices: Option<number>[] = modulusOptions.map((o) => ({
+    value: o.n,
+    name: o.label,
+    label: o.label,
+    disabledReason: o.enabled ? null : (o.reason ?? "Not enabled on this instance."),
+  }));
+  const constructionChoices: Option<string>[] = [
+    { value: AUTO, name: "Engine default", label: "Engine default", sub: "Let the engine pick the construction for this modulus." },
+    ...constructions.map((c) => ({
+      value: c.key,
+      name: c.label,
+      label: c.label,
+      sub: c.description,
+      badge: c.headline ? "Headline · fewest qubits" : undefined,
+      disabledReason: c.moduli.includes(intercepted?.n ?? n)
+        ? null
+        : `This construction is offered for N = ${c.moduli.join(", ") || "no enabled modulus"} only.`,
+    })),
+  ];
+  const usedConstruction =
+    attack && constructions.find((c) => c.key === attack.construction_key || c.name === attack.construction);
+  const reportInput = attack &&
+    keys &&
+    intercepted && {
+      kind: "public-key" as const,
+      resp: attack,
+      e: intercepted.e,
+      orgSecret: keys.victim_secret,
+      constructionLabel: usedConstruction?.label,
+    };
+
   return (
     <div className="page test-page">
       <div className="page-head">
         <div>
-          <div className="eyebrow">RSA · Shor's algorithm</div>
+          <div className="eyebrow">Red-team engagement · RSA · Shor's algorithm</div>
           <h1>Public-key breach test</h1>
           <p className="lede">
             Your organization publishes an RSA public key and receives encrypted messages. A simulated quantum
@@ -199,32 +254,24 @@ export default function PublicKeyTest() {
       <Duo
         left={
           <StageCard id={`${ID}-stage-1`} n={1} title="Configure the test" side="org" sideLabel="Your organization" locked={false}>
-            <div className="field">
-              <span className="field-label" id="pk-n-label">
-                RSA modulus N
-              </span>
-              <div className="segmented" role="radiogroup" aria-labelledby="pk-n-label">
-                {config.rsa_moduli.map((m) => (
-                  <button
-                    type="button"
-                    role="radio"
-                    aria-checked={m === n}
-                    key={m}
-                    className={m === n ? "seg seg-on" : "seg"}
-                    onClick={() => {
-                      setN(m);
-                      if (keys && keys.n !== m) {
-                        setKeys(null);
-                        resetAfterKeygen();
-                      }
-                    }}
-                    disabled={busy}
-                  >
-                    N = {m}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <OptionGroup
+              label="RSA modulus N"
+              options={modulusChoices}
+              value={n}
+              busy={busy}
+              onChange={(m) => {
+                setN(m);
+                if (keys && keys.n !== m) {
+                  setKeys(null);
+                  resetAfterKeygen();
+                }
+              }}
+              hint={
+                selectedModulus?.qubits_register_2n != null && selectedModulus.qubits_iterative != null
+                  ? `N = ${n}: ${selectedModulus.qubits_register_2n} qubits with a 2n counting register, ${selectedModulus.qubits_iterative} with iterative Shor.`
+                  : undefined
+              }
+            />
             <button className="btn btn-primary" onClick={() => void doKeygen()} disabled={busy}>
               {keygenBusy ? "Generating…" : keys ? "↻ Regenerate key pair" : "🔑 Generate key pair"}
             </button>
@@ -279,11 +326,12 @@ export default function PublicKeyTest() {
                     <label htmlFor="pk-msg" className="field-label">
                       Message encrypted with the public key
                     </label>
-                    <input
+                    <textarea
                       id="pk-msg"
                       className="input"
+                      rows={2}
                       value={message}
-                      maxLength={config.max_rsa_text_chars}
+                      maxLength={config.max_rsa_text_chars || undefined}
                       onChange={(e) => {
                         setMessage(e.target.value);
                         if (enc) {
@@ -292,9 +340,11 @@ export default function PublicKeyTest() {
                         }
                       }}
                       disabled={busy}
+                      aria-invalid={!messageValid}
+                      aria-describedby="pk-msg-hint"
                     />
-                    <div className="field-hint">
-                      {message.length}/{config.max_rsa_text_chars} characters
+                    <div id="pk-msg-hint" className={`field-hint ${messageValid ? "" : "field-error"}`}>
+                      {message.length}/{config.max_rsa_text_chars} characters{message.length === 0 ? " · enter a message" : ""}
                     </div>
                   </div>
                   <button type="submit" className="btn btn-primary" disabled={!messageValid || busy}>
@@ -344,7 +394,7 @@ export default function PublicKeyTest() {
             captured={[
               { label: "Modulus n", value: <span className="mono">{keys.n}</span> },
               { label: "Public exponent e", value: <span className="mono">{keys.e}</span> },
-              { label: "Ciphertext", value: <span className="mono">[{enc.ciphertext.join(", ")}]</span> },
+              { label: "Ciphertext", value: <span className="mono chip-scroll">[{enc.ciphertext.join(", ")}]</span> },
               { label: "bit_length", value: <span className="mono">{enc.bit_length}</span> },
             ]}
           >
@@ -365,7 +415,7 @@ export default function PublicKeyTest() {
             <span className="side-tag side-tag-org">Your organization</span>
             <p>
               <span aria-hidden="true">🔒</span> p, q, φ and d never leave this side. The adversary's request contains
-              only n, e, the ciphertext and its bit length.
+              only n, e, the ciphertext, its bit length and the attack settings.
             </p>
           </div>
         }
@@ -399,13 +449,37 @@ export default function PublicKeyTest() {
                   : `a must be a whole number from 2 to ${(intercepted?.n ?? n) - 1}.`}
               </div>
             </div>
+            {constructions.length > 0 && (
+              <OptionGroup
+                label="Shor construction"
+                variant="cards"
+                options={constructionChoices}
+                value={construction}
+                busy={busy}
+                onChange={(key) => {
+                  setConstruction(key);
+                  setAttack(null);
+                }}
+                hint={chosen ? `Counting qubits: ${chosen.counting_qubits}.` : undefined}
+              />
+            )}
+            <p className="caution">
+              <strong>Classical pre-computation is disclosed.</strong> Except for the textbook swap circuit at N = 15,
+              the modular-multiplication blocks are permutations computed classically when the circuit is built. The
+              period itself is read from the quantum measurement, and each report states which construction ran.
+            </p>
             <ShotsSlider value={shots} max={config.max_shots} onChange={setShots} disabled={busy} />
             <button className="btn btn-attack" onClick={() => void runAttack()} disabled={busy || !intercepted || !aValid}>
               {attacking ? "Breach test running…" : "⚛ Run quantum breach test"}
             </button>
             {attacking && (
               <RunProgress
-                stages={["Building period-finding circuit", "Simulating", "Inverse QFT", "Reading period"]}
+                stages={[
+                  "Building period-finding circuit",
+                  "Simulating",
+                  construction === "iterative" ? "Measuring and resetting the counting qubit" : "Inverse QFT",
+                  "Reading period",
+                ]}
               />
             )}
             <ErrorBox message={attackError} onRetry={busy ? undefined : () => void runAttack()} />
@@ -424,14 +498,15 @@ export default function PublicKeyTest() {
         lockedHint="Run the breach test to produce a report."
         className="stage-report"
       >
-        {attack && keys && intercepted && (
+        {reportInput && intercepted && (
           <BreachReport
-            input={{ kind: "public-key", resp: attack, e: intercepted.e, orgSecret: keys.victim_secret }}
+            input={reportInput}
             onRetry={() => void runAttack(intercepted, null, randomSeed())}
             retrying={attacking}
             popTheHood={
               <PopTheHood
-                input={{ kind: "public-key", resp: attack, e: intercepted.e, orgSecret: keys.victim_secret }}
+                input={reportInput}
+                noiseTarget={{ kind: "public-key", intercepted, shots, construction: reportInput.resp.construction_key }}
                 pulse={completedOnce}
               />
             }

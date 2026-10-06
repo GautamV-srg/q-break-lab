@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Q-Break · Track 5 presentation</title>
+<meta name="description" content="Q-Break: a quantum red-team engine for breach testing encrypted communications. Track 5 presentation deck." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230a0c13'/><circle cx='16' cy='16' r='8' fill='none' stroke='%23ff6170' stroke-width='2.5'/><circle cx='16' cy='16' r='2.5' fill='%23ff6170'/><path d='M16 4v6M16 22v6M4 16h6M22 16h6' stroke='%23ff6170' stroke-width='2.5' stroke-linecap='round'/></svg>" />
+<style>
+  :root {
+    --bg: #0a0c13; --surface: #11151f; --surface-2: #181d2b; --surface-3: #212839; --border: #2a3247;
+    --text: #e9edf6; --muted: #98a3b8; --accent: #22d3ee; --org: #60a5fa; --adv: #ff6170;
+    --adv-strong: #e11d48; --adv-deep: #9f1239; --amber: #f59e0b; --ok: #22c55e;
+    --q: #3987e5; --c: #d95926; --s3: #199e70; --grid: #222a3c;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --mono: "JetBrains Mono", "Cascadia Code", Consolas, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.45; }
+  a { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  .slide {
+    min-height: 100vh; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center;
+    padding: clamp(56px, 8vh, 96px) clamp(20px, 7vw, 120px) clamp(64px, 9vh, 96px); position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+  .slide > * { max-width: 1280px; width: 100%; margin-left: auto; margin-right: auto; }
+  .kicker { font-family: var(--mono); font-size: clamp(0.7rem, 1.4vmin, 0.95rem); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--adv); margin-bottom: 0.8em; }
+  .kicker::before { content: "▸ "; }
+  h1 { font-size: clamp(2.2rem, 7.2vmin, 5rem); line-height: 1.04; letter-spacing: -0.03em; margin: 0 0 0.35em; font-weight: 850; }
+  h2 { font-size: clamp(1.6rem, 4.6vmin, 3.1rem); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 0.5em; }
+  h3 { font-size: clamp(1rem, 2.3vmin, 1.4rem); margin: 0 0 0.3em; }
+  p, li { font-size: clamp(1rem, 2.35vmin, 1.5rem); }
+  p { margin: 0 0 0.7em; }
+  ul { margin: 0; padding-left: 1.2em; }
+  li { margin-bottom: 0.45em; }
+  .lede { color: var(--muted); max-width: 46em; }
+  .small, .small p, .small li { font-size: clamp(0.82rem, 1.7vmin, 1.05rem); }
+  .muted { color: var(--muted); }
+  strong.hot { color: var(--adv); }
+
+  .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 3vw, 48px); align-items: center; }
+  .cols.wide-right { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: clamp(10px, 1.6vw, 20px); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: clamp(12px, 2vmin, 22px); }
+  .card.org { border-top: 3px solid var(--org); } .card.adv { border-top: 3px solid var(--adv); }
+  .card.q { border-top: 3px solid var(--q); } .card.c { border-top: 3px solid var(--c); }
+  .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+  .big { font-family: var(--mono); font-size: clamp(1.6rem, 5vmin, 3.2rem); font-weight: 800; line-height: 1.1; }
+  .tag { font-family: var(--mono); font-size: clamp(0.65rem, 1.3vmin, 0.85rem); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+  .strip { font-family: var(--mono); font-size: clamp(0.62rem, 1.3vmin, 0.85rem); letter-spacing: 0.05em; color: var(--muted); border: 1px solid var(--border); border-left: 4px solid var(--adv-strong); border-radius: 6px; padding: 8px 12px; background: var(--surface); }
+  .strip b { color: var(--adv); letter-spacing: 0.12em; text-transform: uppercase; }
+  .note { border-left: 4px solid var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--surface)); border-radius: 0 10px 10px 0; padding: 10px 16px; }
+  .note p { margin: 0; }
+
+  .flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; counter-reset: step; list-style: none; padding: 0; }
+  .flow li { counter-increment: step; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 0; }
+  .flow li::before { content: counter(step); display: inline-grid; place-items: center; width: 1.7em; height: 1.7em; border-radius: 50%; background: var(--adv-strong); color: #fff; font-family: var(--mono); font-weight: 800; margin-bottom: 6px; }
+  .flow b { display: block; }
+  .wall { display: flex; align-items: center; gap: 14px; font-family: var(--mono); font-size: clamp(0.6rem, 1.3vmin, 0.85rem); font-weight: 700; letter-spacing: 0.14em; color: var(--org); margin: 18px auto; }
+  .wall span:last-child { color: var(--adv); }
+  .wall i { flex: 1; height: 14px; border-radius: 3px; background: repeating-linear-gradient(90deg, var(--surface-3) 0 26px, var(--border) 26px 28px); box-shadow: inset 0 0 0 1px var(--border); }
+
+  figure { margin: 0; }
+  .chart { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 12px 6px; }
+  .chart svg { display: block; width: 100%; height: auto; }
+  .chart-title { font-weight: 700; font-size: clamp(0.9rem, 1.9vmin, 1.2rem); margin-bottom: 2px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: clamp(0.75rem, 1.5vmin, 0.95rem); color: var(--muted); margin: 4px 0; padding: 0; list-style: none; }
+  .legend li { display: flex; align-items: center; gap: 6px; margin: 0; font-size: inherit; }
+  .key { width: 18px; height: 3px; border-radius: 2px; display: inline-block; }
+  .key.dash { height: 0; border-top: 3px dashed; background: none !important; }
+  .key.box { width: 11px; height: 11px; border-radius: 3px; }
+  .source { font-size: clamp(0.7rem, 1.35vmin, 0.9rem); color: var(--muted); margin-top: 4px; }
+  svg text { font-family: var(--sans); fill: var(--muted); font-size: 13px; }
+  table { border-collapse: collapse; width: 100%; font-size: clamp(0.8rem, 1.7vmin, 1.05rem); }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+
+  .nav { position: fixed; right: 14px; bottom: 12px; display: flex; align-items: center; gap: 8px; z-index: 5; font-family: var(--mono); font-size: 0.8rem; color: var(--muted); background: color-mix(in srgb, var(--bg) 85%, transparent); border: 1px solid var(--border); border-radius: 999px; padding: 4px 6px 4px 12px; }
+  .nav button { font: inherit; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; width: 30px; height: 30px; cursor: pointer; }
+  .nav button:hover { border-color: var(--accent); }
+  .home { position: fixed; left: 14px; bottom: 12px; z-index: 5; font-family: var(--mono); font-size: 0.8rem; background: color-mix(in srgb, var(--bg) 85%, transparent); border: 1px solid var(--border); border-radius: 999px; padding: 8px 12px; text-decoration: none; color: var(--muted); }
+  .glow { position: absolute; inset: 0; pointer-events: none; z-index: -1; max-width: none !important; background: radial-gradient(circle at 78% 30%, color-mix(in srgb, var(--adv-strong) 22%, transparent), transparent 55%), radial-gradient(circle at 20% 80%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 50%); }
+
+  @media (max-width: 860px) {
+    .cols, .cols.wide-right { grid-template-columns: minmax(0, 1fr); }
+    .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    html { scroll-snap-type: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media print {
+    :root { --bg: #fff; --surface: #fff; --surface-2: #f3f4f6; --surface-3: #e5e7eb; --border: #d1d5db; --text: #111827; --muted: #4b5563; --accent: #0e7490; --adv: #be123c; --org: #1d4ed8; --grid: #e5e7eb; --q: #2a78d6; --c: #eb6834; }
+    @page { size: landscape; margin: 10mm; }
+    html { scroll-snap-type: none; }
+    .slide { min-height: 0; height: 186mm; page-break-after: always; border: none; padding: 6mm 10mm; overflow: hidden; }
+    .nav, .home, .glow { display: none; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<section class="slide" id="s1" aria-label="Title">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="kicker">Qiskit Fall Fest 2026 · Track 5 · Open Innovation</div>
+  <h1>Q-Break</h1>
+  <h2 style="font-weight:600;max-width:24em">A quantum red-team engine for breach testing encrypted communications</h2>
+  <p class="lede">Can your encrypted messages survive a quantum attacker?</p>
+  <p class="strip"><b>Simulated exercise</b> · miniature ciphers · classical simulator · does not break real AES or RSA · no speed-advantage claim</p>
+</section>
+
+<section class="slide" id="s2" aria-label="Problem, motivation, users">
+  <div class="kicker">The problem</div>
+  <h2>Encrypted traffic recorded today can be opened later</h2>
+  <div class="cols">
+    <div>
+      <ul>
+        <li><strong>Harvest now, decrypt later.</strong> An adversary stores ciphertext today and waits for the hardware.</li>
+        <li>Shor's algorithm breaks RSA and elliptic curves at <em>any</em> key size; Grover's halves the strength of every symmetric key.</li>
+        <li>Most organizations have never <em>seen</em> a quantum attack on their own messages, so the risk stays abstract and migration stalls.</li>
+      </ul>
+    </div>
+    <div class="cards">
+      <div class="card"><h3>Enterprises</h3><p class="small">Customer data, contracts, internal traffic protected by AES and RSA.</p></div>
+      <div class="card"><h3>Governments</h3><p class="small">Communications that must stay secret for decades.</p></div>
+      <div class="card"><h3>Secure-messaging providers</h3><p class="small">Showing users, with evidence, how their encryption holds up.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s3" aria-label="What Q-Break does">
+  <div class="kicker">The product</div>
+  <h2>A red-team engagement, in four stages</h2>
+  <ol class="flow">
+    <li><b>Configure</b><span class="small">Your organization encrypts a message with its own key.</span></li>
+    <li><b>Intercept</b><span class="small">The adversary captures only what an eavesdropper would.</span></li>
+    <li><b>Breach test</b><span class="small">A genuine Grover or Shor circuit runs on the intercept.</span></li>
+    <li><b>Breach Report</b><span class="small">Verdict, recovered secret, quantum vs classical cost, recommendation.</span></li>
+  </ol>
+  <div class="wall" aria-hidden="true"><span>YOUR ORGANIZATION</span><i></i><span>QUANTUM ADVERSARY</span></div>
+  <div class="note"><p><strong>Blindness is enforced, not promised.</strong> The attack code and the classical baselines receive ciphertext and public parameters only. The key, p, q, φ and d never cross the wall, and tests check it.</p></div>
+</section>
+
+<section class="slide" id="s4" aria-label="Quantum approach: symmetric">
+  <div class="kicker">Quantum approach · symmetric</div>
+  <h2>Grover's search on MiniAES, with the cipher inside the oracle</h2>
+  <div class="cols">
+    <ul>
+      <li>The oracle runs the cipher <strong>reversibly, in circuit</strong>, for every key in superposition, then cleanly uncomputes.</li>
+      <li><strong>Three attack modes:</strong> known beginning, known substring at an unknown position, and ciphertext only.</li>
+      <li><strong>Quantum counting</strong> estimates how many keys match before the search, so the iteration count is derived, not guessed.</li>
+      <li>Every measured key is re-checked classically before anything is reported.</li>
+    </ul>
+    <figure class="chart">
+      <div class="chart-title">Success by number of Grover iterations</div>
+      <ul class="legend"><li><span class="key" style="background:var(--q)"></span>measured</li><li><span class="key dash" style="border-color:var(--q)"></span>theory, sin²((2j+1)θ)</li></ul>
+      <div id="chart-iter"></div>
+      <div class="source" id="src-iter"></div>
+    </figure>
+  </div>
+</section>
+
+<section class="slide" id="s5" aria-label="Quantum approach: public key">
+  <div class="kicker">Quantum approach · public-key</div>
+  <h2>Shor's period finding on MiniRSA, down to one counting qubit</h2>
+  <div class="cols">
+    <ul>
+      <li>Moduli built from distinct odd primes up to 11: <span class="mono" id="moduli-list">15, 21, 33, 35, 55, 77</span>.</li>
+      <li>Three constructions, cross-checked to give the same factors: textbook swaps, permutation blocks, and <strong class="hot">iterative phase estimation</strong>.</li>
+      <li>The iterative circuit reuses <strong>a single counting qubit</strong> in place of a 2n-qubit register and inverse QFT.</li>
+      <li class="small muted">Disclosed: the modular-multiplication blocks are permutations computed classically when the circuit is built. The period is read from the quantum measurement.</li>
+    </ul>
+    <figure class="chart">
+      <div class="chart-title">Qubits needed, by modulus and construction</div>
+      <ul class="legend"><li><span class="key box" style="background:var(--q)"></span>2n counting register</li><li><span class="key box" style="background:var(--s3)"></span>iterative, 1 counting qubit</li></ul>
+      <div id="chart-qubits"></div>
+      <div class="source">Qubit counts as reported by the engine's configuration.</div>
+    </figure>
+  </div>
+</section>
+
+<section class="slide" id="s6" aria-label="Why a quantum approach">
+  <div class="kicker">Why quantum, here</div>
+  <h2>These are the two problems where quantum changes the answer</h2>
+  <div class="cards">
+    <div class="card q"><h3>Key search is unstructured search</h3><p class="small">Classically nothing beats trying keys: about N/2 tries. Grover needs about √N oracle calls, and that is provably optimal. This is the quantum threat to symmetric encryption.</p></div>
+    <div class="card q"><h3>Factoring hides a period</h3><p class="small">RSA's security is the difficulty of factoring N. Shor turns factoring into finding the period of aˣ mod N, which a quantum Fourier transform reads off in polynomial time.</p></div>
+    <div class="card"><h3>Same circuits, small numbers</h3><p class="small">The oracle, diffuser, phase estimation and post-processing are the ones a full-scale attack would use. Only the sizes are miniature, because the simulator's memory doubles with every qubit.</p></div>
+  </div>
+</section>
+
+<section class="slide" id="s7" aria-label="Classical versus quantum: query counts">
+  <div class="kicker">Classical vs quantum · the centrepiece</div>
+  <h2>The gap is in queries, and it widens with every key bit</h2>
+  <div class="cols wide-right">
+    <div>
+      <div class="cards" style="grid-template-columns:1fr">
+        <div class="card c"><div class="tag">Classical brute force</div><div class="big">≈ N / 2</div><p class="small">cipher evaluations on average</p></div>
+        <div class="card q"><div class="tag">Grover</div><div class="big">≈ π/4 · √N</div><p class="small">oracle calls</p></div>
+      </div>
+      <p class="small muted" style="margin-top:12px">The classical baseline solves the same problem from the same intercepted data, and never sees the key.</p>
+    </div>
+    <figure class="chart">
+      <div class="chart-title">Queries to recover a MiniAES key, by key size (log scale)</div>
+      <ul class="legend">
+        <li><span class="key" style="background:var(--c)"></span>classical tries, measured</li>
+        <li><span class="key" style="background:var(--q)"></span>Grover oracle calls, measured</li>
+        <li><span class="key dash" style="border-color:var(--muted)"></span>theory</li>
+      </ul>
+      <div id="chart-queries"></div>
+      <div class="source" id="src-queries"></div>
+    </figure>
+  </div>
+  <div class="note" style="margin-top:14px"><p class="small"><strong>Not a speed claim.</strong> On wall-clock time, simulating the quantum circuit on a classical computer is slower than brute force at these sizes. Query count is the fair comparison, and no quantum advantage is claimed.</p></div>
+</section>
+
+<section class="slide" id="s8" aria-label="Classical versus quantum: Shor">
+  <div class="kicker">Classical vs quantum · public-key</div>
+  <h2>At toy moduli, classical factoring wins. We say so.</h2>
+  <div class="cols">
+    <div class="cards" style="grid-template-columns:1fr">
+      <div class="card q"><div class="tag">Shor, measured per run</div><p>Circuit runs to factor, qubits used, and the same count for the 2n-register and iterative constructions.</p></div>
+      <div class="card c"><div class="tag">Two blind classical baselines</div><p>Trial division, and classical order finding: counted in divisions and modular multiplications.</p></div>
+    </div>
+    <div>
+      <ul>
+        <li>Every Breach Report carries a <strong>Quantum vs classical</strong> box built from that run's comparison record.</li>
+        <li>For N ≤ 77 a handful of trial divisions factors N in microseconds. The simulator takes milliseconds to seconds.</li>
+        <li>What the miniature run demonstrates is the <strong>workflow and its resource counts</strong>: the part that scales polynomially where classical factoring does not.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s9" aria-label="Noise results">
+  <div class="kicker">Noise analysis</div>
+  <h2>On noisy hardware, even the miniature breach fails</h2>
+  <div class="cols wide-right">
+    <ul>
+      <li>Depolarising noise is added to every gate; we sweep the error rate and re-run the attack.</li>
+      <li>Success falls to <strong>random guessing</strong> at error rates far below what today's devices achieve.</li>
+      <li>Fake IBM backends (real chip layouts and calibrations) tell the same story.</li>
+      <li>In the app, the <strong>noise lab</strong> in Pop the Hood re-runs your own breach under noise, live.</li>
+    </ul>
+    <figure class="chart">
+      <div class="chart-title">Attack success probability as the error rate rises</div>
+      <ul class="legend" id="legend-noise"></ul>
+      <div id="chart-noise"></div>
+      <div class="source" id="src-noise"></div>
+    </figure>
+  </div>
+  <div class="note" style="margin-top:14px"><p class="small"><strong>Takeaway.</strong> Real breach testing needs fault-tolerant, error-corrected quantum hardware. It does not exist yet.</p></div>
+</section>
+
+<section class="slide" id="s10" aria-label="Scaling results">
+  <div class="kicker">Depth and problem size</div>
+  <h2>Qubits grow gently. Depth, and the simulator's memory, do not.</h2>
+  <div class="cols">
+    <figure class="chart">
+      <div class="chart-title">MiniAES · Grover: qubits by key size</div>
+      <div id="chart-scale-q"></div>
+    </figure>
+    <figure class="chart">
+      <div class="chart-title">MiniAES · Grover: transpiled depth by key size (log scale)</div>
+      <div id="chart-scale-d"></div>
+    </figure>
+  </div>
+  <div class="source" id="src-scale"></div>
+  <p class="small" style="margin-top:12px" id="note-16bit"><strong>The 16-bit wall.</strong> 16-bit keys are deliberately not simulated: about 30 qubits means a state vector of roughly 16 GB, with about 200 Grover iterations over it. That limit is the point: classical simulation of quantum circuits does not scale.</p>
+</section>
+
+<section class="slide" id="s11" aria-label="Real-scale resource estimates and Mosca">
+  <div class="kicker">What it means at real scale</div>
+  <h2>Published resource estimates, and when they matter to you</h2>
+  <div class="cols">
+    <div>
+      <h3>Cited estimates (not measured by Q-Break)</h3>
+      <table aria-label="Published resource estimates">
+        <thead><tr><th>Target</th><th>Estimate</th><th>Source</th></tr></thead>
+        <tbody id="estimates"></tbody>
+      </table>
+      <p class="source">Figures are quoted by the engine from the cited papers; the app shows them with full references in every Breach Report.</p>
+    </div>
+    <div>
+      <h3>Mosca's inequality</h3>
+      <p class="big">X + Y &gt; Z</p>
+      <ul class="small">
+        <li><b>X</b> years your data must stay secret</li>
+        <li><b>Y</b> years to migrate to post-quantum cryptography</li>
+        <li><b>Z</b> years until a capable quantum computer exists</li>
+      </ul>
+      <div class="card adv" style="margin-top:10px"><p class="small" id="mosca-example"></p></div>
+      <p class="source">Z is your assumption. Q-Break does not forecast it.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s12" aria-label="Limitations and honesty">
+  <div class="kicker">Limitations · rules of engagement</div>
+  <h2>What this prototype does not claim</h2>
+  <div class="cols">
+    <ul>
+      <li><strong>Miniature ciphers.</strong> MiniAES is an AES-inspired toy (4-bit block, one round). MiniRSA uses real RSA arithmetic on tiny moduli.</li>
+      <li><strong>Classical simulator.</strong> Genuine Qiskit circuits, executed on Qiskit Aer. No quantum hardware.</li>
+      <li><strong>It does not break real AES or RSA.</strong> Real key sizes need large fault-tolerant machines.</li>
+      <li><strong>No speed-advantage claim.</strong> The simulation is slower than the classical baselines.</li>
+    </ul>
+    <ul>
+      <li><strong>Disclosed pre-computation.</strong> Shor's multiplication blocks are classically computed permutations.</li>
+      <li><strong>Ciphertext-only is often ambiguous.</strong> Many keys can fit; the report says so instead of picking one.</li>
+      <li><strong>Noise is fatal today.</strong> Ideal-simulator results do not transfer to current hardware.</li>
+      <li><strong>Self-generated instances.</strong> Keys, messages, moduli and seeds are generated by the project and reproducible.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide" id="s13" aria-label="Demo">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="kicker">Live demo</div>
+  <h1 style="font-size:clamp(2rem,6vmin,4rem)">See the breach. Then pop the hood.</h1>
+  <div class="cards">
+    <a class="card adv" href="/test/symmetric" style="text-decoration:none;color:inherit"><h3>Symmetric breach test →</h3><p class="small">Grover on MiniAES, three attack modes.</p></a>
+    <a class="card adv" href="/test/public-key" style="text-decoration:none;color:inherit"><h3>Public-key breach test →</h3><p class="small">Shor on MiniRSA, iterative construction.</p></a>
+    <a class="card" href="/evaluation" style="text-decoration:none;color:inherit"><h3>Evaluation →</h3><p class="small">Scaling, noise, success rates, queries.</p></a>
+    <a class="card" href="/mosca" style="text-decoration:none;color:inherit"><h3>Mosca risk calculator →</h3><p class="small">X + Y &gt; Z for your own timeline.</p></a>
+  </div>
+  <p class="strip" style="margin-top:22px"><b>Simulated exercise</b> · miniature ciphers · classical simulator · does not break real AES or RSA · no speed-advantage claim</p>
+</section>
+
+<a class="home" href="/">← Q-Break app</a>
+<div class="nav" aria-label="Slide navigation">
+  <span id="counter" aria-live="polite">1 / 13</span>
+  <button type="button" id="prev" aria-label="Previous slide">←</button>
+  <button type="button" id="next" aria-label="Next slide">→</button>
+</div>
+
+<script src="/deck-data.js"></script>
+<script>
+(() => {
+  "use strict";
+  // ---------- Slide navigation ----------
+  const slides = [...document.querySelectorAll(".slide")];
+  const counter = document.getElementById("counter");
+  let current = 0;
+  const go = (i) => { current = Math.max(0, Math.min(slides.length - 1, i)); slides[current].scrollIntoView(); };
+  const seen = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) { current = slides.indexOf(e.target); counter.textContent = `${current + 1} / ${slides.length}`; }
+  }, { threshold: 0.55 });
+  slides.forEach((s) => seen.observe(s));
+  document.getElementById("prev").onclick = () => go(current - 1);
+  document.getElementById("next").onclick = () => go(current + 1);
+  addEventListener("keydown", (e) => {
+    // Space and Enter keep their normal meaning on links and buttons.
+    if (e.key === " " && e.target instanceof Element && e.target.closest("a, button")) return;
+    if (["ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); go(current + 1); }
+    else if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); go(current - 1); }
+    else if (e.key === "Home") { e.preventDefault(); go(0); }
+    else if (e.key === "End") { e.preventDefault(); go(slides.length - 1); }
+  });
+
+  // ---------- Tiny SVG charts (labels are set with textContent; data is never parsed as HTML) ----------
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (name, attrs = {}, text) => {
+    const n = document.createElementNS(NS, name);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const fmt = (v) => (v >= 1000 ? Math.round(v).toLocaleString() : Number(v.toPrecision(3)).toString());
+
+  function frame(host, { W = 640, H = 340, label }) {
+    host.replaceChildren();
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": label });
+    host.append(svg);
+    return { svg, W, H, L: 62, R: 18, T: 14, B: 46 };
+  }
+  function axes(f, { xs, xOf, yTicks, yOf, yFmt, xLabel, xFmt = String }) {
+    const { svg, W, H, L, R, B } = f;
+    for (const t of yTicks) {
+      svg.append(el("line", { x1: L, x2: W - R, y1: yOf(t), y2: yOf(t), stroke: css("--grid") }));
+      svg.append(el("text", { x: L - 8, y: yOf(t) + 4, "text-anchor": "end" }, yFmt(t)));
+    }
+    for (const x of xs) svg.append(el("text", { x: xOf(x), y: H - B + 18, "text-anchor": "middle" }, xFmt(x)));
+    svg.append(el("line", { x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: css("--border") }));
+    if (xLabel) svg.append(el("text", { x: (L + W - R) / 2, y: H - 8, "text-anchor": "middle" }, xLabel));
+  }
+  /** series: [{color, dash, dots, points:[[x,y]]}], x positions are the categories in `xs`. */
+  function lineChart(host, { xs, series, log, yMax, yFmt = fmt, xLabel, xFmt, label }) {
+    const f = frame(host, { label });
+    const { svg, W, H, L, R, T, B } = f;
+    const ys = series.flatMap((s) => s.points.map((p) => p[1])).filter((v) => v != null && (!log || v > 0));
+    if (!ys.length) return false;
+    const lo = log ? Math.pow(10, Math.floor(Math.log10(Math.min(...ys)))) : 0;
+    const hi = log ? Math.pow(10, Math.ceil(Math.log10(Math.max(...ys)))) : (yMax ?? Math.max(...ys) * 1.1);
+    const yOf = (v) => (log ? H - B - ((Math.log10(v) - Math.log10(lo)) / (Math.log10(hi) - Math.log10(lo))) * (H - B - T) : H - B - ((v - 0) / (hi - 0)) * (H - B - T));
+    const xOf = (x) => L + 20 + (xs.indexOf(x) / Math.max(1, xs.length - 1)) * (W - R - L - 40);
+    const yTicks = [];
+    if (log) for (let t = lo; t <= hi * 1.001; t *= 10) yTicks.push(t);
+    else for (let i = 0; i <= 4; i++) yTicks.push((hi * i) / 4);
+    axes(f, { xs, xOf, yTicks, yOf, yFmt, xLabel, xFmt });
+    for (const s of series) {
+      const pts = s.points.filter((p) => p[1] != null && (!log || p[1] > 0) && xs.includes(p[0]));
+      if (!pts.length) continue;
+      svg.append(el("polyline", { points: pts.map((p) => `${xOf(p[0])},${yOf(p[1])}`).join(" "), fill: "none", stroke: s.color, "stroke-width": 2.5, "stroke-linejoin": "round", "stroke-dasharray": s.dash ? "7 6" : "" }));
+      if (s.dots) for (const p of pts) {
+        const c = el("circle", { cx: xOf(p[0]), cy: yOf(p[1]), r: 5, fill: s.color, stroke: css("--surface"), "stroke-width": 2 });
+        c.append(el("title", {}, `${xFmt ? xFmt(p[0]) : p[0]}: ${yFmt(p[1])}`));
+        svg.append(c);
+      }
+    }
+    return true;
+  }
+  /** groups: [{x, values:[{color, v}]}] */
+  function barChart(host, { groups, xLabel, label, xFmt = String }) {
+    const f = frame(host, { label });
+    const { svg, W, H, L, R, T, B } = f;
+    const hi = Math.max(...groups.flatMap((g) => g.values.map((b) => b.v))) * 1.12;
+    if (!Number.isFinite(hi) || hi <= 0) return false;
+    const yOf = (v) => H - B - (v / hi) * (H - B - T);
+    const band = (W - L - R) / groups.length;
+    const xs = groups.map((g) => g.x);
+    const xOf = (x) => L + band * (xs.indexOf(x) + 0.5);
+    const step = Math.max(1, Math.ceil(hi / 4 / 5) * 5);
+    const yTicks = []; for (let t = 0; t <= hi; t += step) yTicks.push(t);
+    axes(f, { xs, xOf, yTicks, yOf, yFmt: fmt, xLabel, xFmt });
+    for (const g of groups) {
+      const n = g.values.length, w = Math.min(24, (band * 0.7) / n - 2);
+      g.values.forEach((b, i) => {
+        const x = xOf(g.x) - (n * (w + 2) - 2) / 2 + i * (w + 2);
+        const y = yOf(b.v);
+        const r = el("path", { d: `M${x},${H - B} V${y + 4} Q${x},${y} ${x + 4},${y} H${x + w - 4} Q${x + w},${y} ${x + w},${y + 4} V${H - B} Z`, fill: b.color });
+        r.append(el("title", {}, `${xFmt(g.x)}: ${fmt(b.v)}`));
+        svg.append(r);
+        svg.append(el("text", { x: x + w / 2, y: y - 5, "text-anchor": "middle", style: "font-size:12px" }, fmt(b.v)));
+      });
+    }
+    return true;
+  }
+  const empty = (id, text) => { const n = document.getElementById(id); n.replaceChildren(); const p = document.createElement("p"); p.className = "small muted"; p.textContent = text; n.append(p); };
+
+  // ---------- Data: recorded snapshot first, live engine data when the deck is served by the engine ----------
+  const snap = window.QBREAK_SNAPSHOT ?? {};
+  const NO_DATA = "No stored results to plot. Run the experiments runner, then open the Evaluation page.";
+
+  function render(evaluation, origin) {
+    const rows = (name) => evaluation?.data?.[name]?.rows ?? [];
+    const Q = css("--q"), C = css("--c"), M = css("--muted");
+    const src = (id, extra = "") => { const n = document.getElementById(id); if (n) n.textContent = `${origin}${extra}`; };
+
+    // Centrepiece: queries by key size. Theory is exact; measured points come from stored runs.
+    const bits = [4, 6, 8, 10, 12];
+    const cmp = rows("comparison").filter((r) => r.cipher === "miniaes" && (r.condition ?? "known_beginning") === "known_beginning");
+    const measured = (key) => cmp.map((r) => [r.size, r[key]]).sort((a, b) => a[0] - b[0]);
+    lineChart(document.getElementById("chart-queries"), {
+      xs: bits, log: true, xLabel: "key bits (N = 2^bits keys)", xFmt: (b) => `${b}`,
+      label: "Classical tries and Grover oracle calls by key size, log scale",
+      series: [
+        { color: M, dash: true, points: bits.map((b) => [b, (2 ** b + 1) / 2]) },
+        { color: M, dash: true, points: bits.map((b) => [b, (Math.PI / 4) * Math.sqrt(2 ** b)]) },
+        { color: C, dots: true, points: measured("classical_evaluations") },
+        { color: Q, dots: true, points: measured("quantum_oracle_calls") },
+      ],
+    });
+    src("src-queries", cmp.length
+      ? `, ${cmp.length} key size(s) measured. Dashed: (N+1)/2 and π/4·√N. Measured oracle calls include quantum-counting calls where counting ran (small keys), so they can sit above the Grover line.`
+      : ". No measured runs stored yet; dashed lines are the exact formulas (N+1)/2 and π/4·√N.");
+
+    // Iteration curve
+    const iter = rows("iteration_curve").sort((a, b) => a.iterations - b.iterations);
+    const kb = iter[0]?.key_bits;
+    const it = iter.filter((r) => r.key_bits === kb);
+    if (it.length) {
+      lineChart(document.getElementById("chart-iter"), {
+        xs: it.map((r) => r.iterations), yMax: 1, yFmt: (v) => `${Math.round(v * 100)}%`, xLabel: `Grover iterations (${kb}-bit key)`,
+        label: "Measured success and theory by number of Grover iterations",
+        series: [{ color: Q, dash: true, points: it.map((r) => [r.iterations, r.theory]) }, { color: Q, dots: true, points: it.map((r) => [r.iterations, r.p_success]) }],
+      });
+      src("src-iter");
+    } else empty("chart-iter", NO_DATA);
+
+    // Noise: one line per attack, on a shared log-spaced set of error rates
+    const noise = rows("noise").filter((r) => r.model === "depolarizing" && r.p > 0);
+    const groups = [...new Set(noise.map((r) => `${r.cipher}|${r.size}`))];
+    const legend = document.getElementById("legend-noise"); legend.replaceChildren();
+    if (groups.length) {
+      const xs = [...new Set(noise.map((r) => r.p))].sort((a, b) => a - b);
+      const colors = { miniaes: Q, minirsa: css("--s3") };
+      const series = groups.map((g) => {
+        const [cipher, size] = g.split("|");
+        const li = document.createElement("li"); const k = document.createElement("span"); k.className = "key"; k.style.background = colors[cipher] ?? M;
+        li.append(k, document.createTextNode(cipher === "minirsa" ? `Shor, N = ${size}` : `Grover, ${size}-bit key`)); legend.append(li);
+        return { color: colors[cipher] ?? M, dots: true, points: noise.filter((r) => `${r.cipher}|${r.size}` === g).sort((a, b) => a.p - b.p).map((r) => [r.p, r.p_success ?? r.success_rate]) };
+      });
+      const base = noise.find((r) => r.cipher === "miniaes" && r.baseline != null)?.baseline;
+      if (base != null) {
+        series.unshift({ color: M, dash: true, points: xs.map((x) => [x, base]) });
+        const li = document.createElement("li"); const k = document.createElement("span"); k.className = "key dash"; k.style.borderColor = M; li.append(k, document.createTextNode("Grover guessing baseline")); legend.append(li);
+      }
+      lineChart(document.getElementById("chart-noise"), { xs, series, yMax: 1, yFmt: (v) => `${Math.round(v * 100)}%`, xLabel: "depolarising error per two-qubit gate", xFmt: (p) => Number(p).toExponential(0).replace("e-", "e−"), label: "Attack success probability by noise level" });
+      src("src-noise");
+    } else empty("chart-noise", NO_DATA);
+
+    // Scaling
+    const sc = rows("scaling").filter((r) => r.cipher === "miniaes").sort((a, b) => a.size - b.size);
+    if (sc.length) {
+      barChart(document.getElementById("chart-scale-q"), { groups: sc.map((r) => ({ x: r.size, values: [{ color: Q, v: r.qubits }] })), xLabel: "key bits", label: "Qubits by key size" });
+      lineChart(document.getElementById("chart-scale-d"), { xs: sc.map((r) => r.size), log: true, xLabel: "key bits", label: "Transpiled depth by key size, log scale", series: [{ color: Q, dots: true, points: sc.map((r) => [r.size, r.transpiled_depth ?? r.depth]) }] });
+      src("src-scale");
+    } else { empty("chart-scale-q", NO_DATA); empty("chart-scale-d", NO_DATA); }
+  }
+
+  function renderStatic(config, aes, rsa, mosca) {
+    // Qubits by modulus and construction, from the engine's configuration
+    const mods = (config?.rsa_moduli_options ?? []).filter((o) => o.enabled && o.qubits_register_2n != null);
+    if (mods.length) {
+      document.getElementById("moduli-list").textContent = mods.map((o) => o.n).join(", ");
+      barChart(document.getElementById("chart-qubits"), {
+        groups: mods.map((o) => ({ x: o.n, values: [{ color: css("--q"), v: o.qubits_register_2n }, { color: css("--s3"), v: o.qubits_iterative }] })),
+        xLabel: "modulus N", xFmt: (n) => `${n}`, label: "Qubits by modulus: 2n counting register versus iterative",
+      });
+    } else empty("chart-qubits", "Qubit counts appear when the engine's configuration is available.");
+
+    const note16 = config?.aes_key_bits_16_note;
+    if (note16) { const n = document.getElementById("note-16bit"); n.replaceChildren(); const b = document.createElement("strong"); b.textContent = "The 16-bit wall. "; n.append(b, document.createTextNode(note16)); }
+
+    // Cited real-scale estimates, exactly as the engine reports them
+    const body = document.getElementById("estimates"); body.replaceChildren();
+    const row = (target, estimate, source) => { const tr = document.createElement("tr"); for (const t of [target, estimate, source]) { const td = document.createElement("td"); td.textContent = t; tr.append(td); } body.append(tr); };
+    for (const e of aes?.estimates ?? []) row(e.cipher, `${e.logical_qubits.value.toLocaleString()} logical qubits, ${e.t_gates.text} T gates, Grover iterations ${e.grover_iterations.text}`, `[${e.logical_qubits.source}]`);
+    for (const f of (rsa?.figures ?? []).filter((f) => f.kind === "published")) row(f.name, `${f.value.toLocaleString()} ${f.unit}`, `[${f.citation}]`);
+    if (!body.children.length) row("—", "Published estimates appear when the engine's estimators are available.", "");
+
+    const d = mosca?.default_result;
+    document.getElementById("mosca-example").textContent = d
+      ? `Example with the calculator's defaults: X = ${d.x}, Y = ${d.y}, Z = ${d.z}. ${d.verdict_text}`
+      : "Open the Mosca risk calculator in the app to try your own numbers.";
+  }
+
+  const stamp = snap.recorded ? `Recorded snapshot (${snap.recorded}, runners' quick settings)` : "Recorded snapshot";
+  render(snap.evaluation, stamp);
+  renderStatic(snap.config, snap.aes_resources, snap.rsa_resource_estimate, snap.mosca);
+
+  // Live data replaces the snapshot when this deck is served by a Q-Break engine.
+  const live = (path) => fetch(path).then((r) => (r.ok && (r.headers.get("content-type") ?? "").includes("json") ? r.json() : Promise.reject()));
+  live("/api/evaluation").then((ev) => {
+    if (Object.values(ev.data ?? {}).some((s) => !s.empty)) render(ev, "Live results from this engine's stored experiment runs");
+  }).catch(() => {});
+  Promise.allSettled([live("/api/config"), live("/api/aes/resources"), live("/api/rsa/resource-estimate?modulus_bits=2048"), live("/api/risk/mosca")]).then(([c, a, r, m]) => {
+    const val = (p, fallback) => (p.status === "fulfilled" ? p.value : fallback);
+    const cfg = val(c, null);
+    renderStatic(cfg?.rsa_moduli_options ? { ...snap.config, ...cfg } : snap.config, val(a, snap.aes_resources), val(r, snap.rsa_resource_estimate), val(m, snap.mosca));
+  });
+})();
+</script>
+</body>
+</html>

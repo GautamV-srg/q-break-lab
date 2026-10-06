@@ -6,46 +6,54 @@ export default function Home() {
     <div className="page home">
       <section className="hero">
         <div className="hero-glow" aria-hidden="true" />
-        <div className="eyebrow">Quantum breach testing · working prototype</div>
+        <div className="eyebrow">Quantum red-team engine · working prototype</div>
         <h1 className="hero-title">Can your encrypted messages survive a quantum attacker?</h1>
         <p className="hero-lede">
-          Q-Break lets organizations test whether their encrypted communications could be breached by a quantum
-          attacker. Submit an encrypted message, and Q-Break runs real quantum attack circuits against it, then hands
-          you a Breach Report with a verdict, the evidence, and what it means for your real keys.
+          Q-Break is a quantum red-team engine for breach testing encrypted communications. Your organization encrypts
+          a message with a miniature cipher; Q-Break plays the adversary, runs genuine quantum attack circuits on a
+          classical simulator, and hands you a Breach Report with a verdict, the evidence, and what it means for your
+          real keys.
         </p>
         <div className="hero-cta">
-          <Link to="/test/symmetric" className="btn btn-primary btn-large">
+          <Link to="/test/symmetric" className="btn btn-attack-inline btn-large">
             Run a breach test
           </Link>
           <Link to="/about" className="btn btn-ghost btn-large">
-            How it works
+            Rules of engagement
           </Link>
         </div>
       </section>
 
+      <div className="wall-rule" aria-hidden="true">
+        <span>YOUR ORGANIZATION</span>
+        <span className="wall-rule-bricks" />
+        <span>QUANTUM ADVERSARY</span>
+      </div>
+
       <section className="test-cards" aria-label="Breach tests">
         <Link to="/test/symmetric" className="test-card card-sym">
-          <div className="test-card-kicker">Symmetric breach test</div>
+          <div className="test-card-kicker">Engagement 01 · Symmetric breach test</div>
           <h2>Shared-key encryption like AES · Grover's algorithm</h2>
           <p>
             Grover's search can find a secret key in about the square root of the guesses a classical attacker needs,
-            halving the effective strength of every symmetric key.
+            halving the effective strength of every symmetric key. Three attack modes: known beginning, known substring,
+            ciphertext only.
           </p>
-          <span className="card-go">Start test →</span>
+          <span className="card-go">Start engagement →</span>
         </Link>
         <Link to="/test/public-key" className="test-card card-pk">
-          <div className="test-card-kicker">Public-key breach test</div>
+          <div className="test-card-kicker">Engagement 02 · Public-key breach test</div>
           <h2>RSA · Shor's algorithm</h2>
           <p>
-            Shor's period finding factors the public modulus and rebuilds the private key. On large fault-tolerant
-            hardware it breaks RSA at any key size.
+            Shor's period finding factors the public modulus and rebuilds the private key, including an iterative
+            version that needs a single counting qubit. On large fault-tolerant hardware it breaks RSA at any key size.
           </p>
-          <span className="card-go">Start test →</span>
+          <span className="card-go">Start engagement →</span>
         </Link>
       </section>
 
       <section className="how" aria-labelledby="how-title">
-        <h2 id="how-title">How a Q-Break test works</h2>
+        <h2 id="how-title">How a Q-Break engagement works</h2>
         <ol className="how-strip">
           <li>
             <span className="how-n">1</span>
@@ -64,10 +72,31 @@ export default function Home() {
           </li>
           <li>
             <span className="how-n">4</span>
-            <h3>Report</h3>
-            <p>A verdict, the recovered secret, the evidence, and a recommendation. Then pop the hood.</p>
+            <h3>Breach Report</h3>
+            <p>A verdict, the recovered secret, quantum vs classical cost, and a recommendation. Then pop the hood.</p>
           </li>
         </ol>
+      </section>
+
+      <section className="evidence" aria-labelledby="evidence-title">
+        <h2 id="evidence-title">Beyond a single test</h2>
+        <div className="tiles">
+          <Link to="/evaluation" className="tile tile-link">
+            <h3>Evaluation</h3>
+            <p>Scaling, noise, success rates and quantum-vs-classical query counts across stored experiment runs.</p>
+            <span className="card-go">Open the evidence →</span>
+          </Link>
+          <Link to="/mosca" className="tile tile-link">
+            <h3>Mosca risk calculator</h3>
+            <p>X + Y &gt; Z: is data you encrypt today still sensitive when a capable quantum computer arrives?</p>
+            <span className="card-go">Model your risk →</span>
+          </Link>
+          <a href="/presentation.html" className="tile tile-link">
+            <h3>Presentation deck</h3>
+            <p>The Track 5 talk: problem, approach, classical comparison, noise and scaling, limits.</p>
+            <span className="card-go">Open the deck →</span>
+          </a>
+        </div>
       </section>
 
       <section className="audience" aria-labelledby="who-title">

@@ -4,7 +4,7 @@ import PrototypeNotice from "../components/PrototypeNotice";
 export default function About() {
   return (
     <div className="page prose-page">
-      <div className="eyebrow">About Q-Break</div>
+      <div className="eyebrow">Rules of engagement · About Q-Break</div>
       <h1>How Q-Break works, and what this prototype does and doesn't prove</h1>
 
       <PrototypeNotice variant="full" />
@@ -12,8 +12,10 @@ export default function About() {
       <section>
         <h2>The vision</h2>
         <p>
-          Q-Break is a quantum breach-testing tool. Once suitable quantum hardware exists, companies, governments and
-          any organization that sends encrypted messages could run Q-Break to answer one question:{" "}
+          Q-Break is a quantum red-team engine for breach testing encrypted communications. A red team attacks a
+          system the way a real adversary would, so its owners learn where it fails before someone else finds out.
+          Once suitable quantum hardware exists, companies, governments and any organization that sends encrypted
+          messages could run Q-Break to answer one question:{" "}
           <em>could a quantum attacker breach our encrypted messages?</em> This hackathon build is the working
           prototype at miniature scale. The “once scaled” story is a vision, not a current capability.
         </p>
@@ -28,8 +30,9 @@ export default function About() {
           </li>
           <li>
             <strong>Intercept.</strong> Q-Break plays the quantum adversary. It receives only what a real eavesdropper
-            would have: the ciphertext and public parameters (and, for the symmetric test, a short known plaintext such
-            as a standard greeting). It never receives the key, or p, q, φ, d.
+            would have: the ciphertext and public parameters. The symmetric test offers three attack modes: the
+            adversary knows how the message begins, knows a piece of text that appears somewhere in it, or knows
+            nothing but the ciphertext. It never receives the key, or p, q, φ, d.
           </li>
           <li>
             <strong>Breach test.</strong> A genuine quantum circuit runs: <em>Grover's search</em> over all keys, with
@@ -37,9 +40,11 @@ export default function About() {
             fractions and GCDs to recover the factors.
           </li>
           <li>
-            <strong>Breach Report.</strong> A verdict, the recovered secret, the decrypted message, the attack's cost,
-            and what it means at real scale. <strong>Pop the Hood</strong> shows the circuit, measurements, maths and
-            every verification step. Every result is re-checked classically before it is reported.
+            <strong>Breach Report.</strong> A verdict (Breached, Ambiguous or Not breached), the recovered secret, the
+            decrypted message, the attack's cost next to a classical baseline solving the same problem, and what it
+            means at real scale. <strong>Pop the Hood</strong> shows the circuit, measurements, maths, every
+            verification step, and a noise lab that re-runs the breach under simulated hardware noise. Every result
+            is re-checked classically before it is reported.
           </li>
         </ol>
       </section>
@@ -49,7 +54,8 @@ export default function About() {
         <ul className="honesty">
           <li>
             <strong>Simulator, not quantum hardware.</strong> Circuits are built with Qiskit and executed on the Qiskit
-            Aer simulator, on a classical computer. Q-Break does not claim a speed advantage today.
+            Aer simulator, on a classical computer. Q-Break does not claim a speed advantage today: at these sizes
+            the simulation is slower than classical brute force, and each report compares query counts, not time.
           </li>
           <li>
             <strong>We never tested your real AES or RSA.</strong> This miniature test shows how such an attack works. At
@@ -60,15 +66,17 @@ export default function About() {
             uses a 4-bit block, a single round, and independent ECB-style blocks, all insecure on purpose.
           </li>
           <li>
-            <strong>MiniRSA uses genuine RSA arithmetic with numbers far too small to be secure.</strong> At N = 15, 21
-            and 35, the public and private exponents are numerically equal (e = d). These tests demonstrate Shor's
-            factor-recovery workflow, not secure RSA examples.
+            <strong>MiniRSA uses genuine RSA arithmetic with numbers far too small to be secure.</strong> The moduli
+            are products of two distinct odd primes up to 11. At several of them the public and private exponents are
+            numerically equal (e = d), which key generation flags. These tests demonstrate Shor's factor-recovery
+            workflow, not secure RSA examples.
           </li>
           <li>
             <strong>Modular multiplication is built from a classically computed permutation.</strong> The blocks in the
             Shor circuit implement the permutation that multiplication by a performs, computed classically when the
-            circuit is built. This is the standard approach in small textbook demonstrations. For N = 15, a hand-built
-            swap-gate version (the Qiskit textbook construction) is also shown.
+            circuit is built, and every report that uses them says so. This is the standard approach in small textbook
+            demonstrations. For N = 15, a hand-built swap-gate version (the Qiskit textbook construction) is also
+            available, and an iterative version reuses a single counting qubit.
           </li>
           <li>
             <strong>Textbook RSA, no padding.</strong> Text is encoded in 3-bit chunks, so every plaintext value is ≤ 7
@@ -77,6 +85,16 @@ export default function About() {
           <li>
             <strong>Longer text does not mean a bigger circuit.</strong> Grover works only on a few known blocks, and
             classical decryption handles the rest of the message. The Shor circuit depends only on N.
+          </li>
+          <li>
+            <strong>Ciphertext-only results are often ambiguous, on purpose.</strong> With a 4-bit block, many keys
+            decrypt a message to plausible text. Quantum counting estimates how many, and the report says Ambiguous
+            rather than picking one.
+          </li>
+          <li>
+            <strong>Noise breaks even these miniature attacks.</strong> The reported runs use an ideal simulator. Under
+            realistic hardware noise the signal sinks into random guessing, which the noise lab and the{" "}
+            <Link to="/evaluation">Evaluation page</Link> show with data.
           </li>
         </ul>
       </section>
@@ -95,7 +113,8 @@ export default function About() {
           Shor's algorithm factors any RSA modulus in polynomial time, so key length does not save you. But running it
           on a 2048-bit modulus needs a very large number of error-corrected (logical) qubits, each built from many
           physical qubits, and a very long, error-free computation. No machine is close to that today. The workflow,
-          however, is exactly the one this prototype runs on N = 15.
+          however, is exactly the one this prototype runs on its miniature moduli. Each Breach Report quotes published
+          resource estimates, with their sources, next to the miniature result.
         </p>
       </section>
 
@@ -116,7 +135,9 @@ export default function About() {
           </li>
         </ul>
         <p>
-          <Link to="/readiness">Try the Quantum Readiness Check →</Link>
+          <Link to="/mosca">Model your timeline with the Mosca risk calculator →</Link> ·{" "}
+          <Link to="/readiness">Try the Quantum Readiness Check →</Link> ·{" "}
+          <Link to="/evaluation">See the evaluation evidence →</Link>
         </p>
       </section>
     </div>

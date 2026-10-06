@@ -12,6 +12,8 @@
     --breach: #be123c;
     --amber: #b45309;
     --ok: #15803d;
+    --series-1: #2a78d6;
+    --series-2: #eb6834;
     color-scheme: light;
   }
   @page {
@@ -65,6 +67,17 @@
   }
   .stat-v {
     font-size: 13pt;
+  }
+  .qvc-side,
+  .qvc-note,
+  .engagement > div {
+    break-inside: avoid;
+  }
+  .qvc-value {
+    font-size: 13pt;
+  }
+  .real-scale {
+    break-inside: avoid;
   }
   .report-notice .notice {
     border: 1px solid #9ca3af;
