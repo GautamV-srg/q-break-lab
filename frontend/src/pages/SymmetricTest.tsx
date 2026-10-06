@@ -129,7 +129,7 @@ export default function SymmetricTest() {
       : enc
         ? 2
         : 1;
-  useScrollToStage(ID, stage);
+  useScrollToStage(ID, stage, [6]); // stay on the Protect results; no jump to Re-attack
 
   const configReady = !loading && !configError && config.aes_key_bits.length > 0;
   const keyValid = orgKey.length === keyBits && /^[01]+$/.test(orgKey);

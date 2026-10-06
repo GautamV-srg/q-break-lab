@@ -6,16 +6,22 @@ export function randomSeed(): number {
   return Math.floor(Math.random() * 2 ** 31);
 }
 
-/** Scrolls the active stage into view whenever it advances (not on first render). */
-export function useScrollToStage(idPrefix: string, stage: number) {
+/**
+ * Scrolls the active stage into view whenever it advances (not on first render).
+ * Stages in `noAutoScroll` are not jumped to: e.g. after Protect the user stays on the
+ * protection results (round trips, sizes, BB84 visuals) and scrolls on when ready.
+ */
+export function useScrollToStage(idPrefix: string, stage: number, noAutoScroll: number[] = []) {
   const first = useRef(true);
   useEffect(() => {
     if (first.current) {
       first.current = false;
       return;
     }
+    if (noAutoScroll.includes(stage)) return;
     const el = document.getElementById(`${idPrefix}-stage-${stage}`);
     if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idPrefix, stage]);
 }
 

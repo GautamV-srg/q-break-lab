@@ -101,7 +101,7 @@ export default function PublicKeyTest() {
       : enc
         ? 2
         : 1;
-  useScrollToStage(ID, stage);
+  useScrollToStage(ID, stage, [6]); // stay on the Protect results; no jump to Re-attack
 
   const configReady = !loading && !configError && config.rsa_moduli.length > 0;
   const busy = keygenBusy || encrypting || attacking || demoRunning || defence.busy || !configReady;
