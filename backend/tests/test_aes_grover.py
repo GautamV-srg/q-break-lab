@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import inspect
+import itertools
 import random
 
 import numpy as np
@@ -11,7 +12,13 @@ from qiskit import QuantumCircuit
 from qiskit.quantum_info import Statevector
 
 import qbreak.aes.cipher as cipher_mod
-from qbreak.aes.cipher import RCON, encrypt_nibble, encrypt_nibbles, matching_keys
+from qbreak.aes.cipher import (
+    RCON,
+    decrypt_nibbles,
+    encrypt_nibble,
+    encrypt_nibbles,
+    matching_keys,
+)
 from qbreak.aes.grover import (
     build_diffuser,
     build_grover_circuit,
@@ -216,6 +223,33 @@ def test_multiple_solutions_handled() -> None:
                 assert sorted(res.recovered_keys) == matching_keys(pair, 4)
                 return
     pytest.fail("expected some single pair with two matching keys")
+
+
+def test_api_example_end_to_end() -> None:
+    """The A6 example: crib "Hi " recovers key 1001 and decrypts the full message."""
+    msg = "Hi judges!"
+    ct = encrypt_nibbles(_nibbles(msg), 0b1001, 4)
+    res = run_grover_attack(_nibbles("Hi "), ct, 4, seed=42)
+    assert res.recovered_keys == [0b1001]
+    plain = decrypt_nibbles(ct, res.recovered_keys[0], 4)
+    assert bytes((plain[i] << 4) | plain[i + 1] for i in range(0, len(plain), 2)).decode() == msg
+
+
+def test_extra_crib_pairs_filter_out_false_keys() -> None:
+    """In-circuit pairs fit two keys; the crib's third block (not in the circuit) removes one."""
+    for key in range(16):
+        for p1, p2, p3 in itertools.permutations(range(16), 3):
+            crib = [p1, p2, p3]
+            pairs = [(p, encrypt_nibble(p, key, 4)) for p in crib]
+            if len(matching_keys(pairs[:2], 4)) == 2 and matching_keys(pairs, 4) == [key]:
+                ct = encrypt_nibbles(crib + [0, 5, 10], key, 4)
+                res = run_grover_attack(crib, ct, 4, seed=11)
+                assert res.pairs_used == pairs[:2]
+                chosen = next(a for a in res.attempts if a.iterations == res.iterations)
+                assert sorted(chosen.verified_keys) == matching_keys(pairs[:2], 4)
+                assert res.recovered_keys == [key]
+                return
+    pytest.fail("expected a crib whose first two blocks fit two keys")
 
 
 @pytest.mark.slow
