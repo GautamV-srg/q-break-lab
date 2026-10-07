@@ -10,6 +10,6 @@ services:
       - key: SYMMETRIC_MAX_KEY_BITS
         value: "8"
       - key: QBREAK_MODULI
-        value: "15"
+        value: "15,21,33,35"
       - key: QBREAK_MAX_CONCURRENT_SIMS
         value: "1"
